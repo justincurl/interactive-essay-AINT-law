@@ -70,7 +70,7 @@ function App() {
           <div className="flex flex-wrap gap-4 justify-center text-xs">
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-node-starting border border-node-starting" />
-              <span className="text-text-secondary">Starting Condition</span>
+              <span className="text-text-secondary">Starting Assumption</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-node-bottleneck border border-node-bottleneck" />
@@ -82,7 +82,7 @@ function App() {
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-node-reform border border-node-reform" />
-              <span className="text-text-secondary">Impact with Reform</span>
+              <span className="text-text-secondary">Examples of Reform</span>
             </div>
           </div>
         </div>

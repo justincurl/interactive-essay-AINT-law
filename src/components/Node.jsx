@@ -80,7 +80,7 @@ export default function Node({
       <div
         className={`
           text-[10px] uppercase tracking-[0.1em] font-medium mb-1.5 h-4
-          transition-opacity duration-300
+          transition-opacity duration-300 text-center w-full
           ${styles.labelColor}
           ${showCategoryLabel ? 'opacity-100' : 'opacity-0'}
         `}

@@ -6,7 +6,7 @@ export const pathway1 = {
     {
       id: 'p1-node1',
       type: 'starting',
-      category: 'STARTING CONDITION',
+      category: 'STARTING ASSUMPTION',
       title: 'Advanced AI capabilities',
       subtitle: 'AI can increase lawyers\' productivity and do legal work well',
       explanation: [
@@ -57,7 +57,7 @@ export const pathway1 = {
     {
       id: 'p1-node4',
       type: 'reform',
-      category: 'IMPACT WITH REFORM',
+      category: 'EXAMPLES OF REFORM',
       title: 'Impact with Reform',
       subtitle: 'Examples: state courts update regulations; creation of regulatory markets',
       explanation: [
