@@ -2,14 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import Node from './Node';
 import Arrow from './Arrow';
 
-// Column categories in order
-const COLUMN_CATEGORIES = [
-  { key: 'starting', label: 'Starting Condition' },
-  { key: 'bottleneck', label: 'Bottleneck' },
-  { key: 'impact', label: 'Impact Without Reform' },
-  { key: 'reform', label: 'Reform Examples' },
-];
-
 export default function FlowchartGrid({
   nodes,
   expandedNodeId,
@@ -78,29 +70,8 @@ export default function FlowchartGrid({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleContinue, handleBack, visibleCount, totalNodes]);
 
-  // Group nodes by column type for header positioning
-  const getColumnIndex = (nodeType) => {
-    return COLUMN_CATEGORIES.findIndex(c => c.key === nodeType);
-  };
-
   return (
     <div className="flex flex-col items-center gap-6 w-full">
-      {/* Column headers - persistent */}
-      <div className="w-full max-w-[1200px] mx-auto">
-        <div className="grid grid-cols-4 gap-2 px-4">
-          {COLUMN_CATEGORIES.map((col, idx) => (
-            <div
-              key={col.key}
-              className="text-center"
-            >
-              <span className="text-[10px] uppercase tracking-[0.12em] font-medium text-text-secondary/60">
-                {col.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Flowchart row with navigation arrows */}
       <div className="relative w-full flex items-center justify-center">
         {/* Left navigation arrow */}
@@ -154,6 +125,7 @@ export default function FlowchartGrid({
                   node={node}
                   isExpanded={isExpanded}
                   isDimmed={isDimmed}
+                  showCategoryLabel={true}
                   onToggle={() => onNodeToggle(node.id)}
                   onClose={onNodeClose}
                   onShowEvidence={onShowEvidence}
@@ -168,12 +140,12 @@ export default function FlowchartGrid({
         {!isComplete && (
           <button
             onClick={handleContinue}
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-accent/70 hover:text-accent transition-colors rounded-full hover:bg-accent/10 z-20"
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-text-secondary/50 hover:text-text-primary transition-colors rounded-full hover:bg-black/5 z-20"
             aria-label="Continue"
             title="Continue (→)"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         )}

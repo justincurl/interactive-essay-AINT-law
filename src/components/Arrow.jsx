@@ -69,6 +69,7 @@ export default function Arrow({
         ${compact ? 'px-0.5 min-w-[28px]' : 'px-2 min-w-[48px]'}
         ${visible ? 'opacity-100' : 'opacity-0'}
       `}
+      style={{ marginTop: compact ? '22px' : '28px' }} /* Offset for category label space */
     >
       <svg
         width={arrowWidth}

@@ -32,6 +32,7 @@ export default function Node({
   node,
   isExpanded = false,
   isDimmed = false,
+  showCategoryLabel = true,
   onToggle,
   onClose,
   onShowEvidence,
@@ -75,6 +76,18 @@ export default function Node({
 
   return (
     <div className="flex flex-col items-center">
+      {/* Category label - always visible above node */}
+      <div
+        className={`
+          text-[10px] uppercase tracking-[0.1em] font-medium mb-1.5 h-4
+          transition-opacity duration-300
+          ${styles.labelColor}
+          ${showCategoryLabel ? 'opacity-100' : 'opacity-0'}
+        `}
+      >
+        {node.category}
+      </div>
+
       {/* Node card */}
       <div
         ref={nodeRef}
