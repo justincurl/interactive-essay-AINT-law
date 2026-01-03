@@ -58,20 +58,20 @@ function App() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-wrap gap-6 justify-center text-sm">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-node-blue border border-node-blue" />
+              <div className="w-4 h-4 rounded bg-node-starting border border-node-starting" />
               <span className="text-text-secondary">Starting Condition</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-node-gray border border-node-gray" />
+              <div className="w-4 h-4 rounded bg-node-bottleneck border border-node-bottleneck" />
               <span className="text-text-secondary">Bottleneck</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-node-cream border border-node-cream" />
-              <span className="text-text-secondary">Impact</span>
+              <div className="w-4 h-4 rounded bg-node-impact border border-node-impact" />
+              <span className="text-text-secondary">Impact by Default</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-cream border-2 border-dashed border-accent" />
-              <span className="text-text-secondary">Reform</span>
+              <div className="w-4 h-4 rounded bg-node-reform border border-node-reform" />
+              <span className="text-text-secondary">Impact with Reform</span>
             </div>
           </div>
         </div>

@@ -8,9 +8,17 @@
   /* Colors */
   --color-cream: #FDFCFA;
   --color-accent: #C54B32;
-  --color-node-blue: #D4E5F7;
-  --color-node-gray: #E8EEF2;
-  --color-node-cream: #FDF4E7;
+
+  /* Node colors */
+  --color-node-starting: #D4E5F7;     /* Blue - starting condition */
+  --color-node-bottleneck: #F5D5D5;   /* Light red/salmon */
+  --color-node-impact: #FDF4E7;       /* Cream/yellow - impact by default */
+  --color-node-reform: #D4EDDA;       /* Light green - impact with reform */
+
+  /* Arrow colors */
+  --color-arrow-standard: #737373;
+  --color-arrow-reform: #C54B32;
+
   --color-text-primary: #1a1a1a;
   --color-text-secondary: #4a4a4a;
   --color-border: #d1d5db;
@@ -31,4 +39,35 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
+}
+
+/* Node entrance animation */
+@keyframes node-enter {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes node-exit {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+.animate-node-enter {
+  animation: node-enter 400ms ease-out forwards;
+}
+
+.animate-node-exit {
+  animation: node-exit 300ms ease-in forwards;
 }

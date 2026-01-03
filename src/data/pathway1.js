@@ -5,7 +5,8 @@ export const pathway1 = {
   nodes: [
     {
       id: 'p1-node1',
-      type: 'blue',
+      type: 'starting',
+      category: 'STARTING CONDITION',
       title: 'Advanced AI capabilities',
       subtitle: 'AI can increase lawyers\' productivity and do legal work well',
       explanation: [
@@ -21,7 +22,8 @@ export const pathway1 = {
     },
     {
       id: 'p1-node2',
-      type: 'gray',
+      type: 'bottleneck',
+      category: 'BOTTLENECK',
       title: 'Regulatory barriers',
       subtitle: 'UPL regulations: Only licensed attorneys can practice law',
       explanation: [
@@ -37,7 +39,8 @@ export const pathway1 = {
     },
     {
       id: 'p1-node3',
-      type: 'cream',
+      type: 'impact',
+      category: 'IMPACT BY DEFAULT',
       title: 'Limits on AI use by consumers',
       subtitle: 'Threat of liability chills experimentation',
       explanation: [
@@ -54,7 +57,8 @@ export const pathway1 = {
     {
       id: 'p1-node4',
       type: 'reform',
-      title: 'With reform',
+      category: 'IMPACT WITH REFORM',
+      title: 'Impact with Reform',
       subtitle: 'Examples: state courts update regulations; creation of regulatory markets',
       explanation: [
         'Placeholder: Discuss potential regulatory reforms.',

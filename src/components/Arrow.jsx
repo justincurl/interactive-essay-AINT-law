@@ -1,49 +1,93 @@
-export default function Arrow({ direction = 'right', dashed = false }) {
+export default function Arrow({
+  direction = 'right',
+  variant = 'standard', // 'standard' or 'reform'
+  animate = false,
+  visible = true
+}) {
   const isVertical = direction === 'down';
+  const isReform = variant === 'reform';
+
+  // Arrow colors based on variant
+  const strokeColor = isReform ? '#C54B32' : '#737373';
+  const dashArray = isReform ? '6 4' : 'none';
 
   if (isVertical) {
     return (
-      <div className="flex flex-col items-center justify-center h-12 py-2">
-        <div
-          className={`
-            w-0.5
-            h-full
-            ${dashed ? 'border-l-2 border-dashed border-accent' : 'bg-text-secondary'}
-          `}
-        />
+      <div
+        className={`
+          flex flex-col items-center justify-center h-12
+          transition-opacity duration-300
+          ${visible ? 'opacity-100' : 'opacity-0'}
+        `}
+      >
         <svg
-          className="w-4 h-4 text-text-secondary -mt-1"
-          fill="currentColor"
-          viewBox="0 0 20 20"
+          width="16"
+          height="48"
+          viewBox="0 0 16 48"
+          className={`
+            ${animate ? 'animate-draw-arrow-down' : ''}
+          `}
         >
+          {/* Vertical line */}
+          <line
+            x1="8"
+            y1="0"
+            x2="8"
+            y2="40"
+            stroke={strokeColor}
+            strokeWidth="2"
+            strokeDasharray={dashArray}
+            className={animate ? 'animate-draw-line' : ''}
+          />
+          {/* Arrow head */}
           <path
-            fillRule="evenodd"
-            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-            clipRule="evenodd"
+            d="M4 36 L8 44 L12 36"
+            fill="none"
+            stroke={strokeColor}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </svg>
       </div>
     );
   }
 
+  // Horizontal arrow - centered vertically
   return (
-    <div className="flex items-center justify-center px-2 min-w-[40px]">
-      <div
-        className={`
-          h-0.5
-          w-6
-          ${dashed ? 'border-t-2 border-dashed border-accent' : 'bg-text-secondary'}
-        `}
-      />
+    <div
+      className={`
+        flex items-center justify-center px-2 min-w-[48px] self-center
+        transition-opacity duration-300
+        ${visible ? 'opacity-100' : 'opacity-0'}
+      `}
+      style={{ marginTop: '28px' }} /* Offset for category label space */
+    >
       <svg
-        className={`w-4 h-4 ${dashed ? 'text-accent' : 'text-text-secondary'} -ml-1`}
-        fill="currentColor"
-        viewBox="0 0 20 20"
+        width="40"
+        height="16"
+        viewBox="0 0 40 16"
+        className={animate ? 'animate-draw-arrow-right' : ''}
       >
+        {/* Horizontal line */}
+        <line
+          x1="0"
+          y1="8"
+          x2="32"
+          y2="8"
+          stroke={strokeColor}
+          strokeWidth="2"
+          strokeDasharray={dashArray}
+          className={animate ? 'animate-draw-line' : ''}
+        />
+        {/* Arrow head */}
         <path
-          fillRule="evenodd"
-          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-          clipRule="evenodd"
+          d="M28 4 L36 8 L28 12"
+          fill="none"
+          stroke={strokeColor}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </svg>
     </div>
