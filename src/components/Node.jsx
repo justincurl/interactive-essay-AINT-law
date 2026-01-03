@@ -32,9 +32,9 @@ export default function Node({
   node,
   isExpanded = false,
   isDimmed = false,
-  showCategoryLabel = false,
   onToggle,
-  onClose
+  onClose,
+  compact = false
 }) {
   const nodeRef = useRef(null);
   const styles = nodeStyles[node.type] || nodeStyles.starting;
@@ -74,18 +74,6 @@ export default function Node({
 
   return (
     <div className="flex flex-col items-center">
-      {/* Category label - shown temporarily on reveal */}
-      <div
-        className={`
-          text-[11px] uppercase tracking-[0.1em] font-medium mb-2 h-5
-          transition-opacity duration-300
-          ${styles.labelColor}
-          ${showCategoryLabel ? 'opacity-100' : 'opacity-0'}
-        `}
-      >
-        {node.category}
-      </div>
-
       {/* Node card */}
       <div
         ref={nodeRef}
@@ -97,12 +85,16 @@ export default function Node({
           ${isExpanded ? 'shadow-lg ring-2 ring-accent/30' : ''}
           ${isDimmed ? 'opacity-40 pointer-events-none' : ''}
           rounded-lg
-          p-4
+          ${compact ? 'p-3' : 'p-4'}
           text-left
           transition-all
           duration-300
           ease-out
-          ${isExpanded ? 'max-w-[600px] w-full' : 'min-w-[200px] max-w-[280px] cursor-pointer hover:shadow-md hover:scale-[1.02]'}
+          ${isExpanded 
+            ? 'max-w-[600px] w-full' 
+            : compact 
+              ? 'w-full max-w-[200px] cursor-pointer hover:shadow-md hover:scale-[1.02]'
+              : 'min-w-[200px] max-w-[280px] cursor-pointer hover:shadow-md hover:scale-[1.02]'}
         `}
         role="button"
         tabIndex={isDimmed ? -1 : 0}
@@ -116,10 +108,10 @@ export default function Node({
         {/* Header */}
         <div className="flex justify-between items-start gap-2">
           <div className="flex-1">
-            <h3 className="font-heading text-lg font-semibold text-text-primary mb-1">
+            <h3 className={`font-heading font-semibold text-text-primary ${compact ? 'text-sm mb-0.5' : 'text-lg mb-1'}`}>
               {node.title}
             </h3>
-            <p className={`font-body text-sm leading-relaxed transition-opacity duration-200 ${isExpanded ? 'text-text-secondary/70' : 'text-text-secondary'}`}>
+            <p className={`font-body leading-relaxed transition-opacity duration-200 ${isExpanded ? 'text-text-secondary/70' : 'text-text-secondary'} ${compact ? 'text-xs' : 'text-sm'}`}>
               {node.subtitle}
             </p>
           </div>

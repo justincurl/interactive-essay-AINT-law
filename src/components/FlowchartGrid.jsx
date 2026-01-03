@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import Node from './Node';
 import Arrow from './Arrow';
 
+const COLUMN_LABELS = ['Starting Condition', 'Bottleneck', 'Impact Without Reform', 'Reform Examples'];
+
 export default function FlowchartGrid({
   nodes,
   expandedNodeId,
@@ -10,7 +12,6 @@ export default function FlowchartGrid({
 }) {
   const [visibleCount, setVisibleCount] = useState(1);
   const [animatingNodeIndex, setAnimatingNodeIndex] = useState(null);
-  const [showCategoryLabel, setShowCategoryLabel] = useState({});
 
   const totalNodes = nodes.length;
   const isComplete = visibleCount >= totalNodes;
@@ -23,23 +24,12 @@ export default function FlowchartGrid({
       setAnimatingNodeIndex(newIndex);
       setVisibleCount(prev => prev + 1);
 
-      // Show category label for the new node
-      const nodeId = nodes[newIndex]?.id;
-      if (nodeId) {
-        setShowCategoryLabel(prev => ({ ...prev, [nodeId]: true }));
-
-        // Fade out after 2 seconds
-        setTimeout(() => {
-          setShowCategoryLabel(prev => ({ ...prev, [nodeId]: false }));
-        }, 2000);
-      }
-
       // Clear animation state after animation completes
       setTimeout(() => {
         setAnimatingNodeIndex(null);
       }, 400);
     }
-  }, [visibleCount, totalNodes, nodes]);
+  }, [visibleCount, totalNodes]);
 
   // Handle Back click
   const handleBack = useCallback(() => {
@@ -58,109 +48,146 @@ export default function FlowchartGrid({
       onNodeClose();
     }
     setVisibleCount(1);
-    setShowCategoryLabel({});
   }, [expandedNodeId, onNodeClose]);
 
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowRight' && visibleCount < totalNodes) {
+        handleContinue();
+      } else if (e.key === 'ArrowLeft' && visibleCount > 1) {
+        handleBack();
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleContinue, handleBack, visibleCount, totalNodes]);
+
   return (
-    <div className="flex flex-col items-center gap-8 w-full">
-      {/* Flowchart row */}
-      <div className="flex items-start flex-wrap justify-center gap-y-4">
-        {nodes.map((node, index) => {
-          const isVisible = index < visibleCount;
-          const isExpanded = expandedNodeId === node.id;
-          const isDimmed = hasExpanded && !isExpanded;
-          const isAnimating = animatingNodeIndex === index;
-          const isReformNode = node.type === 'reform';
-
-          // Don't render nodes that aren't visible yet
-          if (!isVisible) return null;
-
-          return (
+    <div className="flex flex-col items-center gap-4 w-full">
+      {/* Persistent column headers */}
+      <div className="w-full flex justify-center">
+        <div className="grid grid-cols-4 gap-x-8 w-full max-w-5xl">
+          {COLUMN_LABELS.map((label, index) => (
             <div
-              key={node.id}
+              key={label}
               className={`
-                flex items-start
-                transition-all duration-300
-                ${isExpanded ? 'z-10' : 'z-0'}
-                ${isAnimating ? 'animate-node-enter' : ''}
+                text-center text-xs uppercase tracking-wider font-medium
+                transition-opacity duration-300
+                ${index < visibleCount ? 'text-text-secondary/60' : 'text-text-secondary/30'}
               `}
             >
-              {/* Arrow before node (except first node) */}
-              {index > 0 && (
-                <Arrow
-                  direction="right"
-                  variant={isReformNode ? 'reform' : 'standard'}
-                  visible={!hasExpanded || isExpanded}
-                  animate={isAnimating}
-                />
-              )}
-
-              <Node
-                node={node}
-                isExpanded={isExpanded}
-                isDimmed={isDimmed}
-                showCategoryLabel={showCategoryLabel[node.id] || false}
-                onToggle={() => onNodeToggle(node.id)}
-                onClose={onNodeClose}
-              />
+              {label}
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
 
-      {/* Navigation buttons */}
-      <div className="flex items-center gap-4">
-        {/* Back button */}
-        {visibleCount > 1 && !isComplete && (
-          <button
-            onClick={handleBack}
-            className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back
-          </button>
-        )}
+      {/* Flowchart with navigation arrows */}
+      <div className="relative flex items-center justify-center w-full">
+        {/* Left navigation arrow */}
+        <button
+          onClick={handleBack}
+          disabled={visibleCount <= 1}
+          className={`
+            absolute left-0 z-20 p-2 rounded-full transition-all duration-200
+            ${visibleCount > 1 
+              ? 'text-text-secondary/60 hover:text-text-primary hover:bg-black/5 cursor-pointer' 
+              : 'text-text-secondary/20 cursor-default'}
+          `}
+          aria-label="Go back"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
 
-        {/* Continue button */}
-        {!isComplete && (
-          <button
-            onClick={handleContinue}
-            className="flex items-center gap-1 px-5 py-2.5 text-sm font-medium bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors shadow-sm"
-          >
-            Continue
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        )}
+        {/* Flowchart grid */}
+        <div className="grid grid-cols-4 gap-x-2 w-full max-w-5xl px-10">
+          {nodes.map((node, index) => {
+            const isVisible = index < visibleCount;
+            const isExpanded = expandedNodeId === node.id;
+            const isDimmed = hasExpanded && !isExpanded;
+            const isAnimating = animatingNodeIndex === index;
+            const isReformNode = node.type === 'reform';
 
-        {/* Start Over button (when complete) */}
+            return (
+              <div
+                key={node.id}
+                className={`
+                  flex items-center justify-center
+                  transition-all duration-300
+                  ${isExpanded ? 'z-10' : 'z-0'}
+                  ${isAnimating ? 'animate-node-enter' : ''}
+                  ${!isVisible ? 'opacity-0 pointer-events-none' : ''}
+                `}
+              >
+                {/* Arrow before node (except first node) */}
+                <div className={`flex-shrink-0 ${index === 0 ? 'hidden' : ''}`}>
+                  <Arrow
+                    direction="right"
+                    variant={isReformNode ? 'reform' : 'standard'}
+                    visible={isVisible && (!hasExpanded || isExpanded)}
+                    animate={isAnimating}
+                    compact
+                  />
+                </div>
+
+                <Node
+                  node={node}
+                  isExpanded={isExpanded}
+                  isDimmed={isDimmed}
+                  onToggle={() => onNodeToggle(node.id)}
+                  onClose={onNodeClose}
+                  compact
+                />
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Right navigation arrow */}
+        <button
+          onClick={handleContinue}
+          disabled={isComplete}
+          className={`
+            absolute right-0 z-20 p-2 rounded-full transition-all duration-200
+            ${!isComplete 
+              ? 'text-text-secondary/60 hover:text-text-primary hover:bg-black/5 cursor-pointer' 
+              : 'text-text-secondary/20 cursor-default'}
+          `}
+          aria-label="Continue"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Progress indicator and Start Over */}
+      <div className="flex items-center gap-4 mt-2">
+        <div className="flex items-center gap-1.5">
+          {nodes.map((_, index) => (
+            <div
+              key={index}
+              className={`
+                w-1.5 h-1.5 rounded-full transition-all duration-300
+                ${index < visibleCount ? 'bg-accent' : 'bg-border'}
+              `}
+            />
+          ))}
+        </div>
+        
+        {/* Start Over link (when complete) */}
         {isComplete && (
           <button
             onClick={handleStartOver}
-            className="flex items-center gap-1 px-5 py-2.5 text-sm font-medium border-2 border-accent text-accent rounded-lg hover:bg-accent/10 transition-colors"
+            className="text-xs text-text-secondary/60 hover:text-accent transition-colors"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            Start Over
+            Start over
           </button>
         )}
-      </div>
-
-      {/* Progress indicator */}
-      <div className="flex items-center gap-2">
-        {nodes.map((_, index) => (
-          <div
-            key={index}
-            className={`
-              w-2 h-2 rounded-full transition-all duration-300
-              ${index < visibleCount ? 'bg-accent' : 'bg-border'}
-            `}
-          />
-        ))}
       </div>
     </div>
   );

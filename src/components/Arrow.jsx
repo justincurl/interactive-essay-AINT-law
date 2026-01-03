@@ -2,7 +2,8 @@ export default function Arrow({
   direction = 'right',
   variant = 'standard', // 'standard' or 'reform'
   animate = false,
-  visible = true
+  visible = true,
+  compact = false
 }) {
   const isVertical = direction === 'down';
   const isReform = variant === 'reform';
@@ -54,6 +55,46 @@ export default function Arrow({
   }
 
   // Horizontal arrow - centered vertically
+  if (compact) {
+    return (
+      <div
+        className={`
+          flex items-center justify-center px-1 self-center
+          transition-opacity duration-300
+          ${visible ? 'opacity-100' : 'opacity-0'}
+        `}
+      >
+        <svg
+          width="20"
+          height="12"
+          viewBox="0 0 20 12"
+          className={animate ? 'animate-draw-arrow-right' : ''}
+        >
+          {/* Horizontal line */}
+          <line
+            x1="0"
+            y1="6"
+            x2="14"
+            y2="6"
+            stroke={strokeColor}
+            strokeWidth="1.5"
+            strokeDasharray={dashArray}
+            className={animate ? 'animate-draw-line' : ''}
+          />
+          {/* Arrow head */}
+          <path
+            d="M12 3 L18 6 L12 9"
+            fill="none"
+            stroke={strokeColor}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`
