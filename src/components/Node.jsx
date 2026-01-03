@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useRef, useEffect } from 'react';
+import NodeExpandedContent from './NodeExpandedContent';
 
 const nodeStyles = {
   blue: {
@@ -24,45 +25,111 @@ const nodeStyles = {
 };
 
 export default function Node({
-  id,
-  type = 'blue',
-  title,
-  subtitle,
-  isSelected = false,
-  onClick
+  node,
+  isExpanded = false,
+  isDimmed = false,
+  onToggle,
+  onClose
 }) {
-  const styles = nodeStyles[type] || nodeStyles.blue;
+  const nodeRef = useRef(null);
+  const styles = nodeStyles[node.type] || nodeStyles.blue;
+
+  // Handle click outside to close
+  useEffect(() => {
+    if (!isExpanded) return;
+
+    const handleClickOutside = (event) => {
+      if (nodeRef.current && !nodeRef.current.contains(event.target)) {
+        onClose?.();
+      }
+    };
+
+    // Delay adding listener to prevent immediate close
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 10);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isExpanded, onClose]);
+
+  const handleClick = (e) => {
+    e.stopPropagation();
+    if (!isDimmed) {
+      onToggle?.();
+    }
+  };
+
+  const handleClose = (e) => {
+    e.stopPropagation();
+    onClose?.();
+  };
 
   return (
-    <button
-      onClick={() => onClick?.(id)}
+    <div
+      ref={nodeRef}
+      onClick={handleClick}
       className={`
         ${styles.bg}
         ${styles.borderStyle}
         ${styles.border}
-        ${isSelected ? 'ring-2 ring-accent ring-offset-2' : ''}
+        ${isExpanded ? 'shadow-lg ring-2 ring-accent/30' : ''}
+        ${isDimmed ? 'opacity-40 pointer-events-none' : ''}
         rounded-lg
         p-4
-        min-w-[200px]
-        max-w-[280px]
         text-left
-        cursor-pointer
         transition-all
-        duration-200
-        hover:shadow-md
-        hover:scale-[1.02]
-        focus:outline-none
-        focus:ring-2
-        focus:ring-accent
-        focus:ring-offset-2
+        duration-300
+        ease-out
+        ${isExpanded ? 'max-w-[600px] w-full' : 'min-w-[200px] max-w-[280px] cursor-pointer hover:shadow-md hover:scale-[1.02]'}
       `}
+      role="button"
+      tabIndex={isDimmed ? -1 : 0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick(e);
+        }
+      }}
     >
-      <h3 className="font-heading text-lg font-semibold text-text-primary mb-1">
-        {title}
-      </h3>
-      <p className="font-body text-sm text-text-secondary leading-relaxed">
-        {subtitle}
-      </p>
-    </button>
+      {/* Header */}
+      <div className="flex justify-between items-start gap-2">
+        <div className="flex-1">
+          <h3 className="font-heading text-lg font-semibold text-text-primary mb-1">
+            {node.title}
+          </h3>
+          <p className={`font-body text-sm leading-relaxed transition-opacity duration-200 ${isExpanded ? 'text-text-secondary/70' : 'text-text-secondary'}`}>
+            {node.subtitle}
+          </p>
+        </div>
+
+        {/* Close button - only shown when expanded */}
+        {isExpanded && (
+          <button
+            onClick={handleClose}
+            className="flex-shrink-0 w-6 h-6 flex items-center justify-center text-text-secondary hover:text-text-primary transition-colors rounded-md hover:bg-black/5"
+            aria-label="Close"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {/* Expanded content */}
+      <div
+        className={`
+          overflow-hidden transition-all duration-300 ease-out
+          ${isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}
+        `}
+      >
+        {isExpanded && (
+          <NodeExpandedContent node={node} onClose={onClose} />
+        )}
+      </div>
+    </div>
   );
 }

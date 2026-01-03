@@ -1,21 +1,16 @@
 import { useState } from 'react';
 import FlowchartGrid from './components/FlowchartGrid';
-import DetailPanel from './components/DetailPanel';
 import { pathway1 } from './data/pathway1';
 
 function App() {
-  const [selectedNodeId, setSelectedNodeId] = useState(null);
+  const [expandedNodeId, setExpandedNodeId] = useState(null);
 
-  const selectedNode = selectedNodeId
-    ? pathway1.nodes.find(n => n.id === selectedNodeId)
-    : null;
-
-  const handleNodeClick = (nodeId) => {
-    setSelectedNodeId(nodeId === selectedNodeId ? null : nodeId);
+  const handleNodeToggle = (nodeId) => {
+    setExpandedNodeId(expandedNodeId === nodeId ? null : nodeId);
   };
 
-  const handleClosePanel = () => {
-    setSelectedNodeId(null);
+  const handleNodeClose = () => {
+    setExpandedNodeId(null);
   };
 
   return (
@@ -48,27 +43,13 @@ function App() {
             </p>
           </div>
 
-          {/* Flowchart and Detail Panel */}
-          <div className="flex flex-col lg:flex-row gap-8 items-start justify-center">
-            {/* Flowchart */}
-            <div className="flex-1 flex justify-center">
-              <FlowchartGrid
-                nodes={pathway1.nodes}
-                selectedNodeId={selectedNodeId}
-                onNodeClick={handleNodeClick}
-              />
-            </div>
-
-            {/* Detail Panel */}
-            {selectedNode && (
-              <div className="w-full lg:w-96 lg:sticky lg:top-8">
-                <DetailPanel
-                  node={selectedNode}
-                  onClose={handleClosePanel}
-                />
-              </div>
-            )}
-          </div>
+          {/* Flowchart */}
+          <FlowchartGrid
+            nodes={pathway1.nodes}
+            expandedNodeId={expandedNodeId}
+            onNodeToggle={handleNodeToggle}
+            onNodeClose={handleNodeClose}
+          />
         </div>
       </main>
 
