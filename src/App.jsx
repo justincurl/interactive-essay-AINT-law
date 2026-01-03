@@ -181,33 +181,44 @@ function App() {
 
           {/* Global Navigation Controls */}
           <div className="mt-8 flex flex-col items-center gap-4">
-            {/* Navigation buttons */}
-            <div className="flex items-center gap-4">
-              <button
-                onClick={handleBack}
-                disabled={globalVisibleCount <= 1}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  globalVisibleCount <= 1
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-white border border-border hover:bg-gray-50 text-text-secondary'
-                }`}
-              >
-                Back
-              </button>
+            {/* Navigation arrows */}
+            <div className="flex items-center gap-6">
+              {/* Left arrow - go back */}
+              {globalVisibleCount > 1 && (
+                <button
+                  onClick={handleBack}
+                  className="w-10 h-10 flex items-center justify-center text-text-secondary/50 hover:text-text-primary transition-colors rounded-full hover:bg-black/5"
+                  aria-label="Go back"
+                  title="Go back (←)"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+              )}
               
+              {/* Right arrow - continue or restart */}
               {!isComplete ? (
                 <button
                   onClick={handleContinue}
-                  className="px-4 py-2 rounded-lg text-sm font-medium bg-text-primary text-white hover:bg-text-primary/90 transition-colors"
+                  className="w-10 h-10 flex items-center justify-center text-text-secondary/50 hover:text-text-primary transition-colors rounded-full hover:bg-black/5"
+                  aria-label="Continue"
+                  title="Continue (→)"
                 >
-                  Continue
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+                  </svg>
                 </button>
               ) : (
                 <button
                   onClick={handleStartOver}
-                  className="px-4 py-2 rounded-lg text-sm font-medium bg-text-primary text-white hover:bg-text-primary/90 transition-colors"
+                  className="w-10 h-10 flex items-center justify-center text-text-secondary/50 hover:text-text-primary transition-colors rounded-full hover:bg-black/5"
+                  aria-label="Start over"
+                  title="Start over"
                 >
-                  Start Over
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
                 </button>
               )}
             </div>
