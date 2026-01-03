@@ -1,6 +1,6 @@
 export const pathway1 = {
   id: 'pathway1',
-  title: 'Pathway 1: Consumer Access',
+  title: 'Bottleneck 1: Regulatory Barriers',
   description: 'How AI capabilities face regulatory barriers that limit consumer access',
   nodes: [
     {

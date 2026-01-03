@@ -1,6 +1,6 @@
 export const pathway3 = {
   id: 'pathway3',
-  title: 'Pathway 3: Human Involvement',
+  title: 'Bottleneck 3: Human Involvement',
   description: 'How AI gains face constraints from human involvement requirements',
   nodes: [
     {

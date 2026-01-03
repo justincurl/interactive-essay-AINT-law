@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import FlowchartGrid from './components/FlowchartGrid';
 import EvidenceModal from './components/EvidenceModal';
 import ReformModal from './components/ReformModal';
@@ -7,18 +7,42 @@ import { pathway2 } from './data/pathway2';
 import { pathway3 } from './data/pathway3';
 
 const pathways = [pathway1, pathway2, pathway3];
+const NODES_PER_PATHWAY = 4;
+const TOTAL_NODES = pathways.length * NODES_PER_PATHWAY;
 
 function App() {
-  const [currentPathwayIndex, setCurrentPathwayIndex] = useState(0);
+  const [globalVisibleCount, setGlobalVisibleCount] = useState(1);
   const [expandedNodeId, setExpandedNodeId] = useState(null);
   const [evidenceNode, setEvidenceNode] = useState(null);
   const [reformBottleneckNode, setReformBottleneckNode] = useState(null);
-  const [showBypassArrow, setShowBypassArrow] = useState(false);
+  const [reformPathwayIndex, setReformPathwayIndex] = useState(null);
+  const [animatingNodeIndex, setAnimatingNodeIndex] = useState(null);
 
-  const currentPathway = pathways[currentPathwayIndex];
+  // Calculate visible count for each pathway based on global progress
+  const getPathwayVisibleCount = (pathwayIndex) => {
+    const startNode = pathwayIndex * NODES_PER_PATHWAY;
+    const endNode = (pathwayIndex + 1) * NODES_PER_PATHWAY;
+    
+    if (globalVisibleCount <= startNode) {
+      return 0;
+    } else if (globalVisibleCount >= endNode) {
+      return NODES_PER_PATHWAY;
+    } else {
+      return globalVisibleCount - startNode;
+    }
+  };
 
-  // Find the reform node for the modal
-  const reformNode = currentPathway.nodes.find(n => n.type === 'reform');
+  // Check if a pathway should be visible
+  const isPathwayVisible = (pathwayIndex) => {
+    return getPathwayVisibleCount(pathwayIndex) > 0;
+  };
+
+  const isComplete = globalVisibleCount >= TOTAL_NODES;
+
+  // Get reform node for the modal based on which pathway's bottleneck was clicked
+  const reformNode = reformPathwayIndex !== null 
+    ? pathways[reformPathwayIndex].nodes.find(n => n.type === 'reform')
+    : null;
 
   const handleNodeToggle = (nodeId) => {
     setExpandedNodeId(expandedNodeId === nodeId ? null : nodeId);
@@ -36,23 +60,67 @@ function App() {
     setEvidenceNode(null);
   };
 
-  const handleShowReform = (bottleneckNode) => {
+  const handleShowReform = (bottleneckNode, pathwayIndex) => {
     setReformBottleneckNode(bottleneckNode);
-    setShowBypassArrow(true);
+    setReformPathwayIndex(pathwayIndex);
   };
 
   const handleCloseReform = () => {
     setReformBottleneckNode(null);
-    setShowBypassArrow(false);
+    setReformPathwayIndex(null);
   };
 
-  const handlePathwayChange = (index) => {
-    setCurrentPathwayIndex(index);
-    setExpandedNodeId(null);
-    setEvidenceNode(null);
-    setReformBottleneckNode(null);
-    setShowBypassArrow(false);
-  };
+  // Global navigation handlers
+  const handleContinue = useCallback(() => {
+    if (globalVisibleCount < TOTAL_NODES) {
+      const newGlobalIndex = globalVisibleCount;
+      const pathwayIndex = Math.floor(newGlobalIndex / NODES_PER_PATHWAY);
+      const nodeIndexInPathway = newGlobalIndex % NODES_PER_PATHWAY;
+      
+      setAnimatingNodeIndex({ pathwayIndex, nodeIndex: nodeIndexInPathway });
+      setGlobalVisibleCount(prev => prev + 1);
+
+      setTimeout(() => {
+        setAnimatingNodeIndex(null);
+      }, 400);
+    }
+  }, [globalVisibleCount]);
+
+  const handleBack = useCallback(() => {
+    if (globalVisibleCount > 1) {
+      if (expandedNodeId) {
+        setExpandedNodeId(null);
+      }
+      setGlobalVisibleCount(prev => prev - 1);
+    }
+  }, [globalVisibleCount, expandedNodeId]);
+
+  const handleStartOver = useCallback(() => {
+    if (expandedNodeId) {
+      setExpandedNodeId(null);
+    }
+    setGlobalVisibleCount(1);
+  }, [expandedNodeId]);
+
+  // Global keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return;
+      }
+
+      if (e.key === 'ArrowRight' && globalVisibleCount < TOTAL_NODES) {
+        e.preventDefault();
+        handleContinue();
+      } else if (e.key === 'ArrowLeft' && globalVisibleCount > 1) {
+        e.preventDefault();
+        handleBack();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleContinue, handleBack, globalVisibleCount]);
 
   return (
     <div className="min-h-screen bg-cream">
@@ -71,46 +139,101 @@ function App() {
       {/* Main content */}
       <main className="py-8 px-6">
         <div className="max-w-6xl mx-auto">
-          {/* Pathway selector */}
-          <div className="mb-6 flex justify-center gap-2">
-            {pathways.map((pathway, index) => (
-              <button
-                key={pathway.id}
-                onClick={() => handlePathwayChange(index)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  currentPathwayIndex === index
-                    ? 'bg-text-primary text-white'
-                    : 'bg-white border border-border hover:bg-gray-50 text-text-secondary'
-                }`}
-              >
-                Pathway {index + 1}
-              </button>
-            ))}
-          </div>
-
-          {/* Pathway title */}
+          {/* Instructions */}
           <div className="mb-6 text-center">
-            <h2 className="font-heading text-xl font-semibold text-text-primary">
-              {currentPathway.title}
-            </h2>
-            <p className="font-body text-sm text-text-secondary mt-1">
-              {currentPathway.description}
-            </p>
-            <p className="font-body text-xs text-text-secondary/60 mt-2">
+            <p className="font-body text-xs text-text-secondary/60">
               Click any node to learn more · Use arrow keys to navigate
             </p>
           </div>
 
-          {/* Flowchart */}
-          <FlowchartGrid
-            nodes={currentPathway.nodes}
-            expandedNodeId={expandedNodeId}
-            onNodeToggle={handleNodeToggle}
-            onNodeClose={handleNodeClose}
-            onShowEvidence={handleShowEvidence}
-            onShowReform={handleShowReform}
-            showBypassArrow={showBypassArrow}
-          />
+          {/* Stacked Pathways */}
+          <div className="flex flex-col gap-8">
+            {pathways.map((pathway, pathwayIndex) => {
+              const pathwayVisibleCount = getPathwayVisibleCount(pathwayIndex);
+              const isVisible = isPathwayVisible(pathwayIndex);
+              
+              // Calculate animating node index for this pathway
+              const pathwayAnimatingIndex = animatingNodeIndex?.pathwayIndex === pathwayIndex 
+                ? animatingNodeIndex.nodeIndex 
+                : null;
+
+              if (!isVisible) return null;
+
+              return (
+                <FlowchartGrid
+                  key={pathway.id}
+                  nodes={pathway.nodes}
+                  expandedNodeId={expandedNodeId}
+                  onNodeToggle={handleNodeToggle}
+                  onNodeClose={handleNodeClose}
+                  onShowEvidence={handleShowEvidence}
+                  onShowReform={(bottleneckNode) => handleShowReform(bottleneckNode, pathwayIndex)}
+                  showBypassArrow={reformPathwayIndex === pathwayIndex}
+                  visibleCount={pathwayVisibleCount}
+                  animatingNodeIndex={pathwayAnimatingIndex}
+                  showNavigation={false}
+                  pathwayTitle={pathway.title}
+                  pathwayDescription={pathway.description}
+                />
+              );
+            })}
+          </div>
+
+          {/* Global Navigation Controls */}
+          <div className="mt-8 flex flex-col items-center gap-4">
+            {/* Navigation buttons */}
+            <div className="flex items-center gap-4">
+              <button
+                onClick={handleBack}
+                disabled={globalVisibleCount <= 1}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  globalVisibleCount <= 1
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-white border border-border hover:bg-gray-50 text-text-secondary'
+                }`}
+              >
+                Back
+              </button>
+              
+              {!isComplete ? (
+                <button
+                  onClick={handleContinue}
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-text-primary text-white hover:bg-text-primary/90 transition-colors"
+                >
+                  Continue
+                </button>
+              ) : (
+                <button
+                  onClick={handleStartOver}
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-text-primary text-white hover:bg-text-primary/90 transition-colors"
+                >
+                  Start Over
+                </button>
+              )}
+            </div>
+
+            {/* Global progress indicator */}
+            <div className="flex items-center gap-1.5">
+              {Array.from({ length: TOTAL_NODES }).map((_, index) => {
+                // Add visual separator between pathways
+                const isPathwayStart = index > 0 && index % NODES_PER_PATHWAY === 0;
+                return (
+                  <div key={index} className="flex items-center">
+                    {isPathwayStart && <div className="w-2" />}
+                    <div
+                      className={`
+                        w-1.5 h-1.5 rounded-full transition-all duration-300
+                        ${index < globalVisibleCount ? 'bg-accent/70' : 'bg-border/50'}
+                      `}
+                    />
+                  </div>
+                );
+              })}
+              <span className="ml-2 text-[10px] text-text-secondary/50">
+                {globalVisibleCount}/{TOTAL_NODES}
+              </span>
+            </div>
+          </div>
         </div>
       </main>
 

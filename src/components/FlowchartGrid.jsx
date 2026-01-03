@@ -10,10 +10,23 @@ export default function FlowchartGrid({
   onNodeClose,
   onShowEvidence,
   onShowReform,
-  showBypassArrow = false
+  showBypassArrow = false,
+  visibleCount: controlledVisibleCount,
+  onContinue,
+  onBack,
+  onStartOver,
+  showNavigation = true,
+  pathwayTitle,
+  pathwayDescription,
+  animatingNodeIndex: controlledAnimatingIndex
 }) {
-  const [visibleCount, setVisibleCount] = useState(1);
-  const [animatingNodeIndex, setAnimatingNodeIndex] = useState(null);
+  const [internalVisibleCount, setInternalVisibleCount] = useState(1);
+  const [internalAnimatingNodeIndex, setInternalAnimatingNodeIndex] = useState(null);
+
+  // Use controlled or internal state
+  const isControlled = controlledVisibleCount !== undefined;
+  const visibleCount = isControlled ? controlledVisibleCount : internalVisibleCount;
+  const animatingNodeIndex = isControlled ? controlledAnimatingIndex : internalAnimatingNodeIndex;
 
   const totalNodes = nodes.length;
   const isComplete = visibleCount >= totalNodes;
@@ -25,39 +38,49 @@ export default function FlowchartGrid({
 
   // Handle Continue (next node)
   const handleContinue = useCallback(() => {
-    if (visibleCount < totalNodes) {
+    if (isControlled) {
+      onContinue?.();
+    } else if (visibleCount < totalNodes) {
       const newIndex = visibleCount;
-      setAnimatingNodeIndex(newIndex);
-      setVisibleCount(prev => prev + 1);
+      setInternalAnimatingNodeIndex(newIndex);
+      setInternalVisibleCount(prev => prev + 1);
 
       // Clear animation state after animation completes
       setTimeout(() => {
-        setAnimatingNodeIndex(null);
+        setInternalAnimatingNodeIndex(null);
       }, 400);
     }
-  }, [visibleCount, totalNodes]);
+  }, [isControlled, onContinue, visibleCount, totalNodes]);
 
   // Handle Back (previous node)
   const handleBack = useCallback(() => {
-    if (visibleCount > 1) {
+    if (isControlled) {
+      onBack?.();
+    } else if (visibleCount > 1) {
       // Close any expanded node first
       if (expandedNodeId) {
         onNodeClose();
       }
-      setVisibleCount(prev => prev - 1);
+      setInternalVisibleCount(prev => prev - 1);
     }
-  }, [visibleCount, expandedNodeId, onNodeClose]);
+  }, [isControlled, onBack, visibleCount, expandedNodeId, onNodeClose]);
 
   // Handle Start Over
   const handleStartOver = useCallback(() => {
-    if (expandedNodeId) {
-      onNodeClose();
+    if (isControlled) {
+      onStartOver?.();
+    } else {
+      if (expandedNodeId) {
+        onNodeClose();
+      }
+      setInternalVisibleCount(1);
     }
-    setVisibleCount(1);
-  }, [expandedNodeId, onNodeClose]);
+  }, [isControlled, onStartOver, expandedNodeId, onNodeClose]);
 
-  // Keyboard navigation
+  // Keyboard navigation - only if not controlled (parent handles it)
   useEffect(() => {
+    if (isControlled) return; // Parent handles keyboard navigation
+
     const handleKeyDown = (e) => {
       // Don't handle if modal is open or user is typing in an input
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
@@ -75,7 +98,7 @@ export default function FlowchartGrid({
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handleContinue, handleBack, visibleCount, totalNodes]);
+  }, [isControlled, handleContinue, handleBack, visibleCount, totalNodes]);
 
   // Handle unlock click - find bottleneck node and trigger reform modal
   const handleUnlockClick = () => {
@@ -86,14 +109,28 @@ export default function FlowchartGrid({
   };
 
   return (
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col items-center gap-4 w-full">
+      {/* Pathway title - only shown if provided */}
+      {pathwayTitle && (
+        <div className="text-center">
+          <h3 className="font-heading text-lg font-semibold text-text-primary">
+            {pathwayTitle}
+          </h3>
+          {pathwayDescription && (
+            <p className="font-body text-xs text-text-secondary mt-0.5">
+              {pathwayDescription}
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Flowchart row with navigation arrows */}
       <div className="relative w-full flex items-center justify-center">
         {/* Bypass arrow overlay */}
         <BypassArrow visible={showBypassArrow} />
 
-        {/* Left navigation arrow */}
-        {visibleCount > 1 && (
+        {/* Left navigation arrow - only if showNavigation is true */}
+        {showNavigation && visibleCount > 1 && (
           <button
             onClick={handleBack}
             className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-text-secondary/50 hover:text-text-primary transition-colors rounded-full hover:bg-black/5 z-20"
@@ -160,8 +197,8 @@ export default function FlowchartGrid({
           })}
         </div>
 
-        {/* Right navigation arrow */}
-        {!isComplete && (
+        {/* Right navigation arrow - only if showNavigation is true */}
+        {showNavigation && !isComplete && (
           <button
             onClick={handleContinue}
             className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-text-secondary/50 hover:text-text-primary transition-colors rounded-full hover:bg-black/5 z-20"
@@ -174,8 +211,8 @@ export default function FlowchartGrid({
           </button>
         )}
 
-        {/* Restart indicator when complete */}
-        {isComplete && (
+        {/* Restart indicator when complete - only if showNavigation is true */}
+        {showNavigation && isComplete && (
           <button
             onClick={handleStartOver}
             className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-text-secondary/50 hover:text-text-primary transition-colors rounded-full hover:bg-black/5 z-20"
@@ -189,21 +226,23 @@ export default function FlowchartGrid({
         )}
       </div>
 
-      {/* Progress indicator - subtle dots */}
-      <div className="flex items-center gap-1.5">
-        {nodes.map((_, index) => (
-          <div
-            key={index}
-            className={`
-              w-1.5 h-1.5 rounded-full transition-all duration-300
-              ${index < visibleCount ? 'bg-accent/70' : 'bg-border/50'}
-            `}
-          />
-        ))}
-        <span className="ml-2 text-[10px] text-text-secondary/50">
-          {visibleCount}/{totalNodes}
-        </span>
-      </div>
+      {/* Progress indicator - subtle dots - only if showNavigation is true */}
+      {showNavigation && (
+        <div className="flex items-center gap-1.5">
+          {nodes.map((_, index) => (
+            <div
+              key={index}
+              className={`
+                w-1.5 h-1.5 rounded-full transition-all duration-300
+                ${index < visibleCount ? 'bg-accent/70' : 'bg-border/50'}
+              `}
+            />
+          ))}
+          <span className="ml-2 text-[10px] text-text-secondary/50">
+            {visibleCount}/{totalNodes}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 export const pathway2 = {
   id: 'pathway2',
-  title: 'Pathway 2: Adversarial Dynamics',
+  title: 'Bottleneck 2: Adversarial Dynamics',
   description: 'How AI adoption faces adversarial dynamics that absorb productivity gains',
   nodes: [
     {
