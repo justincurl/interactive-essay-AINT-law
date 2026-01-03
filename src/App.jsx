@@ -1,11 +1,17 @@
 import { useState } from 'react';
 import FlowchartGrid from './components/FlowchartGrid';
 import EvidenceModal from './components/EvidenceModal';
+import ReformModal from './components/ReformModal';
 import { pathway1 } from './data/pathway1';
 
 function App() {
   const [expandedNodeId, setExpandedNodeId] = useState(null);
   const [evidenceNode, setEvidenceNode] = useState(null);
+  const [reformBottleneckNode, setReformBottleneckNode] = useState(null);
+  const [showBypassArrow, setShowBypassArrow] = useState(false);
+
+  // Find the reform node for the modal
+  const reformNode = pathway1.nodes.find(n => n.type === 'reform');
 
   const handleNodeToggle = (nodeId) => {
     setExpandedNodeId(expandedNodeId === nodeId ? null : nodeId);
@@ -21,6 +27,16 @@ function App() {
 
   const handleCloseEvidence = () => {
     setEvidenceNode(null);
+  };
+
+  const handleShowReform = (bottleneckNode) => {
+    setReformBottleneckNode(bottleneckNode);
+    setShowBypassArrow(true);
+  };
+
+  const handleCloseReform = () => {
+    setReformBottleneckNode(null);
+    setShowBypassArrow(false);
   };
 
   return (
@@ -60,6 +76,8 @@ function App() {
             onNodeToggle={handleNodeToggle}
             onNodeClose={handleNodeClose}
             onShowEvidence={handleShowEvidence}
+            onShowReform={handleShowReform}
+            showBypassArrow={showBypassArrow}
           />
         </div>
       </main>
@@ -93,6 +111,15 @@ function App() {
         <EvidenceModal
           node={evidenceNode}
           onClose={handleCloseEvidence}
+        />
+      )}
+
+      {/* Reform Modal */}
+      {reformBottleneckNode && reformNode && (
+        <ReformModal
+          bottleneckNode={reformBottleneckNode}
+          reformNode={reformNode}
+          onClose={handleCloseReform}
         />
       )}
     </div>

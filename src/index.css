@@ -95,3 +95,20 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Bypass arrow animation */
+@keyframes draw-bypass {
+  from {
+    stroke-dashoffset: 400;
+    opacity: 0;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+.animate-draw-bypass {
+  stroke-dasharray: 400;
+  animation: draw-bypass 500ms ease-out forwards;
+}

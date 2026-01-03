@@ -1,13 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import Node from './Node';
 import Arrow from './Arrow';
+import BypassArrow from './BypassArrow';
 
 export default function FlowchartGrid({
   nodes,
   expandedNodeId,
   onNodeToggle,
   onNodeClose,
-  onShowEvidence
+  onShowEvidence,
+  onShowReform,
+  showBypassArrow = false
 }) {
   const [visibleCount, setVisibleCount] = useState(1);
   const [animatingNodeIndex, setAnimatingNodeIndex] = useState(null);
@@ -15,6 +18,10 @@ export default function FlowchartGrid({
   const totalNodes = nodes.length;
   const isComplete = visibleCount >= totalNodes;
   const hasExpanded = expandedNodeId !== null;
+
+  // Find node indices by type
+  const bottleneckIndex = nodes.findIndex(n => n.type === 'bottleneck');
+  const impactIndex = nodes.findIndex(n => n.type === 'impact');
 
   // Handle Continue (next node)
   const handleContinue = useCallback(() => {
@@ -70,10 +77,21 @@ export default function FlowchartGrid({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleContinue, handleBack, visibleCount, totalNodes]);
 
+  // Handle unlock click - find bottleneck node and trigger reform modal
+  const handleUnlockClick = () => {
+    const bottleneckNode = nodes.find(n => n.type === 'bottleneck');
+    if (bottleneckNode) {
+      onShowReform?.(bottleneckNode);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center gap-6 w-full">
       {/* Flowchart row with navigation arrows */}
       <div className="relative w-full flex items-center justify-center">
+        {/* Bypass arrow overlay */}
+        <BypassArrow visible={showBypassArrow} />
+
         {/* Left navigation arrow */}
         {visibleCount > 1 && (
           <button
@@ -97,6 +115,10 @@ export default function FlowchartGrid({
             const isAnimating = animatingNodeIndex === index;
             const isReformNode = node.type === 'reform';
 
+            // Show unlock icon on arrow between bottleneck and impact
+            const isArrowBeforeImpact = index === impactIndex && bottleneckIndex >= 0;
+            const showUnlockOnArrow = isArrowBeforeImpact && visibleCount > impactIndex;
+
             // Don't render nodes that aren't visible yet
             if (!isVisible) return null;
 
@@ -118,6 +140,8 @@ export default function FlowchartGrid({
                     visible={!hasExpanded || isExpanded}
                     animate={isAnimating}
                     compact={true}
+                    showUnlock={showUnlockOnArrow && !showBypassArrow}
+                    onUnlockClick={handleUnlockClick}
                   />
                 )}
 
