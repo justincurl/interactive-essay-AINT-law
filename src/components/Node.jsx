@@ -5,26 +5,26 @@ const nodeStyles = {
   starting: {
     bg: 'bg-node-starting',
     border: 'border-node-starting',
-    borderStyle: 'border-2 border-solid',
-    labelColor: 'text-[#5a7a9a]', // Darker blue
+    borderStyle: 'border border-solid',
+    labelColor: 'text-[#5a7a9a]',
   },
   bottleneck: {
     bg: 'bg-node-bottleneck',
     border: 'border-node-bottleneck',
-    borderStyle: 'border-2 border-solid',
-    labelColor: 'text-[#9a5a5a]', // Darker red
+    borderStyle: 'border border-solid',
+    labelColor: 'text-[#9a5a5a]',
   },
   impact: {
     bg: 'bg-node-impact',
     border: 'border-node-impact',
-    borderStyle: 'border-2 border-solid',
-    labelColor: 'text-[#8a7a5a]', // Darker cream/brown
+    borderStyle: 'border border-solid',
+    labelColor: 'text-[#8a7a5a]',
   },
   reform: {
     bg: 'bg-node-reform',
     border: 'border-node-reform',
-    borderStyle: 'border-2 border-solid',
-    labelColor: 'text-[#5a8a6a]', // Darker green
+    borderStyle: 'border border-solid',
+    labelColor: 'text-[#5a8a6a]',
   },
 };
 
@@ -32,9 +32,11 @@ export default function Node({
   node,
   isExpanded = false,
   isDimmed = false,
-  showCategoryLabel = false,
+  showCategoryLabel = true,
   onToggle,
-  onClose
+  onClose,
+  onShowEvidence,
+  compact = false
 }) {
   const nodeRef = useRef(null);
   const styles = nodeStyles[node.type] || nodeStyles.starting;
@@ -74,11 +76,11 @@ export default function Node({
 
   return (
     <div className="flex flex-col items-center">
-      {/* Category label - shown temporarily on reveal */}
+      {/* Category label - always visible above node */}
       <div
         className={`
-          text-[11px] uppercase tracking-[0.1em] font-medium mb-2 h-5
-          transition-opacity duration-300
+          text-[10px] uppercase tracking-[0.1em] font-medium mb-1.5 h-4
+          transition-opacity duration-300 text-center w-full
           ${styles.labelColor}
           ${showCategoryLabel ? 'opacity-100' : 'opacity-0'}
         `}
@@ -96,13 +98,17 @@ export default function Node({
           ${styles.border}
           ${isExpanded ? 'shadow-lg ring-2 ring-accent/30' : ''}
           ${isDimmed ? 'opacity-40 pointer-events-none' : ''}
-          rounded-lg
-          p-4
+          rounded-md
           text-left
           transition-all
           duration-300
           ease-out
-          ${isExpanded ? 'max-w-[600px] w-full' : 'min-w-[200px] max-w-[280px] cursor-pointer hover:shadow-md hover:scale-[1.02]'}
+          ${isExpanded
+            ? 'max-w-[500px] w-full p-4'
+            : compact
+              ? 'w-[180px] p-2.5 cursor-pointer hover:shadow-md hover:scale-[1.02]'
+              : 'min-w-[200px] max-w-[280px] p-4 cursor-pointer hover:shadow-md hover:scale-[1.02]'
+          }
         `}
         role="button"
         tabIndex={isDimmed ? -1 : 0}
@@ -114,12 +120,20 @@ export default function Node({
         }}
       >
         {/* Header */}
-        <div className="flex justify-between items-start gap-2">
-          <div className="flex-1">
-            <h3 className="font-heading text-lg font-semibold text-text-primary mb-1">
+        <div className="flex justify-between items-start gap-1">
+          <div className="flex-1 min-w-0">
+            <h3 className={`font-heading font-semibold text-text-primary leading-tight ${
+              isExpanded ? 'text-base' : compact ? 'text-[13px]' : 'text-lg'
+            }`}>
               {node.title}
             </h3>
-            <p className={`font-body text-sm leading-relaxed transition-opacity duration-200 ${isExpanded ? 'text-text-secondary/70' : 'text-text-secondary'}`}>
+            <p className={`font-body leading-snug transition-opacity duration-200 mt-1 ${
+              isExpanded
+                ? 'text-sm text-text-secondary/70'
+                : compact
+                  ? 'text-[11px] text-text-secondary line-clamp-2'
+                  : 'text-sm text-text-secondary'
+            }`}>
               {node.subtitle}
             </p>
           </div>
@@ -146,7 +160,11 @@ export default function Node({
           `}
         >
           {isExpanded && (
-            <NodeExpandedContent node={node} onClose={onClose} />
+            <NodeExpandedContent
+              node={node}
+              onClose={onClose}
+              onShowEvidence={onShowEvidence}
+            />
           )}
         </div>
       </div>

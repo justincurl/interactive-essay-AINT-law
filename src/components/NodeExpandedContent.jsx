@@ -1,82 +1,40 @@
-import { useState } from 'react';
-
-export default function NodeExpandedContent({ node, onClose }) {
-  const [showLevel3, setShowLevel3] = useState(false);
+export default function NodeExpandedContent({ node, onClose, onShowEvidence }) {
+  const handleShowEvidence = (e) => {
+    e.stopPropagation();
+    onShowEvidence?.(node);
+  };
 
   return (
-    <div className="mt-4 pt-4 border-t border-border/30">
+    <div className="mt-3 pt-3 border-t border-border/30">
       {/* Level 2: Explanation paragraphs */}
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {node.explanation?.map((paragraph, idx) => (
           <p
             key={idx}
-            className="text-[15px] leading-[1.7] text-text-secondary"
+            className="text-[14px] leading-[1.65] text-text-secondary"
           >
             {paragraph}
           </p>
         ))}
       </div>
 
-      {/* Level 3 toggle / Transition prompt */}
+      {/* Level 3 button - opens modal */}
       {node.evidence && node.evidence.length > 0 && (
         <div className="mt-4">
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowLevel3(!showLevel3);
-            }}
-            className="text-accent hover:text-accent/80 text-sm font-medium transition-colors flex items-center gap-1"
+            onClick={handleShowEvidence}
+            className="text-accent hover:text-accent/80 text-sm font-medium transition-colors flex items-center gap-1.5 group"
           >
-            {showLevel3 ? (
-              <>
-                Show less
-                <svg
-                  className="w-4 h-4 transition-transform rotate-180"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </>
-            ) : (
-              <>
-                See the evidence
-                <svg
-                  className="w-4 h-4 transition-transform"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </>
-            )}
+            <svg
+              className="w-4 h-4 transition-transform group-hover:scale-110"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            See the evidence
           </button>
-
-          {/* Level 3: Evidence/quotes */}
-          <div
-            className={`
-              overflow-hidden transition-all duration-300 ease-out
-              ${showLevel3 ? 'max-h-[1000px] opacity-100 mt-4' : 'max-h-0 opacity-0'}
-            `}
-          >
-            <div className="space-y-4">
-              {node.evidence.map((item, idx) => (
-                <blockquote
-                  key={idx}
-                  className="border-l-[3px] border-accent pl-4 text-sm text-text-secondary italic font-heading"
-                >
-                  "{item.quote}"
-                  {item.source && (
-                    <cite className="block text-xs mt-2 not-italic font-body text-text-secondary/70">
-                      — {item.source}
-                    </cite>
-                  )}
-                </blockquote>
-              ))}
-            </div>
-          </div>
         </div>
       )}
 

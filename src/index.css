@@ -71,3 +71,44 @@ h1, h2, h3, h4, h5, h6 {
 .animate-node-exit {
   animation: node-exit 300ms ease-in forwards;
 }
+
+/* Modal animation */
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modal-enter {
+  animation: modal-enter 200ms ease-out forwards;
+}
+
+/* Line clamp utility for compact nodes */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Bypass arrow animation */
+@keyframes draw-bypass {
+  from {
+    stroke-dashoffset: 400;
+    opacity: 0;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+.animate-draw-bypass {
+  stroke-dasharray: 400;
+  animation: draw-bypass 500ms ease-out forwards;
+}
