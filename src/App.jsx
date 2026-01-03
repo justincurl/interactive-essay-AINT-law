@@ -37,6 +37,16 @@ function App() {
     return getPathwayVisibleCount(pathwayIndex) > 0;
   };
 
+  // Get the currently active pathway index (the one being navigated)
+  const getActivePathwayIndex = () => {
+    if (globalVisibleCount >= TOTAL_NODES) {
+      // When complete, the last pathway is "active" for showing restart
+      return pathways.length - 1;
+    }
+    return Math.floor((globalVisibleCount - 1) / NODES_PER_PATHWAY);
+  };
+
+  const activePathwayIndex = getActivePathwayIndex();
   const isComplete = globalVisibleCount >= TOTAL_NODES;
 
   // Get reform node for the modal based on which pathway's bottleneck was clicked
@@ -151,6 +161,7 @@ function App() {
             {pathways.map((pathway, pathwayIndex) => {
               const pathwayVisibleCount = getPathwayVisibleCount(pathwayIndex);
               const isVisible = isPathwayVisible(pathwayIndex);
+              const isActiveRow = pathwayIndex === activePathwayIndex;
               
               // Calculate animating node index for this pathway
               const pathwayAnimatingIndex = animatingNodeIndex?.pathwayIndex === pathwayIndex 
@@ -171,59 +182,25 @@ function App() {
                   showBypassArrow={reformPathwayIndex === pathwayIndex}
                   visibleCount={pathwayVisibleCount}
                   animatingNodeIndex={pathwayAnimatingIndex}
-                  showNavigation={false}
+                  showNavigation={isActiveRow}
                   pathwayTitle={pathway.title}
                   pathwayDescription={pathway.description}
+                  // Global navigation overrides for the active row
+                  onContinue={isActiveRow ? handleContinue : undefined}
+                  onBack={isActiveRow ? handleBack : undefined}
+                  onStartOver={isActiveRow ? handleStartOver : undefined}
+                  canBack={isActiveRow ? globalVisibleCount > 1 : undefined}
+                  canContinue={isActiveRow ? globalVisibleCount < TOTAL_NODES : undefined}
+                  showRestart={isActiveRow ? isComplete : undefined}
+                  showProgressIndicator={false}
                 />
               );
             })}
           </div>
 
-          {/* Global Navigation Controls */}
+          {/* Global Progress Indicator */}
           <div className="mt-8 flex flex-col items-center gap-4">
-            {/* Navigation arrows */}
-            <div className="flex items-center gap-6">
-              {/* Left arrow - go back */}
-              {globalVisibleCount > 1 && (
-                <button
-                  onClick={handleBack}
-                  className="w-10 h-10 flex items-center justify-center text-text-secondary/50 hover:text-text-primary transition-colors rounded-full hover:bg-black/5"
-                  aria-label="Go back"
-                  title="Go back (←)"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-              )}
-              
-              {/* Right arrow - continue or restart */}
-              {!isComplete ? (
-                <button
-                  onClick={handleContinue}
-                  className="w-10 h-10 flex items-center justify-center text-text-secondary/50 hover:text-text-primary transition-colors rounded-full hover:bg-black/5"
-                  aria-label="Continue"
-                  title="Continue (→)"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              ) : (
-                <button
-                  onClick={handleStartOver}
-                  className="w-10 h-10 flex items-center justify-center text-text-secondary/50 hover:text-text-primary transition-colors rounded-full hover:bg-black/5"
-                  aria-label="Start over"
-                  title="Start over"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                </button>
-              )}
-            </div>
-
-            {/* Global progress indicator */}
+            {/* Progress dots */}
             <div className="flex items-center gap-1.5">
               {Array.from({ length: TOTAL_NODES }).map((_, index) => {
                 // Add visual separator between pathways

@@ -18,7 +18,12 @@ export default function FlowchartGrid({
   showNavigation = true,
   pathwayTitle,
   pathwayDescription,
-  animatingNodeIndex: controlledAnimatingIndex
+  animatingNodeIndex: controlledAnimatingIndex,
+  // Override props for global navigation (when arrows should be controlled by parent)
+  canBack: overrideCanBack,
+  canContinue: overrideCanContinue,
+  showRestart: overrideShowRestart,
+  showProgressIndicator = true
 }) {
   const [internalVisibleCount, setInternalVisibleCount] = useState(1);
   const [internalAnimatingNodeIndex, setInternalAnimatingNodeIndex] = useState(null);
@@ -31,6 +36,11 @@ export default function FlowchartGrid({
   const totalNodes = nodes.length;
   const isComplete = visibleCount >= totalNodes;
   const hasExpanded = expandedNodeId !== null;
+
+  // Use override props if provided, otherwise use local logic
+  const canBack = overrideCanBack !== undefined ? overrideCanBack : visibleCount > 1;
+  const canContinue = overrideCanContinue !== undefined ? overrideCanContinue : !isComplete;
+  const showRestart = overrideShowRestart !== undefined ? overrideShowRestart : isComplete;
 
   // Find node indices by type
   const bottleneckIndex = nodes.findIndex(n => n.type === 'bottleneck');
@@ -129,8 +139,8 @@ export default function FlowchartGrid({
         {/* Bypass arrow overlay */}
         <BypassArrow visible={showBypassArrow} />
 
-        {/* Left navigation arrow - only if showNavigation is true */}
-        {showNavigation && visibleCount > 1 && (
+        {/* Left navigation arrow - only if showNavigation is true and canBack */}
+        {showNavigation && canBack && (
           <button
             onClick={handleBack}
             className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-text-secondary/50 hover:text-text-primary transition-colors rounded-full hover:bg-black/5 z-20"
@@ -197,8 +207,8 @@ export default function FlowchartGrid({
           })}
         </div>
 
-        {/* Right navigation arrow - only if showNavigation is true */}
-        {showNavigation && !isComplete && (
+        {/* Right navigation arrow - only if showNavigation is true and canContinue */}
+        {showNavigation && canContinue && (
           <button
             onClick={handleContinue}
             className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-text-secondary/50 hover:text-text-primary transition-colors rounded-full hover:bg-black/5 z-20"
@@ -211,8 +221,8 @@ export default function FlowchartGrid({
           </button>
         )}
 
-        {/* Restart indicator when complete - only if showNavigation is true */}
-        {showNavigation && isComplete && (
+        {/* Restart indicator when complete - only if showNavigation is true and showRestart */}
+        {showNavigation && showRestart && (
           <button
             onClick={handleStartOver}
             className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-text-secondary/50 hover:text-text-primary transition-colors rounded-full hover:bg-black/5 z-20"
@@ -226,8 +236,8 @@ export default function FlowchartGrid({
         )}
       </div>
 
-      {/* Progress indicator - subtle dots - only if showNavigation is true */}
-      {showNavigation && (
+      {/* Progress indicator - subtle dots - only if showNavigation and showProgressIndicator are true */}
+      {showNavigation && showProgressIndicator && (
         <div className="flex items-center gap-1.5">
           {nodes.map((_, index) => (
             <div
