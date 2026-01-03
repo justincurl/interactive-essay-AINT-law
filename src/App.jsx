@@ -3,15 +3,22 @@ import FlowchartGrid from './components/FlowchartGrid';
 import EvidenceModal from './components/EvidenceModal';
 import ReformModal from './components/ReformModal';
 import { pathway1 } from './data/pathway1';
+import { pathway2 } from './data/pathway2';
+import { pathway3 } from './data/pathway3';
+
+const pathways = [pathway1, pathway2, pathway3];
 
 function App() {
+  const [currentPathwayIndex, setCurrentPathwayIndex] = useState(0);
   const [expandedNodeId, setExpandedNodeId] = useState(null);
   const [evidenceNode, setEvidenceNode] = useState(null);
   const [reformBottleneckNode, setReformBottleneckNode] = useState(null);
   const [showBypassArrow, setShowBypassArrow] = useState(false);
 
+  const currentPathway = pathways[currentPathwayIndex];
+
   // Find the reform node for the modal
-  const reformNode = pathway1.nodes.find(n => n.type === 'reform');
+  const reformNode = currentPathway.nodes.find(n => n.type === 'reform');
 
   const handleNodeToggle = (nodeId) => {
     setExpandedNodeId(expandedNodeId === nodeId ? null : nodeId);
@@ -39,6 +46,14 @@ function App() {
     setShowBypassArrow(false);
   };
 
+  const handlePathwayChange = (index) => {
+    setCurrentPathwayIndex(index);
+    setExpandedNodeId(null);
+    setEvidenceNode(null);
+    setReformBottleneckNode(null);
+    setShowBypassArrow(false);
+  };
+
   return (
     <div className="min-h-screen bg-cream">
       {/* Header */}
@@ -56,13 +71,30 @@ function App() {
       {/* Main content */}
       <main className="py-8 px-6">
         <div className="max-w-6xl mx-auto">
+          {/* Pathway selector */}
+          <div className="mb-6 flex justify-center gap-2">
+            {pathways.map((pathway, index) => (
+              <button
+                key={pathway.id}
+                onClick={() => handlePathwayChange(index)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  currentPathwayIndex === index
+                    ? 'bg-text-primary text-white'
+                    : 'bg-white border border-border hover:bg-gray-50 text-text-secondary'
+                }`}
+              >
+                Pathway {index + 1}
+              </button>
+            ))}
+          </div>
+
           {/* Pathway title */}
           <div className="mb-6 text-center">
             <h2 className="font-heading text-xl font-semibold text-text-primary">
-              {pathway1.title}
+              {currentPathway.title}
             </h2>
             <p className="font-body text-sm text-text-secondary mt-1">
-              {pathway1.description}
+              {currentPathway.description}
             </p>
             <p className="font-body text-xs text-text-secondary/60 mt-2">
               Click any node to learn more · Use arrow keys to navigate
@@ -71,7 +103,7 @@ function App() {
 
           {/* Flowchart */}
           <FlowchartGrid
-            nodes={pathway1.nodes}
+            nodes={currentPathway.nodes}
             expandedNodeId={expandedNodeId}
             onNodeToggle={handleNodeToggle}
             onNodeClose={handleNodeClose}
