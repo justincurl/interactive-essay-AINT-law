@@ -24,7 +24,6 @@ export default function FlowchartGrid({
   pathwayIndex = 0,
   showReformBranch = false,
   isReformFocused = false,
-  reformClicked = false,
 }) {
   const reformBranchRef = useRef(null);
   const [internalVisibleCount, setInternalVisibleCount] = useState(1);
@@ -159,13 +158,14 @@ export default function FlowchartGrid({
                   onClose={onNodeClose}
                   onShowEvidence={onShowEvidence}
                   compact={true}
+                  pathwayIndex={pathwayIndex}
                 />
               </div>
             );
           })}
 
           {showReformBranch && reform && (
-            <div className="flex items-start">
+            <div className="flex items-center" style={{ marginTop: '22px' }}>
               <ReformBranchIndicator
                 ref={reformBranchRef}
                 reform={reform}
@@ -176,44 +176,6 @@ export default function FlowchartGrid({
           )}
         </div>
 
-        {/* "With Reform" dashed arrow - shows after clicking reform */}
-        {reformClicked && showReformBranch && (
-          <div className="absolute right-[calc(50%-280px)] top-full mt-2 flex flex-col items-center">
-            <span className="text-[10px] font-medium text-[#059669] mb-1 whitespace-nowrap">
-              With Reform
-            </span>
-            <svg
-              width="24"
-              height="40"
-              viewBox="0 0 24 40"
-              className="text-[#059669]"
-            >
-              <defs>
-                <marker
-                  id={`withReformArrow-${pathwayIndex}`}
-                  markerWidth="6"
-                  markerHeight="4"
-                  refX="5"
-                  refY="2"
-                  orient="auto"
-                >
-                  <polygon
-                    points="0 0, 6 2, 0 4"
-                    fill="currentColor"
-                  />
-                </marker>
-              </defs>
-              <path
-                d="M 12 0 L 12 34"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeDasharray="4 3"
-                markerEnd={`url(#withReformArrow-${pathwayIndex})`}
-              />
-            </svg>
-          </div>
-        )}
 
         {showNavigation && canContinue && (
           <button

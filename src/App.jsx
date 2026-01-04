@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
 import FlowchartGrid from './components/FlowchartGrid';
 import EvidenceModal from './components/EvidenceModal';
 import ReformModal from './components/ReformModal';
@@ -18,6 +18,8 @@ function App() {
   const [reformNode, setReformNode] = useState(null);
   const [animatingNodeIndex, setAnimatingNodeIndex] = useState(null);
   const [clickedReforms, setClickedReforms] = useState(new Set());
+  const [arrowPaths, setArrowPaths] = useState([]);
+  const pathwaysContainerRef = useRef(null);
 
   const getPathwayState = (pathwayIndex) => {
     const startElement = pathwayIndex * ELEMENTS_PER_PATHWAY;
@@ -127,6 +129,70 @@ function App() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleContinue, handleBack, globalVisibleCount]);
 
+  useLayoutEffect(() => {
+    const updateArrowPaths = () => {
+      if (!pathwaysContainerRef.current) return;
+
+      const containerRect = pathwaysContainerRef.current.getBoundingClientRect();
+      const newPaths = [];
+
+      clickedReforms.forEach((pathwayIndex) => {
+        const bottleneckNode = pathwaysContainerRef.current.querySelector(
+          `[data-pathway-index="${pathwayIndex}"][data-node-type="bottleneck"]`
+        );
+        
+        let targetNode;
+        const isLastPathway = pathwayIndex === pathways.length - 1;
+        
+        if (isLastPathway) {
+          targetNode = pathwaysContainerRef.current.querySelector('[data-final-destination="true"]');
+        } else {
+          targetNode = pathwaysContainerRef.current.querySelector(
+            `[data-pathway-index="${pathwayIndex + 1}"][data-node-type="starting"]`
+          );
+        }
+
+        if (bottleneckNode && targetNode) {
+          const sourceRect = bottleneckNode.getBoundingClientRect();
+          const targetRect = targetNode.getBoundingClientRect();
+
+          const sourceX = sourceRect.left + sourceRect.width / 2 - containerRect.left;
+          const sourceY = sourceRect.bottom - containerRect.top;
+          
+          const targetX = targetRect.left + targetRect.width / 2 - containerRect.left;
+          const targetY = targetRect.top - containerRect.top;
+
+          const midY = sourceY + (targetY - sourceY) / 2;
+
+          const path = `M ${sourceX} ${sourceY} L ${sourceX} ${midY} L ${targetX} ${midY} L ${targetX} ${targetY}`;
+          
+          newPaths.push({
+            pathwayIndex,
+            path,
+            labelX: (sourceX + targetX) / 2,
+            labelY: midY - 8,
+          });
+        }
+      });
+
+      setArrowPaths(newPaths);
+    };
+
+    updateArrowPaths();
+
+    const resizeObserver = new ResizeObserver(updateArrowPaths);
+    if (pathwaysContainerRef.current) {
+      resizeObserver.observe(pathwaysContainerRef.current);
+    }
+
+    window.addEventListener('resize', updateArrowPaths);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', updateArrowPaths);
+    };
+  }, [clickedReforms, globalVisibleCount]);
+
   return (
     <div className="min-h-screen bg-cream">
       {/* Header */}
@@ -152,7 +218,52 @@ function App() {
           </div>
 
           {/* Stacked Pathways */}
-          <div className="flex flex-col gap-8">
+          <div ref={pathwaysContainerRef} className="relative flex flex-col gap-8">
+            {/* Reform Elbow Arrows SVG Overlay */}
+            {arrowPaths.length > 0 && (
+              <svg
+                className="absolute inset-0 w-full h-full pointer-events-none z-10"
+                style={{ overflow: 'visible' }}
+              >
+                <defs>
+                  <marker
+                    id="reformElbowArrowHead"
+                    markerWidth="8"
+                    markerHeight="6"
+                    refX="7"
+                    refY="3"
+                    orient="auto"
+                  >
+                    <polygon
+                      points="0 0, 8 3, 0 6"
+                      fill="#059669"
+                    />
+                  </marker>
+                </defs>
+                {arrowPaths.map((arrow) => (
+                  <g key={arrow.pathwayIndex}>
+                    <path
+                      d={arrow.path}
+                      fill="none"
+                      stroke="#059669"
+                      strokeWidth="2"
+                      strokeDasharray="6 4"
+                      markerEnd="url(#reformElbowArrowHead)"
+                    />
+                    <text
+                      x={arrow.labelX}
+                      y={arrow.labelY}
+                      textAnchor="middle"
+                      className="text-[10px] font-medium"
+                      fill="#059669"
+                    >
+                      With Reform
+                    </text>
+                  </g>
+                ))}
+              </svg>
+            )}
+
             {pathways.map((pathway, pathwayIndex) => {
               const pathwayState = getPathwayState(pathwayIndex);
               const isVisible = isPathwayVisible(pathwayIndex);
@@ -186,7 +297,6 @@ function App() {
                   showProgressIndicator={false}
                   pathwayIndex={pathwayIndex}
                   showReformBranch={pathwayState.showReformBranch}
-                  reformClicked={clickedReforms.has(pathwayIndex)}
                 />
               );
             })}
@@ -195,7 +305,10 @@ function App() {
             {showFinalDestination && (
               <div className="flex flex-col items-center gap-4 animate-node-enter">
                 <div className="flex items-center justify-center">
-                  <div className="bg-[#d1fae5] border-2 border-[#059669] rounded-lg p-6 max-w-md text-center shadow-lg">
+                  <div 
+                    data-final-destination="true"
+                    className="bg-[#d1fae5] border-2 border-[#059669] rounded-lg p-6 max-w-md text-center shadow-lg"
+                  >
                     <div className="text-[10px] uppercase tracking-[0.1em] font-medium mb-2 text-[#059669]">
                       POSITIVE TRANSFORMATION
                     </div>

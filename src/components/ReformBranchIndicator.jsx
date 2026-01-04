@@ -22,7 +22,6 @@ const ReformBranchIndicator = forwardRef(function ReformBranchIndicator({
   return (
     <div 
       className="relative flex flex-col items-center"
-      style={{ marginTop: '22px' }}
     >
       <button
         ref={ref}
