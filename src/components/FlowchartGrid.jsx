@@ -122,7 +122,7 @@ export default function FlowchartGrid({
           </button>
         )}
 
-        <div className="flex items-start justify-center gap-1 px-12">
+        <div className="flex items-start justify-center gap-1 px-12 transition-all duration-300 ease-out">
           {nodes.map((node, index) => {
             const isVisible = index < visibleCount;
             const isExpanded = expandedNodeId === node.id;
@@ -136,7 +136,7 @@ export default function FlowchartGrid({
                 key={node.id}
                 className={`
                   flex items-start
-                  transition-all duration-300
+                  transition-all duration-300 ease-out
                   ${isExpanded ? 'z-10' : 'z-0'}
                   ${isAnimating ? 'animate-node-enter' : ''}
                 `}

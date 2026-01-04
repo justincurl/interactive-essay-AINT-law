@@ -79,7 +79,7 @@ export default function Arrow({
     <div
       className={`
         relative flex items-center justify-center self-center
-        transition-opacity duration-300
+        transition-all duration-300 ease-out
         ${compact ? 'px-0.5 min-w-[28px]' : 'px-2 min-w-[48px]'}
         ${visible ? 'opacity-100' : 'opacity-0'}
       `}
