@@ -1,52 +1,46 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Node from './Node';
 import Arrow from './Arrow';
-import BypassArrow from './BypassArrow';
+import ReformBranchIndicator from './ReformBranchIndicator';
 
 export default function FlowchartGrid({
   nodes,
+  reform,
   expandedNodeId,
   onNodeToggle,
   onNodeClose,
   onShowEvidence,
   onShowReform,
-  showBypassArrow = false,
   visibleCount: controlledVisibleCount,
   onContinue,
   onBack,
   onStartOver,
   showNavigation = true,
-  pathwayTitle,
-  pathwayDescription,
   animatingNodeIndex: controlledAnimatingIndex,
-  // Override props for global navigation (when arrows should be controlled by parent)
   canBack: overrideCanBack,
   canContinue: overrideCanContinue,
   showRestart: overrideShowRestart,
-  showProgressIndicator = true
+  showProgressIndicator = true,
+  pathwayIndex = 0,
+  showReformBranch = false,
+  isReformFocused = false,
 }) {
+  const reformBranchRef = useRef(null);
   const [internalVisibleCount, setInternalVisibleCount] = useState(1);
   const [internalAnimatingNodeIndex, setInternalAnimatingNodeIndex] = useState(null);
 
-  // Use controlled or internal state
   const isControlled = controlledVisibleCount !== undefined;
   const visibleCount = isControlled ? controlledVisibleCount : internalVisibleCount;
   const animatingNodeIndex = isControlled ? controlledAnimatingIndex : internalAnimatingNodeIndex;
 
   const totalNodes = nodes.length;
-  const isComplete = visibleCount >= totalNodes;
+  const allNodesVisible = visibleCount >= totalNodes;
   const hasExpanded = expandedNodeId !== null;
 
-  // Use override props if provided, otherwise use local logic
   const canBack = overrideCanBack !== undefined ? overrideCanBack : visibleCount > 1;
-  const canContinue = overrideCanContinue !== undefined ? overrideCanContinue : !isComplete;
-  const showRestart = overrideShowRestart !== undefined ? overrideShowRestart : isComplete;
+  const canContinue = overrideCanContinue !== undefined ? overrideCanContinue : !allNodesVisible;
+  const showRestart = overrideShowRestart !== undefined ? overrideShowRestart : false;
 
-  // Find node indices by type
-  const bottleneckIndex = nodes.findIndex(n => n.type === 'bottleneck');
-  const impactIndex = nodes.findIndex(n => n.type === 'impact');
-
-  // Handle Continue (next node)
   const handleContinue = useCallback(() => {
     if (isControlled) {
       onContinue?.();
@@ -55,19 +49,16 @@ export default function FlowchartGrid({
       setInternalAnimatingNodeIndex(newIndex);
       setInternalVisibleCount(prev => prev + 1);
 
-      // Clear animation state after animation completes
       setTimeout(() => {
         setInternalAnimatingNodeIndex(null);
       }, 400);
     }
   }, [isControlled, onContinue, visibleCount, totalNodes]);
 
-  // Handle Back (previous node)
   const handleBack = useCallback(() => {
     if (isControlled) {
       onBack?.();
     } else if (visibleCount > 1) {
-      // Close any expanded node first
       if (expandedNodeId) {
         onNodeClose();
       }
@@ -75,7 +66,6 @@ export default function FlowchartGrid({
     }
   }, [isControlled, onBack, visibleCount, expandedNodeId, onNodeClose]);
 
-  // Handle Start Over
   const handleStartOver = useCallback(() => {
     if (isControlled) {
       onStartOver?.();
@@ -87,12 +77,10 @@ export default function FlowchartGrid({
     }
   }, [isControlled, onStartOver, expandedNodeId, onNodeClose]);
 
-  // Keyboard navigation - only if not controlled (parent handles it)
   useEffect(() => {
-    if (isControlled) return; // Parent handles keyboard navigation
+    if (isControlled) return;
 
     const handleKeyDown = (e) => {
-      // Don't handle if modal is open or user is typing in an input
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
         return;
       }
@@ -110,42 +98,21 @@ export default function FlowchartGrid({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isControlled, handleContinue, handleBack, visibleCount, totalNodes]);
 
-  // Handle unlock click - find bottleneck node and trigger reform modal
-  const handleUnlockClick = () => {
-    const bottleneckNode = nodes.find(n => n.type === 'bottleneck');
-    if (bottleneckNode) {
-      onShowReform?.(bottleneckNode);
+  const handleReformClick = () => {
+    if (reform) {
+      onShowReform?.(reform, pathwayIndex);
     }
   };
 
   return (
     <div className="flex flex-col items-center gap-4 w-full">
-      {/* Pathway title - only shown if provided */}
-      {pathwayTitle && (
-        <div className="text-center">
-          <h3 className="font-heading text-lg font-semibold text-text-primary">
-            {pathwayTitle}
-          </h3>
-          {pathwayDescription && (
-            <p className="font-body text-xs text-text-secondary mt-0.5">
-              {pathwayDescription}
-            </p>
-          )}
-        </div>
-      )}
-
-      {/* Flowchart row with navigation arrows */}
       <div className="relative w-full flex items-center justify-center">
-        {/* Bypass arrow overlay */}
-        <BypassArrow visible={showBypassArrow} />
-
-        {/* Left navigation arrow - only if showNavigation is true and canBack */}
         {showNavigation && canBack && (
           <button
             onClick={handleBack}
             className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-text-secondary/50 hover:text-text-primary transition-colors rounded-full hover:bg-black/5 z-20"
             aria-label="Go back"
-            title="Go back (←)"
+            title="Go back (left arrow)"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
@@ -153,20 +120,13 @@ export default function FlowchartGrid({
           </button>
         )}
 
-        {/* Nodes container */}
         <div className="flex items-start justify-center gap-1 px-12">
           {nodes.map((node, index) => {
             const isVisible = index < visibleCount;
             const isExpanded = expandedNodeId === node.id;
             const isDimmed = hasExpanded && !isExpanded;
             const isAnimating = animatingNodeIndex === index;
-            const isReformNode = node.type === 'reform';
 
-            // Show unlock icon on arrow between bottleneck and impact
-            const isArrowBeforeImpact = index === impactIndex && bottleneckIndex >= 0;
-            const showUnlockOnArrow = isArrowBeforeImpact && visibleCount > impactIndex;
-
-            // Don't render nodes that aren't visible yet
             if (!isVisible) return null;
 
             return (
@@ -179,16 +139,13 @@ export default function FlowchartGrid({
                   ${isAnimating ? 'animate-node-enter' : ''}
                 `}
               >
-                {/* Arrow before node (except first node) */}
                 {index > 0 && (
                   <Arrow
                     direction="right"
-                    variant={isReformNode ? 'reform' : 'standard'}
+                    variant="standard"
                     visible={!hasExpanded || isExpanded}
                     animate={isAnimating}
                     compact={true}
-                    showUnlock={showUnlockOnArrow && !showBypassArrow}
-                    onUnlockClick={handleUnlockClick}
                   />
                 )}
 
@@ -201,19 +158,31 @@ export default function FlowchartGrid({
                   onClose={onNodeClose}
                   onShowEvidence={onShowEvidence}
                   compact={true}
+                  pathwayIndex={pathwayIndex}
                 />
               </div>
             );
           })}
+
+          {showReformBranch && reform && (
+            <div className="flex items-center" style={{ marginTop: '22px' }}>
+              <ReformBranchIndicator
+                ref={reformBranchRef}
+                reform={reform}
+                onClick={handleReformClick}
+                isFocused={isReformFocused}
+              />
+            </div>
+          )}
         </div>
 
-        {/* Right navigation arrow - only if showNavigation is true and canContinue */}
+
         {showNavigation && canContinue && (
           <button
             onClick={handleContinue}
             className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-text-secondary/50 hover:text-text-primary transition-colors rounded-full hover:bg-black/5 z-20"
             aria-label="Continue"
-            title="Continue (→)"
+            title="Continue (right arrow)"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
@@ -221,7 +190,6 @@ export default function FlowchartGrid({
           </button>
         )}
 
-        {/* Restart indicator when complete - only if showNavigation is true and showRestart */}
         {showNavigation && showRestart && (
           <button
             onClick={handleStartOver}
@@ -236,7 +204,6 @@ export default function FlowchartGrid({
         )}
       </div>
 
-      {/* Progress indicator - subtle dots - only if showNavigation and showProgressIndicator are true */}
       {showNavigation && showProgressIndicator && (
         <div className="flex items-center gap-1.5">
           {nodes.map((_, index) => (
@@ -248,8 +215,16 @@ export default function FlowchartGrid({
               `}
             />
           ))}
+          {reform && (
+            <div
+              className={`
+                w-1.5 h-1.5 rounded-full transition-all duration-300
+                ${showReformBranch ? 'bg-[#059669]/70' : 'bg-border/50'}
+              `}
+            />
+          )}
           <span className="ml-2 text-[10px] text-text-secondary/50">
-            {visibleCount}/{totalNodes}
+            {visibleCount + (showReformBranch ? 1 : 0)}/{totalNodes + (reform ? 1 : 0)}
           </span>
         </div>
       )}

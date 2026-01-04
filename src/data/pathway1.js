@@ -1,7 +1,5 @@
 export const pathway1 = {
   id: 'pathway1',
-  title: 'Bottleneck 1: Regulatory Barriers',
-  description: 'How AI capabilities face regulatory barriers that limit consumer access',
   nodes: [
     {
       id: 'p1-node1',
@@ -54,24 +52,23 @@ export const pathway1 = {
         },
       ],
     },
-    {
-      id: 'p1-node4',
-      type: 'reform',
-      category: 'EXAMPLES OF REFORM',
-      title: 'Impact with Reform',
-      subtitle: 'Examples: state courts update regulations; creation of regulatory markets',
-      explanation: [
-        'Placeholder: Discuss potential regulatory reforms.',
-        'Placeholder: Describe examples from states that have modernized their approach.',
-      ],
-      evidence: [
-        {
-          quote: 'Placeholder quote about regulatory reform',
-          source: 'Source citation',
-        },
-      ],
-    },
   ],
+  reform: {
+    id: 'p1-reform',
+    category: 'WITH REFORM',
+    title: 'Regulatory Reform',
+    subtitle: 'State courts update regulations; creation of regulatory markets',
+    explanation: [
+      'Placeholder: Discuss potential regulatory reforms.',
+      'Placeholder: Describe examples from states that have modernized their approach.',
+    ],
+    evidence: [
+      {
+        quote: 'Placeholder quote about regulatory reform',
+        source: 'Source citation',
+      },
+    ],
+  },
 };
 
 export default pathway1;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
 import FlowchartGrid from './components/FlowchartGrid';
 import EvidenceModal from './components/EvidenceModal';
 import ReformModal from './components/ReformModal';
@@ -7,52 +7,50 @@ import { pathway2 } from './data/pathway2';
 import { pathway3 } from './data/pathway3';
 
 const pathways = [pathway1, pathway2, pathway3];
-const NODES_PER_PATHWAY = 4;
-const TOTAL_NODES = pathways.length * NODES_PER_PATHWAY;
+const NODES_PER_PATHWAY = 3;
+const ELEMENTS_PER_PATHWAY = 4;
+const TOTAL_ELEMENTS = pathways.length * ELEMENTS_PER_PATHWAY + 1;
 
 function App() {
   const [globalVisibleCount, setGlobalVisibleCount] = useState(1);
   const [expandedNodeId, setExpandedNodeId] = useState(null);
   const [evidenceNode, setEvidenceNode] = useState(null);
-  const [reformBottleneckNode, setReformBottleneckNode] = useState(null);
-  const [reformPathwayIndex, setReformPathwayIndex] = useState(null);
+  const [reformNode, setReformNode] = useState(null);
   const [animatingNodeIndex, setAnimatingNodeIndex] = useState(null);
+  const [clickedReforms, setClickedReforms] = useState(new Set());
+  const [arrowPaths, setArrowPaths] = useState([]);
+  const pathwaysContainerRef = useRef(null);
 
-  // Calculate visible count for each pathway based on global progress
-  const getPathwayVisibleCount = (pathwayIndex) => {
-    const startNode = pathwayIndex * NODES_PER_PATHWAY;
-    const endNode = (pathwayIndex + 1) * NODES_PER_PATHWAY;
+  const getPathwayState = (pathwayIndex) => {
+    const startElement = pathwayIndex * ELEMENTS_PER_PATHWAY;
     
-    if (globalVisibleCount <= startNode) {
-      return 0;
-    } else if (globalVisibleCount >= endNode) {
-      return NODES_PER_PATHWAY;
+    if (globalVisibleCount <= startElement) {
+      return { nodeCount: 0, showReformBranch: false };
+    }
+    
+    const progressInPathway = globalVisibleCount - startElement;
+    
+    if (progressInPathway <= NODES_PER_PATHWAY) {
+      return { nodeCount: progressInPathway, showReformBranch: false };
     } else {
-      return globalVisibleCount - startNode;
+      return { nodeCount: NODES_PER_PATHWAY, showReformBranch: true };
     }
   };
 
-  // Check if a pathway should be visible
   const isPathwayVisible = (pathwayIndex) => {
-    return getPathwayVisibleCount(pathwayIndex) > 0;
+    return getPathwayState(pathwayIndex).nodeCount > 0;
   };
 
-  // Get the currently active pathway index (the one being navigated)
   const getActivePathwayIndex = () => {
-    if (globalVisibleCount >= TOTAL_NODES) {
-      // When complete, the last pathway is "active" for showing restart
-      return pathways.length - 1;
+    if (globalVisibleCount >= TOTAL_ELEMENTS) {
+      return pathways.length;
     }
-    return Math.floor((globalVisibleCount - 1) / NODES_PER_PATHWAY);
+    return Math.floor((globalVisibleCount - 1) / ELEMENTS_PER_PATHWAY);
   };
 
   const activePathwayIndex = getActivePathwayIndex();
-  const isComplete = globalVisibleCount >= TOTAL_NODES;
-
-  // Get reform node for the modal based on which pathway's bottleneck was clicked
-  const reformNode = reformPathwayIndex !== null 
-    ? pathways[reformPathwayIndex].nodes.find(n => n.type === 'reform')
-    : null;
+  const isComplete = globalVisibleCount >= TOTAL_ELEMENTS;
+  const showFinalDestination = globalVisibleCount >= TOTAL_ELEMENTS;
 
   const handleNodeToggle = (nodeId) => {
     setExpandedNodeId(expandedNodeId === nodeId ? null : nodeId);
@@ -70,24 +68,24 @@ function App() {
     setEvidenceNode(null);
   };
 
-  const handleShowReform = (bottleneckNode, pathwayIndex) => {
-    setReformBottleneckNode(bottleneckNode);
-    setReformPathwayIndex(pathwayIndex);
+  const handleShowReform = (reform, pathwayIndex) => {
+    setReformNode(reform);
+    setClickedReforms(prev => new Set([...prev, pathwayIndex]));
   };
 
   const handleCloseReform = () => {
-    setReformBottleneckNode(null);
-    setReformPathwayIndex(null);
+    setReformNode(null);
   };
 
-  // Global navigation handlers
   const handleContinue = useCallback(() => {
-    if (globalVisibleCount < TOTAL_NODES) {
+    if (globalVisibleCount < TOTAL_ELEMENTS) {
       const newGlobalIndex = globalVisibleCount;
-      const pathwayIndex = Math.floor(newGlobalIndex / NODES_PER_PATHWAY);
-      const nodeIndexInPathway = newGlobalIndex % NODES_PER_PATHWAY;
+      const pathwayIndex = Math.floor(newGlobalIndex / ELEMENTS_PER_PATHWAY);
+      const elementInPathway = newGlobalIndex % ELEMENTS_PER_PATHWAY;
       
-      setAnimatingNodeIndex({ pathwayIndex, nodeIndex: nodeIndexInPathway });
+      if (elementInPathway < NODES_PER_PATHWAY) {
+        setAnimatingNodeIndex({ pathwayIndex, nodeIndex: elementInPathway });
+      }
       setGlobalVisibleCount(prev => prev + 1);
 
       setTimeout(() => {
@@ -112,14 +110,13 @@ function App() {
     setGlobalVisibleCount(1);
   }, [expandedNodeId]);
 
-  // Global keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
         return;
       }
 
-      if (e.key === 'ArrowRight' && globalVisibleCount < TOTAL_NODES) {
+      if (e.key === 'ArrowRight' && globalVisibleCount < TOTAL_ELEMENTS) {
         e.preventDefault();
         handleContinue();
       } else if (e.key === 'ArrowLeft' && globalVisibleCount > 1) {
@@ -131,6 +128,70 @@ function App() {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [handleContinue, handleBack, globalVisibleCount]);
+
+  useLayoutEffect(() => {
+    const updateArrowPaths = () => {
+      if (!pathwaysContainerRef.current) return;
+
+      const containerRect = pathwaysContainerRef.current.getBoundingClientRect();
+      const newPaths = [];
+
+      clickedReforms.forEach((pathwayIndex) => {
+        const bottleneckNode = pathwaysContainerRef.current.querySelector(
+          `[data-pathway-index="${pathwayIndex}"][data-node-type="bottleneck"]`
+        );
+        
+        let targetNode;
+        const isLastPathway = pathwayIndex === pathways.length - 1;
+        
+        if (isLastPathway) {
+          targetNode = pathwaysContainerRef.current.querySelector('[data-final-destination="true"]');
+        } else {
+          targetNode = pathwaysContainerRef.current.querySelector(
+            `[data-pathway-index="${pathwayIndex + 1}"][data-node-type="starting"]`
+          );
+        }
+
+        if (bottleneckNode && targetNode) {
+          const sourceRect = bottleneckNode.getBoundingClientRect();
+          const targetRect = targetNode.getBoundingClientRect();
+
+          const sourceX = sourceRect.left + sourceRect.width / 2 - containerRect.left;
+          const sourceY = sourceRect.bottom - containerRect.top;
+          
+          const targetX = targetRect.left + targetRect.width / 2 - containerRect.left;
+          const targetY = targetRect.top - containerRect.top;
+
+          const midY = sourceY + (targetY - sourceY) / 2;
+
+          const path = `M ${sourceX} ${sourceY} L ${sourceX} ${midY} L ${targetX} ${midY} L ${targetX} ${targetY}`;
+          
+          newPaths.push({
+            pathwayIndex,
+            path,
+            labelX: (sourceX + targetX) / 2,
+            labelY: midY - 8,
+          });
+        }
+      });
+
+      setArrowPaths(newPaths);
+    };
+
+    updateArrowPaths();
+
+    const resizeObserver = new ResizeObserver(updateArrowPaths);
+    if (pathwaysContainerRef.current) {
+      resizeObserver.observe(pathwaysContainerRef.current);
+    }
+
+    window.addEventListener('resize', updateArrowPaths);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', updateArrowPaths);
+    };
+  }, [clickedReforms, globalVisibleCount]);
 
   return (
     <div className="min-h-screen bg-cream">
@@ -157,14 +218,58 @@ function App() {
           </div>
 
           {/* Stacked Pathways */}
-          <div className="flex flex-col gap-8">
+          <div ref={pathwaysContainerRef} className="relative flex flex-col gap-8">
+            {/* Reform Elbow Arrows SVG Overlay */}
+            {arrowPaths.length > 0 && (
+              <svg
+                className="absolute inset-0 w-full h-full pointer-events-none z-10"
+                style={{ overflow: 'visible' }}
+              >
+                <defs>
+                  <marker
+                    id="reformElbowArrowHead"
+                    markerWidth="8"
+                    markerHeight="6"
+                    refX="7"
+                    refY="3"
+                    orient="auto"
+                  >
+                    <polygon
+                      points="0 0, 8 3, 0 6"
+                      fill="#059669"
+                    />
+                  </marker>
+                </defs>
+                {arrowPaths.map((arrow) => (
+                  <g key={arrow.pathwayIndex}>
+                    <path
+                      d={arrow.path}
+                      fill="none"
+                      stroke="#059669"
+                      strokeWidth="2"
+                      strokeDasharray="6 4"
+                      markerEnd="url(#reformElbowArrowHead)"
+                    />
+                    <text
+                      x={arrow.labelX}
+                      y={arrow.labelY}
+                      textAnchor="middle"
+                      className="text-[10px] font-medium"
+                      fill="#059669"
+                    >
+                      With Reform
+                    </text>
+                  </g>
+                ))}
+              </svg>
+            )}
+
             {pathways.map((pathway, pathwayIndex) => {
-              const pathwayVisibleCount = getPathwayVisibleCount(pathwayIndex);
+              const pathwayState = getPathwayState(pathwayIndex);
               const isVisible = isPathwayVisible(pathwayIndex);
               const isActiveRow = pathwayIndex === activePathwayIndex;
               
-              // Calculate animating node index for this pathway
-              const pathwayAnimatingIndex = animatingNodeIndex?.pathwayIndex === pathwayIndex 
+              const pathwayAnimatingIndex = animatingNodeIndex?.pathwayIndex === pathwayIndex
                 ? animatingNodeIndex.nodeIndex 
                 : null;
 
@@ -174,51 +279,92 @@ function App() {
                 <FlowchartGrid
                   key={pathway.id}
                   nodes={pathway.nodes}
+                  reform={pathway.reform}
                   expandedNodeId={expandedNodeId}
                   onNodeToggle={handleNodeToggle}
                   onNodeClose={handleNodeClose}
                   onShowEvidence={handleShowEvidence}
-                  onShowReform={(bottleneckNode) => handleShowReform(bottleneckNode, pathwayIndex)}
-                  showBypassArrow={reformPathwayIndex === pathwayIndex}
-                  visibleCount={pathwayVisibleCount}
+                  onShowReform={handleShowReform}
+                  visibleCount={pathwayState.nodeCount}
                   animatingNodeIndex={pathwayAnimatingIndex}
                   showNavigation={isActiveRow}
-                  pathwayTitle={pathway.title}
-                  pathwayDescription={pathway.description}
-                  // Global navigation overrides for the active row
                   onContinue={isActiveRow ? handleContinue : undefined}
                   onBack={isActiveRow ? handleBack : undefined}
                   onStartOver={isActiveRow ? handleStartOver : undefined}
                   canBack={isActiveRow ? globalVisibleCount > 1 : undefined}
-                  canContinue={isActiveRow ? globalVisibleCount < TOTAL_NODES : undefined}
-                  showRestart={isActiveRow ? isComplete : undefined}
+                  canContinue={isActiveRow ? globalVisibleCount < TOTAL_ELEMENTS : undefined}
+                  showRestart={isActiveRow && isComplete}
                   showProgressIndicator={false}
+                  pathwayIndex={pathwayIndex}
+                  showReformBranch={pathwayState.showReformBranch}
                 />
               );
             })}
+
+            {/* Final Destination Node */}
+            {showFinalDestination && (
+              <div className="flex flex-col items-center gap-4 animate-node-enter">
+                <div className="flex items-center justify-center">
+                  <div 
+                    data-final-destination="true"
+                    className="bg-[#d1fae5] border-2 border-[#059669] rounded-lg p-6 max-w-md text-center shadow-lg"
+                  >
+                    <div className="text-[10px] uppercase tracking-[0.1em] font-medium mb-2 text-[#059669]">
+                      POSITIVE TRANSFORMATION
+                    </div>
+                    <h3 className="font-heading text-lg font-semibold text-text-primary mb-2">
+                      Positive transformation of legal services
+                    </h3>
+                    <p className="font-body text-sm text-text-secondary">
+                      AI makes it easier and cheaper to achieve the legal outcomes clients care about
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleStartOver}
+                  className="text-sm text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Start over
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Global Progress Indicator */}
           <div className="mt-8 flex flex-col items-center gap-4">
-            {/* Progress dots */}
             <div className="flex items-center gap-1.5">
-              {Array.from({ length: TOTAL_NODES }).map((_, index) => {
-                // Add visual separator between pathways
-                const isPathwayStart = index > 0 && index % NODES_PER_PATHWAY === 0;
-                return (
-                  <div key={index} className="flex items-center">
-                    {isPathwayStart && <div className="w-2" />}
-                    <div
-                      className={`
-                        w-1.5 h-1.5 rounded-full transition-all duration-300
-                        ${index < globalVisibleCount ? 'bg-accent/70' : 'bg-border/50'}
-                      `}
-                    />
-                  </div>
-                );
-              })}
+              {pathways.map((_, pathwayIndex) => (
+                <div key={pathwayIndex} className="flex items-center gap-0.5">
+                  {pathwayIndex > 0 && <div className="w-1.5" />}
+                  {Array.from({ length: ELEMENTS_PER_PATHWAY }).map((__, elementIndex) => {
+                    const globalIndex = pathwayIndex * ELEMENTS_PER_PATHWAY + elementIndex;
+                    const isReformElement = elementIndex === NODES_PER_PATHWAY;
+                    return (
+                      <div
+                        key={elementIndex}
+                        className={`
+                          w-1.5 h-1.5 rounded-full transition-all duration-300
+                          ${globalIndex < globalVisibleCount 
+                            ? isReformElement ? 'bg-[#059669]/70' : 'bg-accent/70' 
+                            : 'bg-border/50'}
+                        `}
+                      />
+                    );
+                  })}
+                </div>
+              ))}
+              <div className="w-1.5" />
+              <div
+                className={`
+                  w-1.5 h-1.5 rounded-full transition-all duration-300
+                  ${showFinalDestination ? 'bg-[#059669]' : 'bg-border/50'}
+                `}
+              />
               <span className="ml-2 text-[10px] text-text-secondary/50">
-                {globalVisibleCount}/{TOTAL_NODES}
+                {globalVisibleCount}/{TOTAL_ELEMENTS}
               </span>
             </div>
           </div>
@@ -242,8 +388,8 @@ function App() {
               <span className="text-text-secondary">Impact by Default</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded bg-node-reform border border-node-reform" />
-              <span className="text-text-secondary">Examples of Reform</span>
+              <div className="w-3 h-3 rounded border-2 border-dashed border-[#9ca3af] bg-white" />
+              <span className="text-text-secondary">Reform Branch</span>
             </div>
           </div>
         </div>
@@ -258,9 +404,8 @@ function App() {
       )}
 
       {/* Reform Modal */}
-      {reformBottleneckNode && reformNode && (
+      {reformNode && (
         <ReformModal
-          bottleneckNode={reformBottleneckNode}
           reformNode={reformNode}
           onClose={handleCloseReform}
         />

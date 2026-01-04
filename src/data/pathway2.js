@@ -1,7 +1,5 @@
 export const pathway2 = {
   id: 'pathway2',
-  title: 'Bottleneck 2: Adversarial Dynamics',
-  description: 'How AI adoption faces adversarial dynamics that absorb productivity gains',
   nodes: [
     {
       id: 'p2-node1',
@@ -54,24 +52,23 @@ export const pathway2 = {
         },
       ],
     },
-    {
-      id: 'p2-node4',
-      type: 'reform',
-      category: 'EXAMPLES OF REFORM',
-      title: 'With reform',
-      subtitle: 'Examples: judges make litigation less adversarial; parties use arbitration as a parallel track',
-      explanation: [
-        'Placeholder: Discuss tools judges have to reduce adversarial dynamics.',
-        'Placeholder: Describe how arbitration offers another path forward.',
-      ],
-      evidence: [
-        {
-          quote: 'Placeholder quote about reform options',
-          source: 'Source citation',
-        },
-      ],
-    },
   ],
+  reform: {
+    id: 'p2-reform',
+    category: 'WITH REFORM',
+    title: 'Procedural Reform',
+    subtitle: 'Judges make litigation less adversarial; parties use arbitration as a parallel track',
+    explanation: [
+      'Placeholder: Discuss tools judges have to reduce adversarial dynamics.',
+      'Placeholder: Describe how arbitration offers another path forward.',
+    ],
+    evidence: [
+      {
+        quote: 'Placeholder quote about reform options',
+        source: 'Source citation',
+      },
+    ],
+  },
 };
 
 export default pathway2;

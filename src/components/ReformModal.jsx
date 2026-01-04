@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-export default function ReformModal({ bottleneckNode, reformNode, onClose }) {
+export default function ReformModal({ reformNode, onClose }) {
   const modalRef = useRef(null);
   const [showEvidence, setShowEvidence] = useState(false);
 
@@ -54,7 +54,7 @@ export default function ReformModal({ bottleneckNode, reformNode, onClose }) {
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-[#d1fae5] flex items-center justify-center">
               <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </div>
             <div>
@@ -62,10 +62,10 @@ export default function ReformModal({ bottleneckNode, reformNode, onClose }) {
                 id="reform-modal-title"
                 className="font-heading text-lg font-semibold text-text-primary"
               >
-                Pathway to Reform
+                {reformNode.title}
               </h3>
-              <p className="text-xs text-[#059669] font-medium">
-                Bypassing: {bottleneckNode?.title}
+              <p className="text-xs text-[#059669] font-medium uppercase tracking-wide">
+                {reformNode.category}
               </p>
             </div>
           </div>
@@ -85,11 +85,8 @@ export default function ReformModal({ bottleneckNode, reformNode, onClose }) {
 
         {/* Content */}
         <div className="px-6 py-5 overflow-y-auto max-h-[calc(80vh-80px)]">
-          {/* Reform title and subtitle */}
+          {/* Subtitle */}
           <div className="mb-4">
-            <h4 className="font-heading text-base font-semibold text-text-primary mb-1">
-              {reformNode.title}
-            </h4>
             <p className="text-sm text-text-secondary">
               {reformNode.subtitle}
             </p>

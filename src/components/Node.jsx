@@ -36,7 +36,8 @@ export default function Node({
   onToggle,
   onClose,
   onShowEvidence,
-  compact = false
+  compact = false,
+  pathwayIndex = 0,
 }) {
   const nodeRef = useRef(null);
   const styles = nodeStyles[node.type] || nodeStyles.starting;
@@ -92,6 +93,8 @@ export default function Node({
       <div
         ref={nodeRef}
         onClick={handleClick}
+        data-pathway-index={pathwayIndex}
+        data-node-type={node.type}
         className={`
           ${styles.bg}
           ${styles.borderStyle}
@@ -99,14 +102,14 @@ export default function Node({
           ${isExpanded ? 'shadow-lg ring-2 ring-accent/30' : ''}
           ${isDimmed ? 'opacity-40 pointer-events-none' : ''}
           rounded-md
-          text-left
+          ${isExpanded ? 'text-left' : 'text-center'}
           transition-all
           duration-300
           ease-out
           ${isExpanded
             ? 'max-w-[500px] w-full p-4'
             : compact
-              ? 'w-[180px] p-2.5 cursor-pointer hover:shadow-md hover:scale-[1.02]'
+              ? 'w-[200px] p-2.5 cursor-pointer hover:shadow-md hover:scale-[1.02]'
               : 'min-w-[200px] max-w-[280px] p-4 cursor-pointer hover:shadow-md hover:scale-[1.02]'
           }
         `}
