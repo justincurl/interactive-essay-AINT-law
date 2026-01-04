@@ -79,11 +79,11 @@ export default function Arrow({
     <div
       className={`
         relative flex items-center justify-center self-center
-        transition-opacity duration-300
+        transition-all duration-300 ease-out
         ${compact ? 'px-0.5 min-w-[28px]' : 'px-2 min-w-[48px]'}
         ${visible ? 'opacity-100' : 'opacity-0'}
       `}
-      style={{ marginTop: compact ? '22px' : '28px' }}
+      style={{ marginTop: compact ? '12px' : '16px' }}
     >
       <svg
         width={arrowWidth}
@@ -135,7 +135,7 @@ export default function Arrow({
           aria-label="Explore reforms"
           title="Explore reforms"
         >
-          {/* Fork/branch icon - straight line with branch curving down */}
+          {/* Fork/branch icon - line entering with two branches splitting out */}
           <svg
             className={`w-3 h-3 transition-colors ${isBranchHighlighted ? 'text-white' : 'text-[#737373]'}`}
             viewBox="0 0 24 24"
@@ -145,14 +145,18 @@ export default function Arrow({
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            {/* Main line going right (straight path) */}
-            <path d="M4 12h8" />
-            {/* Arrow head pointing right */}
-            <path d="M9 9l3 3-3 3" />
-            {/* Branch curving down */}
-            <path d="M12 12c0 4 2 6 6 6" />
-            {/* Arrow head on branch pointing down-right */}
-            <path d="M16 16l2 2-2 2" />
+            {/* Input line from left to center junction */}
+            <path d="M3 12h7" />
+            {/* Junction box */}
+            <rect x="10" y="8" width="4" height="8" rx="1" stroke="currentColor" fill="none" strokeWidth={2} />
+            {/* Upper branch going right */}
+            <path d="M14 10h4" />
+            {/* Upper arrow head */}
+            <path d="M16 8l2 2-2 2" />
+            {/* Lower branch going right */}
+            <path d="M14 14h4" />
+            {/* Lower arrow head */}
+            <path d="M16 12l2 2-2 2" />
           </svg>
         </button>
       )}

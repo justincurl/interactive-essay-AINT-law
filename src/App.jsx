@@ -19,6 +19,7 @@ function App() {
   const [animatingNodeIndex, setAnimatingNodeIndex] = useState(null);
   const [arrowPaths, setArrowPaths] = useState([]);
   const pathwaysContainerRef = useRef(null);
+  const prevExpandedNodeIdRef = useRef(null);
 
   const getPathwayState = (pathwayIndex) => {
     const startElement = pathwayIndex * ELEMENTS_PER_PATHWAY;
@@ -32,13 +33,8 @@ function App() {
     // Show reform branch when Impact node (3rd node) is visible
     const showReformBranch = progressInPathway >= NODES_PER_PATHWAY;
 
-    // Show "With Reform" label only after the entire next row is revealed (all 3 nodes visible)
-    const nextPathwayStart = (pathwayIndex + 1) * ELEMENTS_PER_PATHWAY;
-    const nextPathwayFullyRevealed = nextPathwayStart + NODES_PER_PATHWAY; // When all 3 nodes of next pathway are visible
-    const isLastPathway = pathwayIndex === pathways.length - 1;
-    const showReformLabel = isLastPathway
-      ? globalVisibleCount >= TOTAL_ELEMENTS // For last pathway, show when final destination is visible
-      : globalVisibleCount >= nextPathwayFullyRevealed; // For others, show when entire next pathway is revealed
+    // Show "With Reform" label immediately when the arrow appears
+    const showReformLabel = showReformBranch;
 
     const nodeCount = Math.min(progressInPathway, NODES_PER_PATHWAY);
 
@@ -79,14 +75,18 @@ function App() {
   // Track which pathway's reform panel is open (for navigation purposes)
   const [reformPathwayIndex, setReformPathwayIndex] = useState(null);
 
-  const handleShowReform = (reform, shouldAdvance = false) => {
-    // Find which pathway this reform belongs to
-    const pathwayIdx = pathways.findIndex(p => p.reform?.id === reform?.id);
+  const handleShowReform = (reform, shouldAdvance = false, pathwayIdx = -1) => {
+    // Use passed pathwayIdx, or find which pathway this reform belongs to
+    const resolvedPathwayIdx = pathwayIdx >= 0
+      ? pathwayIdx
+      : pathways.findIndex(p => p.reform?.id === reform?.id);
     setReformNode(reform);
-    setReformPathwayIndex(pathwayIdx);
+    setReformPathwayIndex(resolvedPathwayIdx);
 
-    // If shouldAdvance is true, also advance navigation to the reform step
-    if (shouldAdvance && globalVisibleCount < TOTAL_ELEMENTS) {
+    // Only advance if we haven't already reached/passed this pathway's reform step
+    // Reform step for pathway N is at globalVisibleCount = (N + 1) * ELEMENTS_PER_PATHWAY
+    const reformStepForPathway = (resolvedPathwayIdx + 1) * ELEMENTS_PER_PATHWAY;
+    if (shouldAdvance && resolvedPathwayIdx >= 0 && globalVisibleCount < reformStepForPathway) {
       const newGlobalIndex = globalVisibleCount;
       const pathwayIndex = Math.floor(newGlobalIndex / ELEMENTS_PER_PATHWAY);
       const elementInPathway = newGlobalIndex % ELEMENTS_PER_PATHWAY;
@@ -161,11 +161,11 @@ function App() {
   }, [globalVisibleCount, reformNode, isReformPanelOpen]);
 
   const handleBack = useCallback(() => {
-    // If reform panel is open, close it and go back to Bottleneck node (skip Impact)
+    // If reform panel is open, close it and go back one step (to Impact node)
     if (isReformPanelOpen) {
       handleCloseReform();
-      // Go back 2 steps to skip the Impact node and land on Bottleneck
-      setGlobalVisibleCount(prev => Math.max(1, prev - 2));
+      // Go back 1 step to land on Impact node (reform panel counts as its own state)
+      setGlobalVisibleCount(prev => Math.max(1, prev - 1));
       return;
     }
 
@@ -254,7 +254,8 @@ function App() {
           const targetY = targetRect.top + targetRect.height / 2 - containerRect.top;
 
           // Arrow path configuration
-          const initialDrop = 24;          // Short vertical segment before bending left
+          // Last pathway needs a longer initial drop to avoid overlapping with larger target node
+          const initialDrop = isLastPathway ? 44 : 24;
           const horizontalOvershoot = 22;  // How far past target left edge the arrow extends
 
           // Calculate turn point (short drop from bottleneck)
@@ -281,8 +282,37 @@ function App() {
     // Calculate immediately
     updateArrowPaths();
 
-    // Single recalculation after animations complete
-    const postAnimationTimeout = setTimeout(updateArrowPaths, 400);
+    // Track if a node just collapsed (was expanded, now isn't)
+    const justCollapsed = prevExpandedNodeIdRef.current !== null && expandedNodeId === null;
+    prevExpandedNodeIdRef.current = expandedNodeId;
+
+    // Continuously update arrow positions while a node is expanded, animating, or just collapsed
+    let animationFrameId = null;
+    let collapseTimeoutId = null;
+    const isNodeExpanded = expandedNodeId !== null;
+    const isAnimating = animatingNodeIndex !== null;
+
+    const continuousUpdate = () => {
+      updateArrowPaths();
+      animationFrameId = requestAnimationFrame(continuousUpdate);
+    };
+
+    // Run continuous updates while any node is expanded or animating
+    if (isNodeExpanded || isAnimating) {
+      animationFrameId = requestAnimationFrame(continuousUpdate);
+    }
+
+    // If a node just collapsed, run updates for 350ms to cover the collapse animation
+    if (justCollapsed) {
+      animationFrameId = requestAnimationFrame(continuousUpdate);
+      collapseTimeoutId = setTimeout(() => {
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = null;
+        }
+        updateArrowPaths(); // Final update
+      }, 350);
+    }
 
     const resizeObserver = new ResizeObserver(updateArrowPaths);
     if (pathwaysContainerRef.current) {
@@ -292,11 +322,16 @@ function App() {
     window.addEventListener('resize', updateArrowPaths);
 
     return () => {
-      clearTimeout(postAnimationTimeout);
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+      if (collapseTimeoutId) {
+        clearTimeout(collapseTimeoutId);
+      }
       resizeObserver.disconnect();
       window.removeEventListener('resize', updateArrowPaths);
     };
-  }, [globalVisibleCount]);
+  }, [globalVisibleCount, animatingNodeIndex, expandedNodeId]);
 
   return (
     <div className="min-h-screen bg-cream">
@@ -397,7 +432,7 @@ function App() {
                   onNodeToggle={handleNodeToggle}
                   onNodeClose={handleNodeClose}
                   onShowEvidence={handleShowEvidence}
-                  onShowReform={(reform) => handleShowReform(reform, true)}
+                  onShowReform={(reform) => handleShowReform(reform, true, pathwayIndex)}
                   visibleCount={pathwayState.nodeCount}
                   animatingNodeIndex={pathwayAnimatingIndex}
                   showNavigation={isActiveRow}
@@ -420,17 +455,14 @@ function App() {
             {showFinalDestination && (
               <div className="flex flex-col items-center gap-4 animate-node-enter">
                 <div className="flex items-center justify-center">
-                  <div 
+                  <div
                     data-final-destination="true"
-                    className="bg-[#d1fae5] border-2 border-[#059669] rounded-lg p-6 max-w-md text-center shadow-lg"
+                    className="bg-[#d1fae5] border-2 border-[#059669] rounded-lg px-5 py-3 max-w-md text-center shadow-lg"
                   >
-                    <div className="text-[10px] uppercase tracking-[0.1em] font-medium mb-2 text-[#059669]">
-                      POSITIVE TRANSFORMATION
-                    </div>
-                    <h3 className="font-heading text-lg font-semibold text-text-primary mb-2">
+                    <h3 className="font-heading text-base font-semibold text-text-primary mb-1">
                       Positive transformation of legal services
                     </h3>
-                    <p className="font-body text-sm text-text-secondary">
+                    <p className="font-body text-xs text-text-secondary">
                       AI makes it easier and cheaper to achieve the legal outcomes clients care about
                     </p>
                   </div>
@@ -505,8 +537,12 @@ function App() {
             <div className="flex items-center gap-1.5">
               <div className="w-3.5 h-3.5 rounded-full bg-[#059669] flex items-center justify-center">
                 <svg className="w-2 h-2 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 12h8" />
-                  <path d="M12 12c0 4 2 6 6 6" />
+                  {/* Input line */}
+                  <path d="M2 12h8" />
+                  {/* Upper branch */}
+                  <path d="M10 12l8-6" />
+                  {/* Lower branch */}
+                  <path d="M10 12l8 6" />
                 </svg>
               </div>
               <span className="text-text-secondary">Reform Pathway</span>
@@ -527,7 +563,7 @@ function App() {
       {reformNode && (
         <ReformModal
           reformNode={reformNode}
-          onClose={handleCloseReform}
+          onClose={handleContinue}
         />
       )}
     </div>
