@@ -19,6 +19,7 @@ function App() {
   const [animatingNodeIndex, setAnimatingNodeIndex] = useState(null);
   const [arrowPaths, setArrowPaths] = useState([]);
   const pathwaysContainerRef = useRef(null);
+  const prevExpandedNodeIdRef = useRef(null);
 
   const getPathwayState = (pathwayIndex) => {
     const startElement = pathwayIndex * ELEMENTS_PER_PATHWAY;
@@ -278,30 +279,44 @@ function App() {
       setArrowPaths(newPaths);
     };
 
-    // Continuously update arrow positions during animations (node enter or expand/collapse)
-    // Run for 600ms to cover CSS transitions (300ms) plus buffer for smooth tracking
-    let animationFrameId = null;
-    const animationStartTime = performance.now();
-    const animationDuration = 600;
+    // Calculate immediately
+    updateArrowPaths();
 
-    const updateDuringAnimation = () => {
+    // Track if a node just collapsed (was expanded, now isn't)
+    const justCollapsed = prevExpandedNodeIdRef.current !== null && expandedNodeId === null;
+    prevExpandedNodeIdRef.current = expandedNodeId;
+
+    // Continuously update arrow positions while a node is expanded, animating, or just collapsed
+    let animationFrameId = null;
+    let collapseTimeoutId = null;
+    const isNodeExpanded = expandedNodeId !== null;
+    const isAnimating = animatingNodeIndex !== null;
+
+    const continuousUpdate = () => {
       updateArrowPaths();
-      const elapsed = performance.now() - animationStartTime;
-      if (elapsed < animationDuration) {
-        animationFrameId = requestAnimationFrame(updateDuringAnimation);
-      }
+      animationFrameId = requestAnimationFrame(continuousUpdate);
     };
 
-    // Start the loop immediately to catch transitions from the very first frame
-    updateDuringAnimation();
+    // Run continuous updates while any node is expanded or animating
+    if (isNodeExpanded || isAnimating) {
+      animationFrameId = requestAnimationFrame(continuousUpdate);
+    }
+
+    // If a node just collapsed, run updates for 350ms to cover the collapse animation
+    if (justCollapsed) {
+      animationFrameId = requestAnimationFrame(continuousUpdate);
+      collapseTimeoutId = setTimeout(() => {
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = null;
+        }
+        updateArrowPaths(); // Final update
+      }, 350);
+    }
 
     const resizeObserver = new ResizeObserver(updateArrowPaths);
     if (pathwaysContainerRef.current) {
       resizeObserver.observe(pathwaysContainerRef.current);
-      // Also observe all pathway grids for more responsive updates
-      pathwaysContainerRef.current.querySelectorAll('[data-pathway-index]').forEach(node => {
-        resizeObserver.observe(node);
-      });
     }
 
     window.addEventListener('resize', updateArrowPaths);
@@ -309,6 +324,9 @@ function App() {
     return () => {
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
+      }
+      if (collapseTimeoutId) {
+        clearTimeout(collapseTimeoutId);
       }
       resizeObserver.disconnect();
       window.removeEventListener('resize', updateArrowPaths);
