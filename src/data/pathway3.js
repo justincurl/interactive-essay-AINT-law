@@ -1,7 +1,5 @@
 export const pathway3 = {
   id: 'pathway3',
-  title: 'Bottleneck 3: Human Involvement',
-  description: 'How AI gains face constraints from human involvement requirements',
   nodes: [
     {
       id: 'p3-node1',
@@ -54,24 +52,23 @@ export const pathway3 = {
         },
       ],
     },
-    {
-      id: 'p3-node4',
-      type: 'reform',
-      category: 'EXAMPLES OF REFORM',
-      title: 'With reform',
-      subtitle: 'Examples: legislatures fund more judges; legal training better equips attorneys to move up the value chain',
-      explanation: [
-        'Placeholder: Discuss the case for hiring more judges.',
-        'Placeholder: Describe how the role of lawyers will shift and legal education must evolve.',
-      ],
-      evidence: [
-        {
-          quote: 'Placeholder quote about reform options',
-          source: 'Source citation',
-        },
-      ],
-    },
   ],
+  reform: {
+    id: 'p3-reform',
+    category: 'WITH REFORM',
+    title: 'Institutional Reform',
+    subtitle: 'Legislatures fund more judges; legal training better equips attorneys to move up the value chain',
+    explanation: [
+      'Placeholder: Discuss the case for hiring more judges.',
+      'Placeholder: Describe how the role of lawyers will shift and legal education must evolve.',
+    ],
+    evidence: [
+      {
+        quote: 'Placeholder quote about reform options',
+        source: 'Source citation',
+      },
+    ],
+  },
 };
 
 export default pathway3;

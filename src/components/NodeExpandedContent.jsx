@@ -1,4 +1,4 @@
-export default function NodeExpandedContent({ node, onClose, onShowEvidence }) {
+export default function NodeExpandedContent({ node, onShowEvidence }) {
   const handleShowEvidence = (e) => {
     e.stopPropagation();
     onShowEvidence?.(node);
