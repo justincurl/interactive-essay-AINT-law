@@ -278,31 +278,30 @@ function App() {
       setArrowPaths(newPaths);
     };
 
-    // Calculate immediately
-    updateArrowPaths();
-
     // Continuously update arrow positions during animations (node enter or expand/collapse)
+    // Run for 600ms to cover CSS transitions (300ms) plus buffer for smooth tracking
     let animationFrameId = null;
     const animationStartTime = performance.now();
-    // 400ms for node enter, 300ms for expand/collapse - use the longer duration to cover both
-    const animationDuration = 400;
+    const animationDuration = 600;
 
     const updateDuringAnimation = () => {
+      updateArrowPaths();
       const elapsed = performance.now() - animationStartTime;
       if (elapsed < animationDuration) {
-        updateArrowPaths();
         animationFrameId = requestAnimationFrame(updateDuringAnimation);
-      } else {
-        // Final update after animation completes
-        updateArrowPaths();
       }
     };
 
-    animationFrameId = requestAnimationFrame(updateDuringAnimation);
+    // Start the loop immediately to catch transitions from the very first frame
+    updateDuringAnimation();
 
     const resizeObserver = new ResizeObserver(updateArrowPaths);
     if (pathwaysContainerRef.current) {
       resizeObserver.observe(pathwaysContainerRef.current);
+      // Also observe all pathway grids for more responsive updates
+      pathwaysContainerRef.current.querySelectorAll('[data-pathway-index]').forEach(node => {
+        resizeObserver.observe(node);
+      });
     }
 
     window.addEventListener('resize', updateArrowPaths);
