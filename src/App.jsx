@@ -32,13 +32,8 @@ function App() {
     // Show reform branch when Impact node (3rd node) is visible
     const showReformBranch = progressInPathway >= NODES_PER_PATHWAY;
 
-    // Show "With Reform" label only after the entire next row is revealed (all 3 nodes visible)
-    const nextPathwayStart = (pathwayIndex + 1) * ELEMENTS_PER_PATHWAY;
-    const nextPathwayFullyRevealed = nextPathwayStart + NODES_PER_PATHWAY; // When all 3 nodes of next pathway are visible
-    const isLastPathway = pathwayIndex === pathways.length - 1;
-    const showReformLabel = isLastPathway
-      ? globalVisibleCount >= TOTAL_ELEMENTS // For last pathway, show when final destination is visible
-      : globalVisibleCount >= nextPathwayFullyRevealed; // For others, show when entire next pathway is revealed
+    // Show "With Reform" label immediately when the arrow appears
+    const showReformLabel = showReformBranch;
 
     const nodeCount = Math.min(progressInPathway, NODES_PER_PATHWAY);
 
@@ -254,7 +249,8 @@ function App() {
           const targetY = targetRect.top + targetRect.height / 2 - containerRect.top;
 
           // Arrow path configuration
-          const initialDrop = 24;          // Short vertical segment before bending left
+          // Last pathway needs a longer initial drop to avoid overlapping with larger target node
+          const initialDrop = isLastPathway ? 44 : 24;
           const horizontalOvershoot = 22;  // How far past target left edge the arrow extends
 
           // Calculate turn point (short drop from bottleneck)
@@ -439,19 +435,13 @@ function App() {
             {showFinalDestination && (
               <div className="flex flex-col items-center gap-4 animate-node-enter">
                 <div className="flex items-center justify-center">
-                  <div 
+                  <div
                     data-final-destination="true"
-                    className="bg-[#d1fae5] border-2 border-[#059669] rounded-lg p-6 max-w-md text-center shadow-lg"
+                    className="bg-[#d1fae5] border-2 border-[#059669] rounded-lg px-5 py-3 max-w-md text-center shadow-lg"
                   >
-                    <div className="text-[10px] uppercase tracking-[0.1em] font-medium mb-2 text-[#059669]">
-                      POSITIVE TRANSFORMATION
-                    </div>
-                    <h3 className="font-heading text-lg font-semibold text-text-primary mb-2">
+                    <h3 className="font-heading text-base font-semibold text-text-primary">
                       Positive transformation of legal services
                     </h3>
-                    <p className="font-body text-sm text-text-secondary">
-                      AI makes it easier and cheaper to achieve the legal outcomes clients care about
-                    </p>
                   </div>
                 </div>
                 <button
