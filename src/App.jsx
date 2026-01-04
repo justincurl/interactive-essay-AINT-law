@@ -277,25 +277,24 @@ function App() {
     // Calculate immediately
     updateArrowPaths();
 
-    // If an animation is in progress, continuously update arrow positions
+    // Continuously update arrow positions during animations (node enter or expand/collapse)
     let animationFrameId = null;
-    if (animatingNodeIndex !== null) {
-      const animationStartTime = performance.now();
-      const animationDuration = 400; // matches CSS animation duration
+    const animationStartTime = performance.now();
+    // 400ms for node enter, 300ms for expand/collapse - use the longer duration to cover both
+    const animationDuration = 400;
 
-      const updateDuringAnimation = () => {
-        const elapsed = performance.now() - animationStartTime;
-        if (elapsed < animationDuration) {
-          updateArrowPaths();
-          animationFrameId = requestAnimationFrame(updateDuringAnimation);
-        } else {
-          // Final update after animation completes
-          updateArrowPaths();
-        }
-      };
+    const updateDuringAnimation = () => {
+      const elapsed = performance.now() - animationStartTime;
+      if (elapsed < animationDuration) {
+        updateArrowPaths();
+        animationFrameId = requestAnimationFrame(updateDuringAnimation);
+      } else {
+        // Final update after animation completes
+        updateArrowPaths();
+      }
+    };
 
-      animationFrameId = requestAnimationFrame(updateDuringAnimation);
-    }
+    animationFrameId = requestAnimationFrame(updateDuringAnimation);
 
     const resizeObserver = new ResizeObserver(updateArrowPaths);
     if (pathwaysContainerRef.current) {
@@ -311,7 +310,7 @@ function App() {
       resizeObserver.disconnect();
       window.removeEventListener('resize', updateArrowPaths);
     };
-  }, [globalVisibleCount, animatingNodeIndex]);
+  }, [globalVisibleCount, animatingNodeIndex, expandedNodeId]);
 
   return (
     <div className="min-h-screen bg-cream">
@@ -439,9 +438,12 @@ function App() {
                     data-final-destination="true"
                     className="bg-[#d1fae5] border-2 border-[#059669] rounded-lg px-5 py-3 max-w-md text-center shadow-lg"
                   >
-                    <h3 className="font-heading text-base font-semibold text-text-primary">
+                    <h3 className="font-heading text-base font-semibold text-text-primary mb-1">
                       Positive transformation of legal services
                     </h3>
+                    <p className="font-body text-xs text-text-secondary">
+                      AI makes it easier and cheaper to achieve the legal outcomes clients care about
+                    </p>
                   </div>
                 </div>
                 <button
