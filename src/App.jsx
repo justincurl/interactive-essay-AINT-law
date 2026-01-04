@@ -17,7 +17,6 @@ function App() {
   const [evidenceNode, setEvidenceNode] = useState(null);
   const [reformNode, setReformNode] = useState(null);
   const [animatingNodeIndex, setAnimatingNodeIndex] = useState(null);
-  const [clickedReforms, setClickedReforms] = useState(new Set());
   const [arrowPaths, setArrowPaths] = useState([]);
   const pathwaysContainerRef = useRef(null);
 
@@ -68,9 +67,8 @@ function App() {
     setEvidenceNode(null);
   };
 
-  const handleShowReform = (reform, pathwayIndex) => {
+  const handleShowReform = (reform) => {
     setReformNode(reform);
-    setClickedReforms(prev => new Set([...prev, pathwayIndex]));
   };
 
   const handleCloseReform = () => {
@@ -136,7 +134,11 @@ function App() {
       const containerRect = pathwaysContainerRef.current.getBoundingClientRect();
       const newPaths = [];
 
-      clickedReforms.forEach((pathwayIndex) => {
+      // Show arrows for all pathways that have their reform branch visible
+      pathways.forEach((_, pathwayIndex) => {
+        const pathwayState = getPathwayState(pathwayIndex);
+        if (!pathwayState.showReformBranch) return;
+
         const bottleneckNode = pathwaysContainerRef.current.querySelector(
           `[data-pathway-index="${pathwayIndex}"][data-node-type="bottleneck"]`
         );
@@ -156,20 +158,24 @@ function App() {
           const sourceRect = bottleneckNode.getBoundingClientRect();
           const targetRect = targetNode.getBoundingClientRect();
 
+          // Start from bottom center of bottleneck node
           const sourceX = sourceRect.left + sourceRect.width / 2 - containerRect.left;
           const sourceY = sourceRect.bottom - containerRect.top;
           
-          const targetX = targetRect.left + targetRect.width / 2 - containerRect.left;
-          const targetY = targetRect.top - containerRect.top;
+          // End at left edge, vertically centered on target node
+          const targetX = targetRect.left - containerRect.left;
+          const targetY = targetRect.top + targetRect.height / 2 - containerRect.top;
 
+          // Calculate midpoint for the elbow
           const midY = sourceY + (targetY - sourceY) / 2;
 
-          const path = `M ${sourceX} ${sourceY} L ${sourceX} ${midY} L ${targetX} ${midY} L ${targetX} ${targetY}`;
+          // Path: down from bottleneck, horizontal to left of target, then right into target's left edge
+          const path = `M ${sourceX} ${sourceY} L ${sourceX} ${midY} L ${targetX - 8} ${midY} L ${targetX - 8} ${targetY} L ${targetX} ${targetY}`;
           
           newPaths.push({
             pathwayIndex,
             path,
-            labelX: (sourceX + targetX) / 2,
+            labelX: sourceX + (targetX - 8 - sourceX) / 2,
             labelY: midY - 8,
           });
         }
@@ -191,7 +197,7 @@ function App() {
       resizeObserver.disconnect();
       window.removeEventListener('resize', updateArrowPaths);
     };
-  }, [clickedReforms, globalVisibleCount]);
+  }, [globalVisibleCount]);
 
   return (
     <div className="min-h-screen bg-cream">
