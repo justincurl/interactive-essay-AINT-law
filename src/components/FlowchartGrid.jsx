@@ -148,6 +148,11 @@ export default function FlowchartGrid({
                     visible={!hasExpanded || isExpanded}
                     animate={isAnimating}
                     compact={true}
+                    // Show branch node on arrow before Impact (last) node
+                    showBranchNode={index === lastNodeIndex && showReformBranch}
+                    isBranchActivated={isReformActivated}
+                    isBranchOpen={isReformOpen}
+                    onBranchClick={() => handleReformClick(reform)}
                   />
                 )}
 

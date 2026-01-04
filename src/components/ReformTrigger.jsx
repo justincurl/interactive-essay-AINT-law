@@ -72,7 +72,7 @@ function BranchingNode({
   );
 }
 
-// Element B: Text Prompt
+// Element B: Text Prompt - styled as a small tab peeking from bottom of node
 function TextPrompt({
   onClick,
   isOpen = false,
@@ -94,19 +94,26 @@ function TextPrompt({
       onMouseLeave={() => setIsHovered(false)}
       disabled={disabled}
       className={`
-        mt-2 text-[11px] font-medium
+        -mt-0.5 px-2.5 py-1
+        text-[10px] font-medium
         transition-all duration-200
+        rounded-b-md
+        border border-t-0 border-[#d1d5db]
+        bg-white/80
         ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
         ${isOpen
-          ? 'opacity-0 pointer-events-none'
-          : 'opacity-100'
+          ? 'opacity-0 pointer-events-none -translate-y-1'
+          : 'opacity-100 translate-y-0'
         }
-        text-[#059669] hover:text-[#047857]
-        ${isHovered && !isOpen ? 'underline' : ''}
+        ${isHovered && !isOpen
+          ? 'bg-[#f0fdf4] border-[#10b981] text-[#059669]'
+          : 'text-[#737373]'
+        }
+        shadow-sm
       `}
       aria-label="What could change this?"
     >
-      What could change this? →
+      What could change this?
     </button>
   );
 }
