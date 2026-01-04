@@ -140,9 +140,10 @@ export default function Arrow({
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
-            strokeWidth={3}
+            strokeWidth={2.5}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m6-6H6" />
+            {/* Fork/branch icon - represents a path splitting */}
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 3v12M18 9a3 3 0 100-6 3 3 0 000 6zM6 21a3 3 0 100-6 3 3 0 000 6zM18 9a9 9 0 01-9 9" />
           </svg>
         </button>
       )}
