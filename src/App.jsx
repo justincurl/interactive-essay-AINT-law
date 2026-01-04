@@ -91,10 +91,25 @@ function App() {
   };
 
   const handleContinue = useCallback(() => {
-    // If reform modal is open, close it and advance
+    // If reform modal is open, close it and advance (don't re-open the modal)
     if (reformNode) {
       setReformNode(null);
-      // Continue with advancing
+      // Advance to next step
+      if (globalVisibleCount < TOTAL_ELEMENTS) {
+        const newGlobalIndex = globalVisibleCount;
+        const newPathwayIndex = Math.floor(newGlobalIndex / ELEMENTS_PER_PATHWAY);
+        const elementInPathway = newGlobalIndex % ELEMENTS_PER_PATHWAY;
+        
+        if (elementInPathway < NODES_PER_PATHWAY) {
+          setAnimatingNodeIndex({ pathwayIndex: newPathwayIndex, nodeIndex: elementInPathway });
+        }
+        setGlobalVisibleCount(prev => prev + 1);
+
+        setTimeout(() => {
+          setAnimatingNodeIndex(null);
+        }, 100);
+      }
+      return; // Don't fall through to the "open modal" logic
     }
     
     if (globalVisibleCount < TOTAL_ELEMENTS) {
@@ -102,7 +117,7 @@ function App() {
       const pathwayIndex = Math.floor((globalVisibleCount - 1) / ELEMENTS_PER_PATHWAY);
       if (pathwayIndex < pathways.length) {
         const pathwayState = getPathwayState(pathwayIndex);
-        if (pathwayState.showReformBranch && !pathwayState.showReformArrow && !reformNode) {
+        if (pathwayState.showReformBranch && !pathwayState.showReformArrow) {
           // Open reform modal but don't advance - treat it as its own navigation stage
           const reform = pathways[pathwayIndex].reform;
           if (reform) {
@@ -123,7 +138,7 @@ function App() {
 
       setTimeout(() => {
         setAnimatingNodeIndex(null);
-      }, 400);
+      }, 100);
     }
   }, [globalVisibleCount, getPathwayState, reformNode]);
 

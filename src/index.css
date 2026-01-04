@@ -41,35 +41,31 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
 }
 
-/* Node entrance animation */
+/* Node entrance animation - fast fade only to prevent arrow intersection issues */
 @keyframes node-enter {
   from {
     opacity: 0;
-    transform: translateX(20px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
   }
 }
 
 @keyframes node-exit {
   from {
     opacity: 1;
-    transform: translateX(0);
   }
   to {
     opacity: 0;
-    transform: translateX(20px);
   }
 }
 
 .animate-node-enter {
-  animation: node-enter 400ms ease-out forwards;
+  animation: node-enter 100ms ease-out forwards;
 }
 
 .animate-node-exit {
-  animation: node-exit 300ms ease-in forwards;
+  animation: node-exit 100ms ease-in forwards;
 }
 
 /* Modal animation */
