@@ -17,6 +17,7 @@ function App() {
   const [evidenceNode, setEvidenceNode] = useState(null);
   const [reformNode, setReformNode] = useState(null);
   const [animatingNodeIndex, setAnimatingNodeIndex] = useState(null);
+  const [clickedReforms, setClickedReforms] = useState(new Set());
 
   const getPathwayState = (pathwayIndex) => {
     const startElement = pathwayIndex * ELEMENTS_PER_PATHWAY;
@@ -65,8 +66,9 @@ function App() {
     setEvidenceNode(null);
   };
 
-  const handleShowReform = (reform) => {
+  const handleShowReform = (reform, pathwayIndex) => {
     setReformNode(reform);
+    setClickedReforms(prev => new Set([...prev, pathwayIndex]));
   };
 
   const handleCloseReform = () => {
@@ -155,9 +157,8 @@ function App() {
               const pathwayState = getPathwayState(pathwayIndex);
               const isVisible = isPathwayVisible(pathwayIndex);
               const isActiveRow = pathwayIndex === activePathwayIndex;
-              const isLastPathway = pathwayIndex === pathways.length - 1;
               
-              const pathwayAnimatingIndex = animatingNodeIndex?.pathwayIndex === pathwayIndex 
+              const pathwayAnimatingIndex = animatingNodeIndex?.pathwayIndex === pathwayIndex
                 ? animatingNodeIndex.nodeIndex 
                 : null;
 
@@ -184,8 +185,8 @@ function App() {
                   showRestart={isActiveRow && isComplete}
                   showProgressIndicator={false}
                   pathwayIndex={pathwayIndex}
-                  isLastPathway={isLastPathway}
                   showReformBranch={pathwayState.showReformBranch}
+                  reformClicked={clickedReforms.has(pathwayIndex)}
                 />
               );
             })}
@@ -276,10 +277,6 @@ function App() {
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded border-2 border-dashed border-[#9ca3af] bg-white" />
               <span className="text-text-secondary">Reform Branch</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded bg-[#d1fae5] border border-[#059669]" />
-              <span className="text-text-secondary">Positive Transformation</span>
             </div>
           </div>
         </div>
