@@ -189,6 +189,7 @@ export default function Node({
         <TextPrompt
           onClick={() => onShowReform?.(reform)}
           isOpen={isReformOpen}
+          isActivated={isReformActivated}
           disabled={isDimmed}
         />
       )}

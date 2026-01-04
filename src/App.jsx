@@ -161,11 +161,11 @@ function App() {
   }, [globalVisibleCount, reformNode, isReformPanelOpen]);
 
   const handleBack = useCallback(() => {
-    // If reform panel is open, close it and go back to Impact node (decrement count)
+    // If reform panel is open, close it and go back to Bottleneck node (skip Impact)
     if (isReformPanelOpen) {
       handleCloseReform();
-      // Go back to the Impact node (reform trigger visible but collapsed)
-      setGlobalVisibleCount(prev => prev - 1);
+      // Go back 2 steps to skip the Impact node and land on Bottleneck
+      setGlobalVisibleCount(prev => Math.max(1, prev - 2));
       return;
     }
 
@@ -278,22 +278,13 @@ function App() {
       setArrowPaths(newPaths);
     };
 
-    // Initial calculation
+    // Calculate immediately
     updateArrowPaths();
 
-    // Recalculate after a short delay to ensure DOM has settled after animations
-    const animationTimeout = setTimeout(() => {
-      requestAnimationFrame(updateArrowPaths);
-    }, 50);
+    // Single recalculation after animations complete
+    const postAnimationTimeout = setTimeout(updateArrowPaths, 400);
 
-    // Also recalculate after node animations complete (400ms)
-    const postAnimationTimeout = setTimeout(() => {
-      requestAnimationFrame(updateArrowPaths);
-    }, 450);
-
-    const resizeObserver = new ResizeObserver(() => {
-      requestAnimationFrame(updateArrowPaths);
-    });
+    const resizeObserver = new ResizeObserver(updateArrowPaths);
     if (pathwaysContainerRef.current) {
       resizeObserver.observe(pathwaysContainerRef.current);
     }
@@ -301,7 +292,6 @@ function App() {
     window.addEventListener('resize', updateArrowPaths);
 
     return () => {
-      clearTimeout(animationTimeout);
       clearTimeout(postAnimationTimeout);
       resizeObserver.disconnect();
       window.removeEventListener('resize', updateArrowPaths);
@@ -333,7 +323,7 @@ function App() {
           </div>
 
           {/* Stacked Pathways */}
-          <div ref={pathwaysContainerRef} className="relative flex flex-col gap-8">
+          <div ref={pathwaysContainerRef} className="relative flex flex-col gap-4">
             {/* Reform Elbow Arrows SVG Overlay */}
             {arrowPaths.length > 0 && (
               <svg

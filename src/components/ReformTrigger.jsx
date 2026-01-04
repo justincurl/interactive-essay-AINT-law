@@ -76,6 +76,7 @@ function BranchingNode({
 function TextPrompt({
   onClick,
   isOpen = false,
+  isActivated = false,
   disabled = false
 }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -86,6 +87,9 @@ function TextPrompt({
       onClick?.();
     }
   };
+
+  // Determine styling based on state
+  const isHighlighted = isActivated || isHovered;
 
   return (
     <button
@@ -98,16 +102,17 @@ function TextPrompt({
         text-[10px] font-medium
         transition-all duration-200
         rounded-b-md
-        border border-t-0 border-[#d1d5db]
-        bg-white/80
+        border border-t-0
         ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
         ${isOpen
           ? 'opacity-0 pointer-events-none -translate-y-1'
           : 'opacity-100 translate-y-0'
         }
-        ${isHovered && !isOpen
-          ? 'bg-[#f0fdf4] border-[#10b981] text-[#059669]'
-          : 'text-[#737373]'
+        ${isActivated
+          ? 'border-[#059669] bg-[#ecfdf5] text-[#059669]'
+          : isHovered
+            ? 'border-[#10b981] bg-[#f0fdf4] text-[#059669]'
+            : 'border-[#d1d5db] bg-white/80 text-[#737373]'
         }
         shadow-sm
       `}
