@@ -20,21 +20,33 @@ function App() {
   const [arrowPaths, setArrowPaths] = useState([]);
   const pathwaysContainerRef = useRef(null);
 
-  const getPathwayState = (pathwayIndex) => {
+  const getPathwayState = useCallback((pathwayIndex) => {
     const startElement = pathwayIndex * ELEMENTS_PER_PATHWAY;
     
     if (globalVisibleCount <= startElement) {
-      return { nodeCount: 0, showReformBranch: false };
+      return { nodeCount: 0, showReformBranch: false, showReformArrow: false };
     }
     
     const progressInPathway = globalVisibleCount - startElement;
     
-    if (progressInPathway <= NODES_PER_PATHWAY) {
-      return { nodeCount: progressInPathway, showReformBranch: false };
+    // showReformBranch: "What could change this?" button appears with the impact node (nodeCount=3)
+    // showReformArrow: "With Reform" arrow appears after the entire NEXT row is revealed (all 3 nodes)
+    // For the last pathway, the arrow appears when the final destination is shown
+    const isLastPathway = pathwayIndex === pathways.length - 1;
+    const nextRowFullyRevealed = isLastPathway
+      ? globalVisibleCount >= TOTAL_ELEMENTS  // Final destination is shown
+      : globalVisibleCount >= (pathwayIndex + 1) * ELEMENTS_PER_PATHWAY + NODES_PER_PATHWAY;  // Next row has all 3 nodes
+    
+    if (progressInPathway < NODES_PER_PATHWAY) {
+      return { nodeCount: progressInPathway, showReformBranch: false, showReformArrow: false };
+    } else if (progressInPathway === NODES_PER_PATHWAY) {
+      // Impact node just appeared - show the reform branch button but not the arrow yet
+      return { nodeCount: NODES_PER_PATHWAY, showReformBranch: true, showReformArrow: false };
     } else {
-      return { nodeCount: NODES_PER_PATHWAY, showReformBranch: true };
+      // User has advanced past this pathway - show reform branch, arrow only when next row is fully revealed
+      return { nodeCount: NODES_PER_PATHWAY, showReformBranch: true, showReformArrow: nextRowFullyRevealed };
     }
-  };
+  }, [globalVisibleCount]);
 
   const isPathwayVisible = (pathwayIndex) => {
     return getPathwayState(pathwayIndex).nodeCount > 0;
@@ -77,12 +89,25 @@ function App() {
 
   const handleContinue = useCallback(() => {
     if (globalVisibleCount < TOTAL_ELEMENTS) {
+      // Check if we're at the reform branch step - if so, open the reform modal
+      const pathwayIndex = Math.floor((globalVisibleCount - 1) / ELEMENTS_PER_PATHWAY);
+      if (pathwayIndex < pathways.length) {
+        const pathwayState = getPathwayState(pathwayIndex);
+        if (pathwayState.showReformBranch && !pathwayState.showReformArrow) {
+          // Open reform modal and advance
+          const reform = pathways[pathwayIndex].reform;
+          if (reform) {
+            setReformNode(reform);
+          }
+        }
+      }
+
       const newGlobalIndex = globalVisibleCount;
-      const pathwayIndex = Math.floor(newGlobalIndex / ELEMENTS_PER_PATHWAY);
+      const newPathwayIndex = Math.floor(newGlobalIndex / ELEMENTS_PER_PATHWAY);
       const elementInPathway = newGlobalIndex % ELEMENTS_PER_PATHWAY;
       
       if (elementInPathway < NODES_PER_PATHWAY) {
-        setAnimatingNodeIndex({ pathwayIndex, nodeIndex: elementInPathway });
+        setAnimatingNodeIndex({ pathwayIndex: newPathwayIndex, nodeIndex: elementInPathway });
       }
       setGlobalVisibleCount(prev => prev + 1);
 
@@ -90,7 +115,7 @@ function App() {
         setAnimatingNodeIndex(null);
       }, 400);
     }
-  }, [globalVisibleCount]);
+  }, [globalVisibleCount, getPathwayState]);
 
   const handleBack = useCallback(() => {
     if (globalVisibleCount > 1) {
@@ -134,10 +159,10 @@ function App() {
       const containerRect = pathwaysContainerRef.current.getBoundingClientRect();
       const newPaths = [];
 
-      // Show arrows for all pathways that have their reform branch visible
+      // Show arrows for all pathways that have their reform arrow visible
       pathways.forEach((_, pathwayIndex) => {
         const pathwayState = getPathwayState(pathwayIndex);
-        if (!pathwayState.showReformBranch) return;
+        if (!pathwayState.showReformArrow) return;
 
         const bottleneckNode = pathwaysContainerRef.current.querySelector(
           `[data-pathway-index="${pathwayIndex}"][data-node-type="bottleneck"]`
@@ -190,20 +215,31 @@ function App() {
       setArrowPaths(newPaths);
     };
 
-    updateArrowPaths();
+    // Use requestAnimationFrame to ensure DOM is fully laid out before calculating arrow positions
+    // This fixes the initialization location bug where arrows appear in wrong position initially
+    let rafId;
+    const scheduleUpdate = () => {
+      rafId = requestAnimationFrame(() => {
+        // Double RAF to ensure layout is complete after any animations
+        rafId = requestAnimationFrame(updateArrowPaths);
+      });
+    };
 
-    const resizeObserver = new ResizeObserver(updateArrowPaths);
+    scheduleUpdate();
+
+    const resizeObserver = new ResizeObserver(scheduleUpdate);
     if (pathwaysContainerRef.current) {
       resizeObserver.observe(pathwaysContainerRef.current);
     }
 
-    window.addEventListener('resize', updateArrowPaths);
+    window.addEventListener('resize', scheduleUpdate);
 
     return () => {
+      cancelAnimationFrame(rafId);
       resizeObserver.disconnect();
-      window.removeEventListener('resize', updateArrowPaths);
+      window.removeEventListener('resize', scheduleUpdate);
     };
-  }, [globalVisibleCount]);
+  }, [globalVisibleCount, getPathwayState]);
 
   return (
     <div className="min-h-screen bg-cream">
