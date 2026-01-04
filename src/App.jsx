@@ -22,18 +22,27 @@ function App() {
 
   const getPathwayState = (pathwayIndex) => {
     const startElement = pathwayIndex * ELEMENTS_PER_PATHWAY;
-    
+
     if (globalVisibleCount <= startElement) {
-      return { nodeCount: 0, showReformBranch: false };
+      return { nodeCount: 0, showReformBranch: false, showReformLabel: false };
     }
-    
+
     const progressInPathway = globalVisibleCount - startElement;
-    
-    if (progressInPathway <= NODES_PER_PATHWAY) {
-      return { nodeCount: progressInPathway, showReformBranch: false };
-    } else {
-      return { nodeCount: NODES_PER_PATHWAY, showReformBranch: true };
-    }
+
+    // Show reform branch when Impact node (3rd node) is visible
+    const showReformBranch = progressInPathway >= NODES_PER_PATHWAY;
+
+    // Show "With Reform" label only after the entire next row is revealed (all 3 nodes visible)
+    const nextPathwayStart = (pathwayIndex + 1) * ELEMENTS_PER_PATHWAY;
+    const nextPathwayFullyRevealed = nextPathwayStart + NODES_PER_PATHWAY; // When all 3 nodes of next pathway are visible
+    const isLastPathway = pathwayIndex === pathways.length - 1;
+    const showReformLabel = isLastPathway
+      ? globalVisibleCount >= TOTAL_ELEMENTS // For last pathway, show when final destination is visible
+      : globalVisibleCount >= nextPathwayFullyRevealed; // For others, show when entire next pathway is revealed
+
+    const nodeCount = Math.min(progressInPathway, NODES_PER_PATHWAY);
+
+    return { nodeCount, showReformBranch, showReformLabel };
   };
 
   const isPathwayVisible = (pathwayIndex) => {
@@ -67,20 +76,14 @@ function App() {
     setEvidenceNode(null);
   };
 
-  const handleShowReform = (reform) => {
+  const handleShowReform = (reform, shouldAdvance = false) => {
     setReformNode(reform);
-  };
-
-  const handleCloseReform = () => {
-    setReformNode(null);
-  };
-
-  const handleContinue = useCallback(() => {
-    if (globalVisibleCount < TOTAL_ELEMENTS) {
+    // If shouldAdvance is true, also advance navigation
+    if (shouldAdvance && globalVisibleCount < TOTAL_ELEMENTS) {
       const newGlobalIndex = globalVisibleCount;
       const pathwayIndex = Math.floor(newGlobalIndex / ELEMENTS_PER_PATHWAY);
       const elementInPathway = newGlobalIndex % ELEMENTS_PER_PATHWAY;
-      
+
       if (elementInPathway < NODES_PER_PATHWAY) {
         setAnimatingNodeIndex({ pathwayIndex, nodeIndex: elementInPathway });
       }
@@ -90,7 +93,41 @@ function App() {
         setAnimatingNodeIndex(null);
       }, 400);
     }
-  }, [globalVisibleCount]);
+  };
+
+  const handleCloseReform = () => {
+    setReformNode(null);
+  };
+
+  const handleContinue = useCallback(() => {
+    if (globalVisibleCount < TOTAL_ELEMENTS) {
+      const currentPathwayIndex = Math.floor((globalVisibleCount - 1) / ELEMENTS_PER_PATHWAY);
+      const currentPathwayState = getPathwayState(currentPathwayIndex);
+
+      // If reform branch is visible for current pathway and popup hasn't been shown yet,
+      // open the popup and advance
+      if (currentPathwayState.showReformBranch && currentPathwayIndex < pathways.length) {
+        const reform = pathways[currentPathwayIndex]?.reform;
+        if (reform && !reformNode) {
+          handleShowReform(reform, true);
+          return;
+        }
+      }
+
+      const newGlobalIndex = globalVisibleCount;
+      const pathwayIndex = Math.floor(newGlobalIndex / ELEMENTS_PER_PATHWAY);
+      const elementInPathway = newGlobalIndex % ELEMENTS_PER_PATHWAY;
+
+      if (elementInPathway < NODES_PER_PATHWAY) {
+        setAnimatingNodeIndex({ pathwayIndex, nodeIndex: elementInPathway });
+      }
+      setGlobalVisibleCount(prev => prev + 1);
+
+      setTimeout(() => {
+        setAnimatingNodeIndex(null);
+      }, 400);
+    }
+  }, [globalVisibleCount, reformNode]);
 
   const handleBack = useCallback(() => {
     if (globalVisibleCount > 1) {
@@ -138,14 +175,15 @@ function App() {
       pathways.forEach((_, pathwayIndex) => {
         const pathwayState = getPathwayState(pathwayIndex);
         if (!pathwayState.showReformBranch) return;
+        const showLabel = pathwayState.showReformLabel;
 
         const bottleneckNode = pathwaysContainerRef.current.querySelector(
           `[data-pathway-index="${pathwayIndex}"][data-node-type="bottleneck"]`
         );
-        
+
         let targetNode;
         const isLastPathway = pathwayIndex === pathways.length - 1;
-        
+
         if (isLastPathway) {
           targetNode = pathwaysContainerRef.current.querySelector('[data-final-destination="true"]');
         } else {
@@ -158,10 +196,13 @@ function App() {
           const sourceRect = bottleneckNode.getBoundingClientRect();
           const targetRect = targetNode.getBoundingClientRect();
 
+          // Skip if target has no dimensions (not rendered yet)
+          if (targetRect.width === 0 || targetRect.height === 0) return;
+
           // Start from bottom center of bottleneck node
           const sourceX = sourceRect.left + sourceRect.width / 2 - containerRect.left;
           const sourceY = sourceRect.bottom - containerRect.top;
-          
+
           // End at left edge, vertically centered on target node
           const targetX = targetRect.left - containerRect.left;
           const targetY = targetRect.top + targetRect.height / 2 - containerRect.top;
@@ -169,7 +210,7 @@ function App() {
           // Arrow path configuration
           const initialDrop = 24;          // Short vertical segment before bending left
           const horizontalOvershoot = 22;  // How far past target left edge the arrow extends
-          
+
           // Calculate turn point (short drop from bottleneck)
           const turnY = sourceY + initialDrop;
           // Calculate elbow X (extends past target's left edge for breathing room)
@@ -177,12 +218,13 @@ function App() {
 
           // Path: down (short), left (extends past target), down, right into target
           const path = `M ${sourceX} ${sourceY} L ${sourceX} ${turnY} L ${elbowX} ${turnY} L ${elbowX} ${targetY} L ${targetX} ${targetY}`;
-          
+
           newPaths.push({
             pathwayIndex,
             path,
             labelX: (sourceX + elbowX) / 2,
             labelY: turnY - 8,
+            showLabel,
           });
         }
       });
@@ -190,9 +232,22 @@ function App() {
       setArrowPaths(newPaths);
     };
 
+    // Initial calculation
     updateArrowPaths();
 
-    const resizeObserver = new ResizeObserver(updateArrowPaths);
+    // Recalculate after a short delay to ensure DOM has settled after animations
+    const animationTimeout = setTimeout(() => {
+      requestAnimationFrame(updateArrowPaths);
+    }, 50);
+
+    // Also recalculate after node animations complete (400ms)
+    const postAnimationTimeout = setTimeout(() => {
+      requestAnimationFrame(updateArrowPaths);
+    }, 450);
+
+    const resizeObserver = new ResizeObserver(() => {
+      requestAnimationFrame(updateArrowPaths);
+    });
     if (pathwaysContainerRef.current) {
       resizeObserver.observe(pathwaysContainerRef.current);
     }
@@ -200,6 +255,8 @@ function App() {
     window.addEventListener('resize', updateArrowPaths);
 
     return () => {
+      clearTimeout(animationTimeout);
+      clearTimeout(postAnimationTimeout);
       resizeObserver.disconnect();
       window.removeEventListener('resize', updateArrowPaths);
     };
@@ -262,15 +319,17 @@ function App() {
                       strokeDasharray="6 4"
                       markerEnd="url(#reformElbowArrowHead)"
                     />
-                    <text
-                      x={arrow.labelX}
-                      y={arrow.labelY}
-                      textAnchor="middle"
-                      className="text-[10px] font-medium"
-                      fill="#059669"
-                    >
-                      With Reform
-                    </text>
+                    {arrow.showLabel && (
+                      <text
+                        x={arrow.labelX}
+                        y={arrow.labelY}
+                        textAnchor="middle"
+                        className="text-[10px] font-medium"
+                        fill="#059669"
+                      >
+                        With Reform
+                      </text>
+                    )}
                   </g>
                 ))}
               </svg>
@@ -299,7 +358,7 @@ function App() {
                   onNodeToggle={handleNodeToggle}
                   onNodeClose={handleNodeClose}
                   onShowEvidence={handleShowEvidence}
-                  onShowReform={handleShowReform}
+                  onShowReform={(reform) => handleShowReform(reform, true)}
                   visibleCount={pathwayState.nodeCount}
                   animatingNodeIndex={pathwayAnimatingIndex}
                   showNavigation={isActiveRow}
