@@ -546,7 +546,7 @@ function App() {
       {reformNode && (
         <ReformModal
           reformNode={reformNode}
-          onClose={handleCloseReform}
+          onClose={handleContinue}
         />
       )}
     </div>
