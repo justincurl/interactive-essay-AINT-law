@@ -80,8 +80,10 @@ function App() {
     setReformNode(reform);
     setReformPathwayIndex(pathwayIdx);
 
-    // If shouldAdvance is true, also advance navigation to the reform step
-    if (shouldAdvance && globalVisibleCount < TOTAL_ELEMENTS) {
+    // Only advance if we haven't already reached/passed this pathway's reform step
+    // Reform step for pathway N is at globalVisibleCount = (N + 1) * ELEMENTS_PER_PATHWAY
+    const reformStepForPathway = (pathwayIdx + 1) * ELEMENTS_PER_PATHWAY;
+    if (shouldAdvance && globalVisibleCount < reformStepForPathway) {
       const newGlobalIndex = globalVisibleCount;
       const pathwayIndex = Math.floor(newGlobalIndex / ELEMENTS_PER_PATHWAY);
       const elementInPathway = newGlobalIndex % ELEMENTS_PER_PATHWAY;
