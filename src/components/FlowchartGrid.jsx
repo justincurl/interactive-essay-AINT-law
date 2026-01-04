@@ -165,7 +165,7 @@ export default function FlowchartGrid({
           })}
 
           {showReformBranch && reform && (
-            <div className="flex items-center" style={{ marginTop: '22px' }}>
+            <div className="flex items-center" style={{ marginTop: '18px' }}>
               <ReformBranchIndicator
                 ref={reformBranchRef}
                 reform={reform}

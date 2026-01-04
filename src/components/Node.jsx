@@ -125,17 +125,17 @@ export default function Node({
         {/* Header */}
         <div className="flex justify-between items-start gap-1">
           <div className="flex-1 min-w-0">
-            <h3 className={`font-heading font-semibold text-text-primary leading-tight ${
+            <h3 className={`font-heading font-semibold text-text-primary leading-tight text-center ${
               isExpanded ? 'text-base' : compact ? 'text-[13px]' : 'text-lg'
             }`}>
               {node.title}
             </h3>
             <p className={`font-body leading-snug transition-opacity duration-200 mt-1 ${
               isExpanded
-                ? 'text-sm text-text-secondary/70'
+                ? 'text-sm text-text-secondary/70 text-left'
                 : compact
-                  ? 'text-[11px] text-text-secondary line-clamp-2'
-                  : 'text-sm text-text-secondary'
+                  ? 'text-[11px] text-text-secondary line-clamp-2 text-right'
+                  : 'text-sm text-text-secondary text-right'
             }`}>
               {node.subtitle}
             </p>
