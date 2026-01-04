@@ -167,8 +167,8 @@ function App() {
           const targetY = targetRect.top + targetRect.height / 2 - containerRect.top;
 
           // Arrow path configuration
-          const initialDrop = 22;          // Short vertical segment before bending left
-          const horizontalOvershoot = 24;  // How far past target left edge the arrow extends
+          const initialDrop = 24;          // Short vertical segment before bending left
+          const horizontalOvershoot = 22;  // How far past target left edge the arrow extends
           
           // Calculate turn point (short drop from bottleneck)
           const turnY = sourceY + initialDrop;
