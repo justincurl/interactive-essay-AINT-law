@@ -161,11 +161,11 @@ function App() {
   }, [globalVisibleCount, reformNode, isReformPanelOpen]);
 
   const handleBack = useCallback(() => {
-    // If reform panel is open, close it and go back to Bottleneck node (skip Impact)
+    // If reform panel is open, close it and go back one step (to Impact node)
     if (isReformPanelOpen) {
       handleCloseReform();
-      // Go back 2 steps to skip the Impact node and land on Bottleneck
-      setGlobalVisibleCount(prev => Math.max(1, prev - 2));
+      // Go back 1 step to land on Impact node (reform panel counts as its own state)
+      setGlobalVisibleCount(prev => Math.max(1, prev - 1));
       return;
     }
 
@@ -281,8 +281,25 @@ function App() {
     // Calculate immediately
     updateArrowPaths();
 
-    // Single recalculation after animations complete
-    const postAnimationTimeout = setTimeout(updateArrowPaths, 400);
+    // If an animation is in progress, continuously update arrow positions
+    let animationFrameId = null;
+    if (animatingNodeIndex !== null) {
+      const animationStartTime = performance.now();
+      const animationDuration = 400; // matches CSS animation duration
+
+      const updateDuringAnimation = () => {
+        const elapsed = performance.now() - animationStartTime;
+        if (elapsed < animationDuration) {
+          updateArrowPaths();
+          animationFrameId = requestAnimationFrame(updateDuringAnimation);
+        } else {
+          // Final update after animation completes
+          updateArrowPaths();
+        }
+      };
+
+      animationFrameId = requestAnimationFrame(updateDuringAnimation);
+    }
 
     const resizeObserver = new ResizeObserver(updateArrowPaths);
     if (pathwaysContainerRef.current) {
@@ -292,11 +309,13 @@ function App() {
     window.addEventListener('resize', updateArrowPaths);
 
     return () => {
-      clearTimeout(postAnimationTimeout);
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
       resizeObserver.disconnect();
       window.removeEventListener('resize', updateArrowPaths);
     };
-  }, [globalVisibleCount]);
+  }, [globalVisibleCount, animatingNodeIndex]);
 
   return (
     <div className="min-h-screen bg-cream">
@@ -505,8 +524,12 @@ function App() {
             <div className="flex items-center gap-1.5">
               <div className="w-3.5 h-3.5 rounded-full bg-[#059669] flex items-center justify-center">
                 <svg className="w-2 h-2 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 12h8" />
-                  <path d="M12 12c0 4 2 6 6 6" />
+                  {/* Input line */}
+                  <path d="M2 12h8" />
+                  {/* Upper branch */}
+                  <path d="M10 12l8-6" />
+                  {/* Lower branch */}
+                  <path d="M10 12l8 6" />
                 </svg>
               </div>
               <span className="text-text-secondary">Reform Pathway</span>
