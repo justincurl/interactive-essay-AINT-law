@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
 import NodeExpandedContent from './NodeExpandedContent';
+import { TextPrompt } from './ReformTrigger';
 
 const nodeStyles = {
   starting: {
@@ -38,6 +39,12 @@ export default function Node({
   onShowEvidence,
   compact = false,
   pathwayIndex = 0,
+  // Reform trigger props (only used for impact nodes)
+  reform = null,
+  showReformTrigger = false,
+  isReformOpen = false,
+  isReformActivated = false,
+  onShowReform = null,
 }) {
   const nodeRef = useRef(null);
   const styles = nodeStyles[node.type] || nodeStyles.starting;
@@ -75,6 +82,10 @@ export default function Node({
     onClose?.();
   };
 
+  // Determine if this is an impact node that should show reform trigger
+  const isImpactNode = node.type === 'impact';
+  const shouldShowReformTrigger = isImpactNode && showReformTrigger && reform;
+
   return (
     <div className="flex flex-col items-center">
       {/* Category label - always visible above node */}
@@ -102,6 +113,7 @@ export default function Node({
           ${isExpanded ? 'shadow-lg ring-2 ring-accent/30' : ''}
           ${isDimmed ? 'opacity-40 pointer-events-none' : ''}
           rounded-md
+          ${shouldShowReformTrigger ? 'rounded-b-none' : ''}
           ${isExpanded ? 'text-left' : 'text-center'}
           transition-all
           duration-300
@@ -171,6 +183,16 @@ export default function Node({
           )}
         </div>
       </div>
+
+      {/* Reform trigger - Element B: Text Prompt (below node) */}
+      {shouldShowReformTrigger && (
+        <TextPrompt
+          onClick={() => onShowReform?.(reform)}
+          isOpen={isReformOpen}
+          isActivated={isReformActivated}
+          disabled={isDimmed}
+        />
+      )}
     </div>
   );
 }

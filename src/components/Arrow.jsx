@@ -7,15 +7,24 @@ export default function Arrow({
   visible = true,
   compact = false,
   showUnlock = false,
-  onUnlockClick = null
+  onUnlockClick = null,
+  // Branch node props (for reform trigger on arrow)
+  showBranchNode = false,
+  isBranchActivated = false,
+  isBranchOpen = false,
+  onBranchClick = null
 }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isBranchHovered, setIsBranchHovered] = useState(false);
   const isVertical = direction === 'down';
   const isReform = variant === 'reform';
 
   // Arrow colors based on variant
   const strokeColor = isReform ? '#C54B32' : '#737373';
   const dashArray = isReform ? '4 3' : 'none';
+
+  // Branch node color - gray by default, green when activated or open
+  const isBranchHighlighted = isBranchActivated || isBranchOpen || isBranchHovered;
 
   if (isVertical) {
     return (
@@ -101,6 +110,52 @@ export default function Arrow({
           strokeLinejoin="round"
         />
       </svg>
+
+      {/* Branch node - positioned on top of the arrow */}
+      {showBranchNode && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onBranchClick?.();
+          }}
+          onMouseEnter={() => setIsBranchHovered(true)}
+          onMouseLeave={() => setIsBranchHovered(false)}
+          className={`
+            absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+            w-5 h-5 rounded-full
+            flex items-center justify-center
+            transition-all duration-200 ease-out
+            border-2
+            ${isBranchHighlighted
+              ? 'bg-[#059669] border-[#059669] scale-110'
+              : 'bg-white border-[#737373] hover:scale-110 hover:border-[#059669]'
+            }
+            cursor-pointer z-20
+          `}
+          aria-label="Explore reforms"
+          title="Explore reforms"
+        >
+          {/* Fork/branch icon - straight line with branch curving down */}
+          <svg
+            className={`w-3 h-3 transition-colors ${isBranchHighlighted ? 'text-white' : 'text-[#737373]'}`}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            {/* Main line going right (straight path) */}
+            <path d="M4 12h8" />
+            {/* Arrow head pointing right */}
+            <path d="M9 9l3 3-3 3" />
+            {/* Branch curving down */}
+            <path d="M12 12c0 4 2 6 6 6" />
+            {/* Arrow head on branch pointing down-right */}
+            <path d="M16 16l2 2-2 2" />
+          </svg>
+        </button>
+      )}
 
       {/* Unlock icon overlay - positioned on the arrow */}
       {showUnlock && (
