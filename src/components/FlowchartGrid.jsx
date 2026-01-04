@@ -105,7 +105,7 @@ export default function FlowchartGrid({
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full">
+    <div className="flex flex-col items-center gap-4 w-full" data-pathway-index={pathwayIndex}>
       <div className="relative w-full flex items-center justify-center">
         {showNavigation && canBack && (
           <button
@@ -165,7 +165,7 @@ export default function FlowchartGrid({
           })}
 
           {showReformBranch && reform && (
-            <div className="flex items-center" style={{ marginTop: '22px' }}>
+            <div className="flex items-center self-center">
               <ReformBranchIndicator
                 ref={reformBranchRef}
                 reform={reform}

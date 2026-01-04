@@ -17,7 +17,6 @@ function App() {
   const [evidenceNode, setEvidenceNode] = useState(null);
   const [reformNode, setReformNode] = useState(null);
   const [animatingNodeIndex, setAnimatingNodeIndex] = useState(null);
-  const [clickedReforms, setClickedReforms] = useState(new Set());
   const [arrowPaths, setArrowPaths] = useState([]);
   const pathwaysContainerRef = useRef(null);
 
@@ -68,9 +67,8 @@ function App() {
     setEvidenceNode(null);
   };
 
-  const handleShowReform = (reform, pathwayIndex) => {
+  const handleShowReform = (reform) => {
     setReformNode(reform);
-    setClickedReforms(prev => new Set([...prev, pathwayIndex]));
   };
 
   const handleCloseReform = () => {
@@ -136,41 +134,43 @@ function App() {
       const containerRect = pathwaysContainerRef.current.getBoundingClientRect();
       const newPaths = [];
 
-      clickedReforms.forEach((pathwayIndex) => {
-        const bottleneckNode = pathwaysContainerRef.current.querySelector(
-          `[data-pathway-index="${pathwayIndex}"][data-node-type="bottleneck"]`
+      // Show arrows for all pathways that have the reform branch visible
+      pathways.forEach((_, pathwayIndex) => {
+        const pathwayState = getPathwayState(pathwayIndex);
+        if (!pathwayState.showReformBranch) return;
+
+        // Find the "What could change this?" button for this pathway
+        const reformButton = pathwaysContainerRef.current.querySelector(
+          `[data-pathway-index="${pathwayIndex}"] [aria-label*="Reform pathway"]`
         );
         
-        let targetNode;
-        const isLastPathway = pathwayIndex === pathways.length - 1;
-        
-        if (isLastPathway) {
-          targetNode = pathwaysContainerRef.current.querySelector('[data-final-destination="true"]');
-        } else {
-          targetNode = pathwaysContainerRef.current.querySelector(
-            `[data-pathway-index="${pathwayIndex + 1}"][data-node-type="starting"]`
-          );
-        }
+        // Find the starting node of the same row
+        const startingNode = pathwaysContainerRef.current.querySelector(
+          `[data-pathway-index="${pathwayIndex}"][data-node-type="starting"]`
+        );
 
-        if (bottleneckNode && targetNode) {
-          const sourceRect = bottleneckNode.getBoundingClientRect();
-          const targetRect = targetNode.getBoundingClientRect();
+        if (reformButton && startingNode) {
+          const sourceRect = reformButton.getBoundingClientRect();
+          const targetRect = startingNode.getBoundingClientRect();
 
-          const sourceX = sourceRect.left + sourceRect.width / 2 - containerRect.left;
-          const sourceY = sourceRect.bottom - containerRect.top;
+          // Start from the left side of the reform button
+          const sourceX = sourceRect.left - containerRect.left;
+          const sourceY = sourceRect.top + sourceRect.height / 2 - containerRect.top;
           
-          const targetX = targetRect.left + targetRect.width / 2 - containerRect.left;
-          const targetY = targetRect.top - containerRect.top;
+          // End at the left edge of the starting node, vertically centered
+          const targetX = targetRect.left - containerRect.left;
+          const targetY = targetRect.top + targetRect.height / 2 - containerRect.top;
 
-          const midY = sourceY + (targetY - sourceY) / 2;
+          // Create elbow path: go left from source, then up/down to target Y, then right to target
+          const elbowX = Math.min(sourceX, targetX) - 30; // Go 30px to the left of the leftmost point
 
-          const path = `M ${sourceX} ${sourceY} L ${sourceX} ${midY} L ${targetX} ${midY} L ${targetX} ${targetY}`;
+          const path = `M ${sourceX} ${sourceY} L ${elbowX} ${sourceY} L ${elbowX} ${targetY} L ${targetX} ${targetY}`;
           
           newPaths.push({
             pathwayIndex,
             path,
-            labelX: (sourceX + targetX) / 2,
-            labelY: midY - 8,
+            labelX: elbowX - 10,
+            labelY: (sourceY + targetY) / 2,
           });
         }
       });
@@ -191,7 +191,7 @@ function App() {
       resizeObserver.disconnect();
       window.removeEventListener('resize', updateArrowPaths);
     };
-  }, [clickedReforms, globalVisibleCount]);
+  }, [globalVisibleCount]);
 
   return (
     <div className="min-h-screen bg-cream">
@@ -256,6 +256,7 @@ function App() {
                       textAnchor="middle"
                       className="text-[10px] font-medium"
                       fill="#059669"
+                      transform={`rotate(-90, ${arrow.labelX}, ${arrow.labelY})`}
                     >
                       With Reform
                     </text>
