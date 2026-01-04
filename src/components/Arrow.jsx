@@ -122,7 +122,7 @@ export default function Arrow({
           onMouseLeave={() => setIsBranchHovered(false)}
           className={`
             absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-            w-4 h-4 rounded-full
+            w-5 h-5 rounded-full
             flex items-center justify-center
             transition-all duration-200 ease-out
             border-2
@@ -135,14 +135,24 @@ export default function Arrow({
           aria-label="Explore reforms"
           title="Explore reforms"
         >
+          {/* Fork/branch icon - straight line with branch curving down */}
           <svg
-            className={`w-2.5 h-2.5 transition-colors ${isBranchHighlighted ? 'text-white' : 'text-[#737373]'}`}
+            className={`w-3 h-3 transition-colors ${isBranchHighlighted ? 'text-white' : 'text-[#737373]'}`}
+            viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            viewBox="0 0 24 24"
-            strokeWidth={3}
+            strokeWidth={2.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m6-6H6" />
+            {/* Main line going right (straight path) */}
+            <path d="M4 12h8" />
+            {/* Arrow head pointing right */}
+            <path d="M9 9l3 3-3 3" />
+            {/* Branch curving down */}
+            <path d="M12 12c0 4 2 6 6 6" />
+            {/* Arrow head on branch pointing down-right */}
+            <path d="M16 16l2 2-2 2" />
           </svg>
         </button>
       )}

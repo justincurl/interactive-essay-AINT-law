@@ -503,8 +503,11 @@ function App() {
               <span className="text-text-secondary">Impact by Default</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-[#059669] flex items-center justify-center">
-                <span className="text-white text-[8px] font-bold">+</span>
+              <div className="w-3.5 h-3.5 rounded-full bg-[#059669] flex items-center justify-center">
+                <svg className="w-2 h-2 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 12h8" />
+                  <path d="M12 12c0 4 2 6 6 6" />
+                </svg>
               </div>
               <span className="text-text-secondary">Reform Pathway</span>
             </div>

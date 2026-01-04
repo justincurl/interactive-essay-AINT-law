@@ -88,27 +88,23 @@ function TextPrompt({
     }
   };
 
-  // Determine styling based on state
-  const isHighlighted = isActivated || isHovered;
+  // Turn green when open OR activated (matches branch node behavior)
+  const isGreen = isOpen || isActivated;
 
   return (
     <button
       onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      disabled={disabled}
+      disabled={disabled || isOpen}
       className={`
         -mt-0.5 px-2.5 py-1
         text-[10px] font-medium
         transition-all duration-200
         rounded-b-md
         border border-t-0
-        ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-        ${isOpen
-          ? 'opacity-0 pointer-events-none -translate-y-1'
-          : 'opacity-100 translate-y-0'
-        }
-        ${isActivated
+        ${disabled ? 'opacity-50 cursor-not-allowed' : isOpen ? 'cursor-default' : 'cursor-pointer'}
+        ${isGreen
           ? 'border-[#059669] bg-[#ecfdf5] text-[#059669]'
           : isHovered
             ? 'border-[#10b981] bg-[#f0fdf4] text-[#059669]'
