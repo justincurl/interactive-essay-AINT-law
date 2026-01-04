@@ -159,19 +159,18 @@ function App() {
           const sourceX = sourceRect.left + sourceRect.width / 2 - containerRect.left;
           const sourceY = sourceRect.bottom - containerRect.top;
           
-          const targetX = targetRect.left - containerRect.left;
-          const targetY = targetRect.top + targetRect.height / 2 - containerRect.top;
+          const targetX = targetRect.left + targetRect.width / 2 - containerRect.left;
+          const targetY = targetRect.top - containerRect.top;
 
-          const elbowY = sourceY + (targetY - sourceY) / 2;
-          const elbowX = Math.max(sourceX, targetX - 40);
+          const midY = sourceY + (targetY - sourceY) / 2;
 
-          const path = `M ${sourceX} ${sourceY} L ${sourceX} ${elbowY} L ${elbowX} ${elbowY} L ${elbowX} ${targetY} L ${targetX} ${targetY}`;
+          const path = `M ${sourceX} ${sourceY} L ${sourceX} ${midY} L ${targetX} ${midY} L ${targetX} ${targetY}`;
           
           newPaths.push({
             pathwayIndex,
             path,
-            labelX: elbowX - 30,
-            labelY: targetY - 8,
+            labelX: (sourceX + targetX) / 2,
+            labelY: midY - 8,
           });
         }
       });
