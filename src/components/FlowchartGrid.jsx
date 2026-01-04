@@ -24,6 +24,7 @@ export default function FlowchartGrid({
   pathwayIndex = 0,
   showReformBranch = false,
   isReformFocused = false,
+  isReformActivated = false,
 }) {
   const reformBranchRef = useRef(null);
   const [internalVisibleCount, setInternalVisibleCount] = useState(1);
@@ -171,6 +172,7 @@ export default function FlowchartGrid({
                 reform={reform}
                 onClick={handleReformClick}
                 isFocused={isReformFocused}
+                isActivated={isReformActivated}
               />
             </div>
           )}

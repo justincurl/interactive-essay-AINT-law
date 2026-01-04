@@ -166,17 +166,23 @@ function App() {
           const targetX = targetRect.left - containerRect.left;
           const targetY = targetRect.top + targetRect.height / 2 - containerRect.top;
 
-          // Calculate midpoint for the elbow
-          const midY = sourceY + (targetY - sourceY) / 2;
+          // Arrow path configuration
+          const initialDrop = 12;          // Short vertical segment before bending left
+          const horizontalOvershoot = 56;  // How far past target left edge the arrow extends
+          
+          // Calculate turn point (short drop from bottleneck)
+          const turnY = sourceY + initialDrop;
+          // Calculate elbow X (extends past target's left edge for breathing room)
+          const elbowX = targetX - horizontalOvershoot;
 
-          // Path: down from bottleneck, horizontal to left of target, then right into target's left edge
-          const path = `M ${sourceX} ${sourceY} L ${sourceX} ${midY} L ${targetX - 8} ${midY} L ${targetX - 8} ${targetY} L ${targetX} ${targetY}`;
+          // Path: down (short), left (extends past target), down, right into target
+          const path = `M ${sourceX} ${sourceY} L ${sourceX} ${turnY} L ${elbowX} ${turnY} L ${elbowX} ${targetY} L ${targetX} ${targetY}`;
           
           newPaths.push({
             pathwayIndex,
             path,
-            labelX: sourceX + (targetX - 8 - sourceX) / 2,
-            labelY: midY - 8,
+            labelX: (sourceX + elbowX) / 2,
+            labelY: turnY - 8,
           });
         }
       });
@@ -275,6 +281,9 @@ function App() {
               const isVisible = isPathwayVisible(pathwayIndex);
               const isActiveRow = pathwayIndex === activePathwayIndex;
               
+              // Reform is "activated" (turns green) when user has progressed past this pathway
+              const isReformActivated = globalVisibleCount > (pathwayIndex + 1) * ELEMENTS_PER_PATHWAY;
+              
               const pathwayAnimatingIndex = animatingNodeIndex?.pathwayIndex === pathwayIndex
                 ? animatingNodeIndex.nodeIndex 
                 : null;
@@ -303,6 +312,7 @@ function App() {
                   showProgressIndicator={false}
                   pathwayIndex={pathwayIndex}
                   showReformBranch={pathwayState.showReformBranch}
+                  isReformActivated={isReformActivated}
                 />
               );
             })}

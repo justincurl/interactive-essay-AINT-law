@@ -4,6 +4,7 @@ const ReformBranchIndicator = forwardRef(function ReformBranchIndicator({
   reform,
   onClick,
   isFocused = false,
+  isActivated = false,
 }, ref) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -18,6 +19,9 @@ const ReformBranchIndicator = forwardRef(function ReformBranchIndicator({
       onClick?.(reform);
     }
   };
+
+  // Determine styling based on activation state
+  const isGreen = isActivated || isFocused || isHovered;
 
   return (
     <div 
@@ -35,10 +39,11 @@ const ReformBranchIndicator = forwardRef(function ReformBranchIndicator({
           rounded-lg border-2 border-dashed
           transition-all duration-200
           cursor-pointer
-          ${isFocused || isHovered
-            ? 'border-[#059669] bg-[#ecfdf5] shadow-md scale-105'
+          ${isGreen
+            ? 'border-[#059669] bg-[#ecfdf5] shadow-md'
             : 'border-[#9ca3af] bg-white/80 hover:border-[#059669] hover:bg-[#f0fdf4]'
           }
+          ${(isFocused || isHovered) && !isActivated ? 'scale-105' : ''}
           ${isFocused ? 'ring-2 ring-[#059669] ring-offset-2' : ''}
         `}
         role="button"
@@ -49,7 +54,7 @@ const ReformBranchIndicator = forwardRef(function ReformBranchIndicator({
         <span className={`
           text-[10px] font-medium whitespace-nowrap
           transition-colors
-          ${isFocused || isHovered ? 'text-[#059669]' : 'text-[#6b7280]'}
+          ${isGreen ? 'text-[#059669]' : 'text-[#6b7280]'}
         `}>
           What could change this?
         </span>

@@ -130,12 +130,12 @@ export default function Node({
             }`}>
               {node.title}
             </h3>
-            <p className={`font-body leading-snug transition-opacity duration-200 mt-1 text-left ${
+            <p className={`font-body leading-snug transition-opacity duration-200 mt-1 ${
               isExpanded
-                ? 'text-sm text-text-secondary/70'
+                ? 'text-sm text-text-secondary/70 text-left'
                 : compact
-                  ? 'text-[11px] text-text-secondary line-clamp-2'
-                  : 'text-sm text-text-secondary'
+                  ? 'text-[11px] text-text-secondary line-clamp-2 text-center'
+                  : 'text-sm text-text-secondary text-center'
             }`}>
               {node.subtitle}
             </p>
