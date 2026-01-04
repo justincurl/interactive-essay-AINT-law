@@ -24,27 +24,30 @@ function App() {
     const startElement = pathwayIndex * ELEMENTS_PER_PATHWAY;
     
     if (globalVisibleCount <= startElement) {
-      return { nodeCount: 0, showReformBranch: false, showReformArrow: false };
+      return { nodeCount: 0, showReformBranch: false, showReformArrow: false, showReformArrowText: false };
     }
     
     const progressInPathway = globalVisibleCount - startElement;
     
     // showReformBranch: "What could change this?" button appears with the impact node (nodeCount=3)
-    // showReformArrow: "With Reform" arrow appears after the entire NEXT row is revealed (all 3 nodes)
-    // For the last pathway, the arrow appears when the final destination is shown
+    // showReformArrow: Green arrow appears as soon as we advance to next row (reform becomes green)
+    // showReformArrowText: "With Reform" text appears after the entire NEXT row is revealed (all 3 nodes)
     const isLastPathway = pathwayIndex === pathways.length - 1;
     const nextRowFullyRevealed = isLastPathway
       ? globalVisibleCount >= TOTAL_ELEMENTS  // Final destination is shown
       : globalVisibleCount >= (pathwayIndex + 1) * ELEMENTS_PER_PATHWAY + NODES_PER_PATHWAY;  // Next row has all 3 nodes
     
+    // Arrow is visible as soon as we advance past the reform step (next row starts)
+    const arrowVisible = progressInPathway > NODES_PER_PATHWAY;
+    
     if (progressInPathway < NODES_PER_PATHWAY) {
-      return { nodeCount: progressInPathway, showReformBranch: false, showReformArrow: false };
+      return { nodeCount: progressInPathway, showReformBranch: false, showReformArrow: false, showReformArrowText: false };
     } else if (progressInPathway === NODES_PER_PATHWAY) {
       // Impact node just appeared - show the reform branch button but not the arrow yet
-      return { nodeCount: NODES_PER_PATHWAY, showReformBranch: true, showReformArrow: false };
+      return { nodeCount: NODES_PER_PATHWAY, showReformBranch: true, showReformArrow: false, showReformArrowText: false };
     } else {
-      // User has advanced past this pathway - show reform branch, arrow only when next row is fully revealed
-      return { nodeCount: NODES_PER_PATHWAY, showReformBranch: true, showReformArrow: nextRowFullyRevealed };
+      // User has advanced past this pathway - show reform branch (green), arrow visible, text only when next row fully revealed
+      return { nodeCount: NODES_PER_PATHWAY, showReformBranch: true, showReformArrow: arrowVisible, showReformArrowText: nextRowFullyRevealed };
     }
   }, [globalVisibleCount]);
 
@@ -88,16 +91,23 @@ function App() {
   };
 
   const handleContinue = useCallback(() => {
+    // If reform modal is open, close it and advance
+    if (reformNode) {
+      setReformNode(null);
+      // Continue with advancing
+    }
+    
     if (globalVisibleCount < TOTAL_ELEMENTS) {
-      // Check if we're at the reform branch step - if so, open the reform modal
+      // Check if we're at the reform branch step - if so, open the reform modal (don't advance yet)
       const pathwayIndex = Math.floor((globalVisibleCount - 1) / ELEMENTS_PER_PATHWAY);
       if (pathwayIndex < pathways.length) {
         const pathwayState = getPathwayState(pathwayIndex);
-        if (pathwayState.showReformBranch && !pathwayState.showReformArrow) {
-          // Open reform modal and advance
+        if (pathwayState.showReformBranch && !pathwayState.showReformArrow && !reformNode) {
+          // Open reform modal but don't advance - treat it as its own navigation stage
           const reform = pathways[pathwayIndex].reform;
           if (reform) {
             setReformNode(reform);
+            return; // Don't advance yet, modal is now open
           }
         }
       }
@@ -115,16 +125,22 @@ function App() {
         setAnimatingNodeIndex(null);
       }, 400);
     }
-  }, [globalVisibleCount, getPathwayState]);
+  }, [globalVisibleCount, getPathwayState, reformNode]);
 
   const handleBack = useCallback(() => {
+    // If reform modal is open, close it without going back
+    if (reformNode) {
+      setReformNode(null);
+      return; // Don't go back, just close the modal
+    }
+    
     if (globalVisibleCount > 1) {
       if (expandedNodeId) {
         setExpandedNodeId(null);
       }
       setGlobalVisibleCount(prev => prev - 1);
     }
-  }, [globalVisibleCount, expandedNodeId]);
+  }, [globalVisibleCount, expandedNodeId, reformNode]);
 
   const handleStartOver = useCallback(() => {
     if (expandedNodeId) {
@@ -208,6 +224,7 @@ function App() {
             path,
             labelX: (sourceX + elbowX) / 2,
             labelY: turnY - 8,
+            showText: pathwayState.showReformArrowText,
           });
         }
       });
@@ -298,15 +315,17 @@ function App() {
                       strokeDasharray="6 4"
                       markerEnd="url(#reformElbowArrowHead)"
                     />
-                    <text
-                      x={arrow.labelX}
-                      y={arrow.labelY}
-                      textAnchor="middle"
-                      className="text-[10px] font-medium"
-                      fill="#059669"
-                    >
-                      With Reform
-                    </text>
+                    {arrow.showText && (
+                      <text
+                        x={arrow.labelX}
+                        y={arrow.labelY}
+                        textAnchor="middle"
+                        className="text-[10px] font-medium"
+                        fill="#059669"
+                      >
+                        With Reform
+                      </text>
+                    )}
                   </g>
                 ))}
               </svg>
