@@ -76,9 +76,16 @@ function App() {
     setEvidenceNode(null);
   };
 
+  // Track which pathway's reform panel is open (for navigation purposes)
+  const [reformPathwayIndex, setReformPathwayIndex] = useState(null);
+
   const handleShowReform = (reform, shouldAdvance = false) => {
+    // Find which pathway this reform belongs to
+    const pathwayIdx = pathways.findIndex(p => p.reform?.id === reform?.id);
     setReformNode(reform);
-    // If shouldAdvance is true, also advance navigation
+    setReformPathwayIndex(pathwayIdx);
+
+    // If shouldAdvance is true, also advance navigation to the reform step
     if (shouldAdvance && globalVisibleCount < TOTAL_ELEMENTS) {
       const newGlobalIndex = globalVisibleCount;
       const pathwayIndex = Math.floor(newGlobalIndex / ELEMENTS_PER_PATHWAY);
@@ -97,15 +104,39 @@ function App() {
 
   const handleCloseReform = () => {
     setReformNode(null);
+    setReformPathwayIndex(null);
   };
 
+  // Check if we're currently viewing a reform panel
+  const isReformPanelOpen = reformNode !== null;
+
   const handleContinue = useCallback(() => {
+    // If reform panel is open, close it and advance to next row's starting node
+    if (isReformPanelOpen) {
+      handleCloseReform();
+      // Count was advanced when reform opened, now advance to next pathway
+      if (globalVisibleCount < TOTAL_ELEMENTS) {
+        const newGlobalIndex = globalVisibleCount;
+        const pathwayIndex = Math.floor(newGlobalIndex / ELEMENTS_PER_PATHWAY);
+        const elementInPathway = newGlobalIndex % ELEMENTS_PER_PATHWAY;
+
+        if (elementInPathway < NODES_PER_PATHWAY) {
+          setAnimatingNodeIndex({ pathwayIndex, nodeIndex: elementInPathway });
+        }
+        setGlobalVisibleCount(prev => prev + 1);
+        setTimeout(() => {
+          setAnimatingNodeIndex(null);
+        }, 400);
+      }
+      return;
+    }
+
     if (globalVisibleCount < TOTAL_ELEMENTS) {
       const currentPathwayIndex = Math.floor((globalVisibleCount - 1) / ELEMENTS_PER_PATHWAY);
       const currentPathwayState = getPathwayState(currentPathwayIndex);
 
       // If reform branch is visible for current pathway and popup hasn't been shown yet,
-      // open the popup and advance
+      // open the popup and advance count (reform is its own step)
       if (currentPathwayState.showReformBranch && currentPathwayIndex < pathways.length) {
         const reform = pathways[currentPathwayIndex]?.reform;
         if (reform && !reformNode) {
@@ -127,16 +158,24 @@ function App() {
         setAnimatingNodeIndex(null);
       }, 400);
     }
-  }, [globalVisibleCount, reformNode]);
+  }, [globalVisibleCount, reformNode, isReformPanelOpen]);
 
   const handleBack = useCallback(() => {
+    // If reform panel is open, close it and go back to Impact node (decrement count)
+    if (isReformPanelOpen) {
+      handleCloseReform();
+      // Go back to the Impact node (reform trigger visible but collapsed)
+      setGlobalVisibleCount(prev => prev - 1);
+      return;
+    }
+
     if (globalVisibleCount > 1) {
       if (expandedNodeId) {
         setExpandedNodeId(null);
       }
       setGlobalVisibleCount(prev => prev - 1);
     }
-  }, [globalVisibleCount, expandedNodeId]);
+  }, [globalVisibleCount, expandedNodeId, isReformPanelOpen]);
 
   const handleStartOver = useCallback(() => {
     if (expandedNodeId) {
@@ -151,18 +190,25 @@ function App() {
         return;
       }
 
-      if (e.key === 'ArrowRight' && globalVisibleCount < TOTAL_ELEMENTS) {
-        e.preventDefault();
-        handleContinue();
-      } else if (e.key === 'ArrowLeft' && globalVisibleCount > 1) {
-        e.preventDefault();
-        handleBack();
+      // Allow navigation when reform panel is open (arrow keys control panel)
+      if (e.key === 'ArrowRight') {
+        // Allow right arrow when reform panel is open OR when not at end
+        if (isReformPanelOpen || globalVisibleCount < TOTAL_ELEMENTS) {
+          e.preventDefault();
+          handleContinue();
+        }
+      } else if (e.key === 'ArrowLeft') {
+        // Allow left arrow when reform panel is open OR when not at start
+        if (isReformPanelOpen || globalVisibleCount > 1) {
+          e.preventDefault();
+          handleBack();
+        }
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handleContinue, handleBack, globalVisibleCount]);
+  }, [handleContinue, handleBack, globalVisibleCount, isReformPanelOpen]);
 
   useLayoutEffect(() => {
     const updateArrowPaths = () => {
@@ -349,6 +395,9 @@ function App() {
 
               if (!isVisible) return null;
 
+              // Check if reform panel is open for THIS pathway
+              const isReformOpenForPathway = isReformPanelOpen && reformPathwayIndex === pathwayIndex;
+
               return (
                 <FlowchartGrid
                   key={pathway.id}
@@ -365,12 +414,13 @@ function App() {
                   onContinue={isActiveRow ? handleContinue : undefined}
                   onBack={isActiveRow ? handleBack : undefined}
                   onStartOver={isActiveRow ? handleStartOver : undefined}
-                  canBack={isActiveRow ? globalVisibleCount > 1 : undefined}
-                  canContinue={isActiveRow ? globalVisibleCount < TOTAL_ELEMENTS : undefined}
+                  canBack={isActiveRow ? globalVisibleCount > 1 || isReformPanelOpen : undefined}
+                  canContinue={isActiveRow ? globalVisibleCount < TOTAL_ELEMENTS || isReformPanelOpen : undefined}
                   showRestart={isActiveRow && isComplete}
                   showProgressIndicator={false}
                   pathwayIndex={pathwayIndex}
                   showReformBranch={pathwayState.showReformBranch}
+                  isReformOpen={isReformOpenForPathway}
                   isReformActivated={isReformActivated}
                 />
               );
@@ -463,8 +513,10 @@ function App() {
               <span className="text-text-secondary">Impact by Default</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded border-2 border-dashed border-[#9ca3af] bg-white" />
-              <span className="text-text-secondary">Reform Branch</span>
+              <div className="w-3 h-3 rounded-full bg-[#059669] flex items-center justify-center">
+                <span className="text-white text-[8px] font-bold">+</span>
+              </div>
+              <span className="text-text-secondary">Reform Pathway</span>
             </div>
           </div>
         </div>

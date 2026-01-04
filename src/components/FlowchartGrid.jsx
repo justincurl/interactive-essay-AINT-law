@@ -1,7 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Node from './Node';
 import Arrow from './Arrow';
-import ReformBranchIndicator from './ReformBranchIndicator';
 
 export default function FlowchartGrid({
   nodes,
@@ -23,10 +22,9 @@ export default function FlowchartGrid({
   showProgressIndicator = true,
   pathwayIndex = 0,
   showReformBranch = false,
-  isReformFocused = false,
+  isReformOpen = false,
   isReformActivated = false,
 }) {
-  const reformBranchRef = useRef(null);
   const [internalVisibleCount, setInternalVisibleCount] = useState(1);
   const [internalAnimatingNodeIndex, setInternalAnimatingNodeIndex] = useState(null);
 
@@ -99,11 +97,14 @@ export default function FlowchartGrid({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isControlled, handleContinue, handleBack, visibleCount, totalNodes]);
 
-  const handleReformClick = () => {
-    if (reform) {
-      onShowReform?.(reform, pathwayIndex);
+  const handleReformClick = (reformData) => {
+    if (reformData) {
+      onShowReform?.(reformData, pathwayIndex);
     }
   };
+
+  // Determine if the last node (impact node) should show reform trigger
+  const lastNodeIndex = nodes.length - 1;
 
   return (
     <div className="flex flex-col items-center gap-4 w-full">
@@ -160,22 +161,17 @@ export default function FlowchartGrid({
                   onShowEvidence={onShowEvidence}
                   compact={true}
                   pathwayIndex={pathwayIndex}
+                  // Reform trigger props - only applied to impact (last) node
+                  reform={index === lastNodeIndex ? reform : null}
+                  showReformTrigger={index === lastNodeIndex && showReformBranch}
+                  isReformOpen={isReformOpen}
+                  isReformActivated={isReformActivated}
+                  onShowReform={handleReformClick}
                 />
               </div>
             );
           })}
 
-          {showReformBranch && reform && (
-            <div className="flex items-center" style={{ marginTop: '50px' }}>
-              <ReformBranchIndicator
-                ref={reformBranchRef}
-                reform={reform}
-                onClick={handleReformClick}
-                isFocused={isReformFocused}
-                isActivated={isReformActivated}
-              />
-            </div>
-          )}
         </div>
 
 
