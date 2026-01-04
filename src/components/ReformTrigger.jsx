@@ -51,15 +51,15 @@ function BranchingNode({
       aria-label="Explore reforms"
       title="Explore reforms"
     >
-      {/* Fork/branch icon - represents a path splitting */}
+      {/* Plus/Fork icon */}
       <svg
         className={`w-2.5 h-2.5 transition-colors ${isHighlighted ? 'text-white' : 'text-[#10b981]'}`}
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
-        strokeWidth={2.5}
+        strokeWidth={3}
       >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6 3v12M18 9a3 3 0 100-6 3 3 0 000 6zM6 21a3 3 0 100-6 3 3 0 000 6zM18 9a9 9 0 01-9 9" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m6-6H6" />
       </svg>
 
       {/* Tooltip - only show on hover when not open */}
