@@ -74,16 +74,18 @@ function App() {
   // Track which pathway's reform panel is open (for navigation purposes)
   const [reformPathwayIndex, setReformPathwayIndex] = useState(null);
 
-  const handleShowReform = (reform, shouldAdvance = false) => {
-    // Find which pathway this reform belongs to
-    const pathwayIdx = pathways.findIndex(p => p.reform?.id === reform?.id);
+  const handleShowReform = (reform, shouldAdvance = false, pathwayIdx = -1) => {
+    // Use passed pathwayIdx, or find which pathway this reform belongs to
+    const resolvedPathwayIdx = pathwayIdx >= 0
+      ? pathwayIdx
+      : pathways.findIndex(p => p.reform?.id === reform?.id);
     setReformNode(reform);
-    setReformPathwayIndex(pathwayIdx);
+    setReformPathwayIndex(resolvedPathwayIdx);
 
     // Only advance if we haven't already reached/passed this pathway's reform step
     // Reform step for pathway N is at globalVisibleCount = (N + 1) * ELEMENTS_PER_PATHWAY
-    const reformStepForPathway = (pathwayIdx + 1) * ELEMENTS_PER_PATHWAY;
-    if (shouldAdvance && globalVisibleCount < reformStepForPathway) {
+    const reformStepForPathway = (resolvedPathwayIdx + 1) * ELEMENTS_PER_PATHWAY;
+    if (shouldAdvance && resolvedPathwayIdx >= 0 && globalVisibleCount < reformStepForPathway) {
       const newGlobalIndex = globalVisibleCount;
       const pathwayIndex = Math.floor(newGlobalIndex / ELEMENTS_PER_PATHWAY);
       const elementInPathway = newGlobalIndex % ELEMENTS_PER_PATHWAY;
@@ -413,7 +415,7 @@ function App() {
                   onNodeToggle={handleNodeToggle}
                   onNodeClose={handleNodeClose}
                   onShowEvidence={handleShowEvidence}
-                  onShowReform={(reform) => handleShowReform(reform, true)}
+                  onShowReform={(reform) => handleShowReform(reform, true, pathwayIndex)}
                   visibleCount={pathwayState.nodeCount}
                   animatingNodeIndex={pathwayAnimatingIndex}
                   showNavigation={isActiveRow}
