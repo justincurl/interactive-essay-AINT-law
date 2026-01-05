@@ -4,7 +4,7 @@ export const pathway2 = {
     {
       id: 'p2-node1',
       type: 'starting',
-      category: 'STARTING ASSUMPTION',
+      category: 'STATE OF THE WORLD',
       title: 'AI adoption in legal contexts',
       subtitle: 'People are effectively using AI for legal work',
       explanation: [

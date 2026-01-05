@@ -4,7 +4,7 @@ export const pathway3 = {
     {
       id: 'p3-node1',
       type: 'starting',
-      category: 'STARTING ASSUMPTION',
+      category: 'STATE OF THE WORLD',
       title: 'AI gains outpace increases in the volume of legal work',
       subtitle: 'Cost per task decreases at faster rate than outputs increase',
       explanation: [

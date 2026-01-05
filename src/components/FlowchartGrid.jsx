@@ -148,6 +148,9 @@ export default function FlowchartGrid({
                     visible={!hasExpanded || isExpanded}
                     animate={isAnimating}
                     compact={true}
+                    showLabel={index === lastNodeIndex}
+                    label="By Default"
+                    extraSpacing={index === lastNodeIndex}
                   />
                 )}
 
@@ -217,7 +220,7 @@ export default function FlowchartGrid({
             <div
               className={`
                 w-1.5 h-1.5 rounded-full transition-all duration-300
-                ${showReformBranch ? 'bg-[#059669]/70' : 'bg-border/50'}
+                ${showReformBranch ? 'bg-accent/70' : 'bg-border/50'}
               `}
             />
           )}

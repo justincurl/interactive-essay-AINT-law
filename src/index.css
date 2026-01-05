@@ -12,7 +12,7 @@
   /* Node colors */
   --color-node-starting: #D4E5F7;     /* Blue - starting condition */
   --color-node-bottleneck: #F5D5D5;   /* Light red/salmon */
-  --color-node-impact: #FDF4E7;       /* Cream/yellow - impact without reform */
+  --color-node-impact: #F0DDB8;       /* Darker cream/tan - impact without reform */
   --color-node-reform: #D4EDDA;       /* Light green - impact with reform */
 
   /* Arrow colors */
