@@ -57,7 +57,7 @@ export default function EvidenceModal({ node, onClose }) {
             id="evidence-modal-title"
             className="font-heading text-lg font-semibold text-text-primary"
           >
-            Evidence: {node.title}
+            {node.evidenceLabel || `Evidence: ${node.title}`}
           </h3>
           <button
             onClick={(e) => {

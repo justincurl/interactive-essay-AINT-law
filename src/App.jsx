@@ -341,10 +341,10 @@ function App() {
       <header className="py-6 px-6 border-b border-border/30">
         <div className="max-w-6xl mx-auto">
           <h1 className="font-heading text-2xl font-semibold text-text-primary">
-            AI and the Transformation of Legal Services
+            What Could Advanced AI Mean for the Practice of Law?
           </h1>
           <p className="font-body text-sm text-text-secondary mt-1">
-            An interactive exploration of how AI is reshaping the legal industry
+            An interactive exploration of three bottlenecks between AI capability and positive transformation
           </p>
         </div>
       </header>
@@ -539,7 +539,7 @@ function App() {
           <div className="flex flex-wrap gap-4 justify-center text-xs">
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-node-starting border border-node-starting" />
-              <span className="text-text-secondary">State of the World</span>
+              <span className="text-text-secondary">Starting Conditions</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-node-bottleneck border border-node-bottleneck" />
