@@ -83,7 +83,7 @@ export default function Arrow({
         ${compact ? 'px-0.5 min-w-[28px]' : 'px-2 min-w-[48px]'}
         ${visible ? 'opacity-100' : 'opacity-0'}
       `}
-      style={{ marginTop: compact ? '48px' : '52px' }}
+      style={{ marginTop: compact ? '54px' : '58px' }}
     >
       <svg
         width={arrowWidth}

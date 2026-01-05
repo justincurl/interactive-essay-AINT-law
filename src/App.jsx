@@ -254,22 +254,25 @@ function App() {
           const targetY = targetRect.top + targetRect.height / 2 - containerRect.top;
 
           // Arrow path configuration
-          // Go left from tab, then down to target level
-          const leftExtension = 100; // How far left to go from tab (enough to clear all nodes)
-          const horizontalOvershoot = isLastPathway ? 30 : 22;  // How far past target left edge the arrow extends
+          const horizontalOvershoot = isLastPathway ? 40 : 22;  // How far past target left edge the arrow extends
 
-          // Calculate turn points
-          const firstTurnX = sourceX - leftExtension; // Left from tab
+          // Calculate elbow position (where arrow turns to go into target)
           const elbowX = targetX - horizontalOvershoot;
 
-          // Path: left from tab, down to target level, left past target, right into target
-          const path = `M ${sourceX} ${sourceY} L ${firstTurnX} ${sourceY} L ${firstTurnX} ${targetY} L ${elbowX} ${targetY} L ${targetX} ${targetY}`;
+          // Vertical segment should be at the same X position as the elbow
+          const verticalSegmentX = elbowX;
+
+          // Arrow endpoint - point directly to target edge, marker positioning handles arrowhead placement
+          const arrowEndX = targetX;
+
+          // Path: left from tab to vertical position, down to target level, right into target
+          const path = `M ${sourceX} ${sourceY} L ${verticalSegmentX} ${sourceY} L ${verticalSegmentX} ${targetY} L ${arrowEndX} ${targetY}`;
 
           newPaths.push({
             pathwayIndex,
             path,
-            labelX: firstTurnX - 8,
-            labelY: (sourceY + targetY) / 2,
+            labelX: verticalSegmentX - 8,
+            labelY: sourceY + (targetY - sourceY) * 0.25,  // Position 25% down from top instead of 50%
             showLabel,
           });
         }
@@ -369,7 +372,7 @@ function App() {
                     id="reformElbowArrowHead"
                     markerWidth="8"
                     markerHeight="6"
-                    refX="7"
+                    refX="8"
                     refY="3"
                     orient="auto"
                   >
@@ -390,15 +393,28 @@ function App() {
                       markerEnd="url(#reformElbowArrowHead)"
                     />
                     {arrow.showLabel && (
-                      <text
-                        x={arrow.labelX}
-                        y={arrow.labelY}
-                        textAnchor="middle"
-                        className="text-[10px] font-medium"
-                        fill="#059669"
-                      >
-                        With Reform
-                      </text>
+                      <g>
+                        <rect
+                          x={arrow.labelX - 35}
+                          y={arrow.labelY - 10}
+                          width="70"
+                          height="20"
+                          rx="6"
+                          fill="#FDFCFA"
+                          stroke="#059669"
+                          strokeWidth="1"
+                        />
+                        <text
+                          x={arrow.labelX}
+                          y={arrow.labelY}
+                          textAnchor="middle"
+                          className="text-[10px] font-medium"
+                          fill="#059669"
+                          dominantBaseline="middle"
+                        >
+                          With Reform
+                        </text>
+                      </g>
                     )}
                   </g>
                 ))}
@@ -456,7 +472,7 @@ function App() {
                 <div className="flex items-center justify-center">
                   <div
                     data-final-destination="true"
-                    className="bg-[#d1fae5] border-2 border-[#059669] rounded-lg px-5 py-3 max-w-md text-center shadow-lg"
+                    className="bg-[#d1fae5] rounded-lg px-5 py-3 max-w-md text-center shadow-lg"
                   >
                     <h3 className="font-heading text-base font-semibold text-text-primary mb-1">
                       Positive transformation of legal services
