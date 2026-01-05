@@ -62,7 +62,7 @@ export default function LandingPage({ onExplore }) {
             What Could Advanced AI Mean for the Practice of Law?
           </h1>
 
-          <div className="flex flex-wrap gap-4">
+          <div className="flex justify-start gap-12">
             <div className="flex flex-col gap-0.5">
               <span className="text-[0.9375rem] font-medium text-[#191919]">Justin Curl</span>
               <span className="text-[0.8125rem] text-[#737373]">Harvard Law School</span>
