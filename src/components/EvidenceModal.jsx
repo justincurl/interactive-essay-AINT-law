@@ -38,6 +38,19 @@ export default function EvidenceModal({ node, onClose }) {
     return null;
   }
 
+  // Define accent colors based on node type
+  const accentColors = {
+    starting: '#5a7a9a',
+    bottleneck: '#9a5a5a',
+    impact: '#8a7a5a',
+    reform: '#5a8a6a',
+  };
+
+  const accentColor = accentColors[node.type] || '#9a5a5a';
+
+  // Count only numbered items for numbering
+  let numberIndex = 0;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -46,13 +59,13 @@ export default function EvidenceModal({ node, onClose }) {
       {/* Modal */}
       <div
         ref={modalRef}
-        className="relative bg-cream border border-border/50 rounded-lg shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden animate-modal-enter"
+        className="relative bg-[#FDFCFA] border border-border/50 rounded-lg shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden animate-modal-enter"
         role="dialog"
         aria-modal="true"
         aria-labelledby="evidence-modal-title"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border/30">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8E5E0]">
           <h3
             id="evidence-modal-title"
             className="font-heading text-lg font-semibold text-text-primary"
@@ -74,23 +87,58 @@ export default function EvidenceModal({ node, onClose }) {
         </div>
 
         {/* Content */}
-        <div className="px-6 py-5 overflow-y-auto max-h-[calc(80vh-80px)]">
-          <div className="space-y-5">
-            {node.evidence.map((item, idx) => (
-              <blockquote
-                key={idx}
-                className="border-l-[3px] border-accent pl-4 py-1"
-              >
-                <p className="text-[15px] leading-[1.7] text-text-secondary italic font-heading">
-                  "{item.quote}"
-                </p>
-                {item.source && (
-                  <cite className="block text-sm mt-2 not-italic font-body text-text-secondary/70">
-                    — {item.source}
-                  </cite>
-                )}
-              </blockquote>
-            ))}
+        <div className="px-6 py-4 overflow-y-auto max-h-[calc(80vh-80px)]">
+          <div className="flex flex-col">
+            {node.evidence.map((item, idx) => {
+              const isContext = item.type === 'context';
+              const hasLabel = !!item.label;
+
+              // Increment number only for items that will show a number
+              if (!isContext && !hasLabel) {
+                numberIndex++;
+              }
+              const currentNumber = numberIndex;
+
+              return (
+                <div
+                  key={idx}
+                  className={`py-3 ${idx !== node.evidence.length - 1 ? 'border-b border-[#F0EDE8]' : ''}`}
+                >
+                  {isContext ? (
+                    // Context items: no number/label, just text
+                    <p className="text-[0.9375rem] text-[#525252] leading-[1.7]">
+                      {item.quote}
+                    </p>
+                  ) : hasLabel ? (
+                    // Labeled items: show label as header
+                    <div>
+                      <h4
+                        className="text-sm font-semibold mb-2"
+                        style={{ color: accentColor }}
+                      >
+                        {item.label}
+                      </h4>
+                      <p className="text-[0.9375rem] text-[#525252] leading-[1.7]">
+                        {item.quote}
+                      </p>
+                    </div>
+                  ) : (
+                    // Numbered items: show number
+                    <div className="flex items-start gap-4">
+                      <span
+                        className="text-xl font-normal leading-none min-w-[1.5rem] mt-0.5"
+                        style={{ color: accentColor, fontFamily: "'Newsreader', Georgia, serif" }}
+                      >
+                        {currentNumber}
+                      </span>
+                      <p className="text-[0.9375rem] text-[#525252] leading-[1.7]">
+                        {item.quote}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

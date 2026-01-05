@@ -125,29 +125,64 @@ export default function ReformModal({ reformNode, onClose }) {
                 {showEvidence ? 'Hide evidence' : (reformNode.evidenceLabel || 'See the evidence')}
               </button>
 
-              {/* Evidence quotes */}
+              {/* Evidence content */}
               <div
                 className={`
                   overflow-hidden transition-all duration-300 ease-out
                   ${showEvidence ? 'max-h-[1000px] opacity-100 mt-4' : 'max-h-0 opacity-0'}
                 `}
               >
-                <div className="space-y-4">
-                  {reformNode.evidence.map((item, idx) => (
-                    <blockquote
-                      key={idx}
-                      className="border-l-[3px] border-[#10b981] pl-4 py-1"
-                    >
-                      <p className="text-[14px] leading-[1.6] text-text-secondary italic font-heading">
-                        "{item.quote}"
-                      </p>
-                      {item.source && (
-                        <cite className="block text-sm mt-2 not-italic font-body text-text-secondary/70">
-                          — {item.source}
-                        </cite>
-                      )}
-                    </blockquote>
-                  ))}
+                <div className="flex flex-col">
+                  {(() => {
+                    let numberIndex = 0;
+                    return reformNode.evidence.map((item, idx) => {
+                      const isContext = item.type === 'context';
+                      const hasLabel = !!item.label;
+                      const accentColor = '#5a8a6a';
+
+                      if (!isContext && !hasLabel) {
+                        numberIndex++;
+                      }
+                      const currentNumber = numberIndex;
+
+                      return (
+                        <div
+                          key={idx}
+                          className={`py-3 ${idx !== reformNode.evidence.length - 1 ? 'border-b border-[#F0EDE8]' : ''}`}
+                        >
+                          {isContext ? (
+                            <p className="text-[0.9375rem] text-[#525252] leading-[1.7]">
+                              {item.quote}
+                            </p>
+                          ) : hasLabel ? (
+                            <div>
+                              <h4
+                                className="text-sm font-semibold mb-2"
+                                style={{ color: accentColor }}
+                              >
+                                {item.label}
+                              </h4>
+                              <p className="text-[0.9375rem] text-[#525252] leading-[1.7]">
+                                {item.quote}
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="flex items-start gap-4">
+                              <span
+                                className="text-xl font-normal leading-none min-w-[1.5rem] mt-0.5"
+                                style={{ color: accentColor, fontFamily: "'Newsreader', Georgia, serif" }}
+                              >
+                                {currentNumber}
+                              </span>
+                              <p className="text-[0.9375rem] text-[#525252] leading-[1.7]">
+                                {item.quote}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    });
+                  })()}
                 </div>
               </div>
             </div>

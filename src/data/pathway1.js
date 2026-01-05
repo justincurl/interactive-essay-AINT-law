@@ -4,26 +4,29 @@ export const pathway1 = {
     {
       id: 'p1-node1',
       type: 'starting',
-      category: 'STARTING CONDITION',
+      category: 'STATE OF THE WORLD',
       title: 'Advanced AI capabilities',
       subtitle: 'AI can increase lawyers\' productivity and do legal work well',
       explanation: [
         'Many AI leaders believe AI will transform knowledge work. OpenAI\'s CEO predicts AI systems "smarter than humans by 2030," while Anthropic\'s CEO analogizes future AI to "a country of geniuses in a data center." Researchers identify legal services as especially vulnerable to disruption. Since GPT-4 passed the bar exam, much of the profession seems to agree—law schools are incorporating AI into curricula, and some argue AI can already replace law clerks.',
-        'This excitement comes at a time when legal services are expensive. Millions of individuals are priced out of legal assistance, while corporate legal fees keep climbing. The technology is advancing; the question is whether it will actually make legal services more accessible.',
       ],
       evidenceLabel: 'Why does this matter now? See the cost data',
       evidence: [
         {
+          quote: 'This excitement comes at a time when legal services are expensive. Millions of individuals are priced out of legal assistance, while corporate legal fees keep climbing. The technology is advancing; the question is whether it will actually make legal services more accessible.',
+          type: 'context',
+        },
+        {
           quote: 'In 2024, the median partner at large law firms charged $1,050 per hour, with some commanding over $2,300. Fortune 200 companies reported that their average litigation costs in cases exceeding $250,000 in legal fees nearly doubled over eight years, climbing from $66 million per company in 2000 to $115 million in 2008.',
-          source: 'The Paper (High-end market)',
+          label: 'At the top end of the market (BigLaw)',
         },
         {
           quote: 'In an average eight-hour workday, lawyers engaged in billable work for only 2.3 hours, billed 1.9 hours, and collected payment for just 1.6 hours. So although clients paid an average of $260 per hour, lawyers effectively received $25-40 per hour because the rest of their time was spent finding clients, managing administrative tasks, and collecting payments.',
-          source: '2017 Clio study of forty thousand law firms',
+          label: 'At the bottom end of the market (PeopleLaw)',
         },
         {
           quote: 'The paper\'s central argument is that optimism about AI reducing these costs may be misplaced—not because the technology won\'t work, but because of bottlenecks between capability advances and positive transformation.',
-          source: 'The Paper',
+          type: 'context',
         },
       ],
     },
@@ -41,15 +44,15 @@ export const pathway1 = {
       evidence: [
         {
           quote: 'UPL laws make it illegal (in some jurisdictions a felony) for unlicensed attorneys to apply legal knowledge to specific circumstances. An unfortunate effect is to make it more expensive to offer basic legal assistance in contexts requiring little legal expertise.',
-          source: 'Gillian Hadfield\'s analysis',
+          label: 'Unauthorized Practice of Law (UPL)',
         },
         {
           quote: 'These regulations require lawyers to serve clients through partnerships fully owned and financed by lawyers. They deter alternative models that involve large-scale businesses with centralized billing, customer service, marketing, and administrative functions, which could leverage economies of scale to deliver legal services at $30-50 per hour instead of $260.',
-          source: 'The Paper',
+          label: 'Entity ownership restrictions',
         },
         {
           quote: 'Importantly, none of the sources of market dysfunction are intrinsic to legal services. They reflect choices about procedure, pricing, and professional governance.',
-          source: 'The Paper',
+          type: 'context',
         },
       ],
     },
@@ -66,20 +69,16 @@ export const pathway1 = {
       evidenceLabel: 'See how this played out with Upsolve and the debt collection crisis',
       evidence: [
         {
-          quote: 'From 1993 to 2013, debt collection lawsuits grew from 1.7 million to about 4 million. In Michigan, these lawsuits made up 37% of all civil district court case filings by 2019.',
-          source: 'The Paper',
+          quote: 'From 1993 to 2013, debt collection lawsuits grew from 1.7 million to about 4 million. In Michigan, these lawsuits made up 37% of all civil district court case filings by 2019. More than 70% of debt collection defendants lose by default for failing to respond, even though many are "meritless suits" and responding is not complicated.',
+          label: 'The debt collection crisis',
         },
         {
-          quote: 'More than 70% of debt collection defendants lose by default for failing to respond, even though many are "meritless suits" and responding is not complicated.',
-          source: 'The Paper',
+          quote: 'The nonprofit Upsolve trained volunteers to help New Yorkers respond to these suits. Concerned that this might violate New York\'s UPL rules, Upsolve sought an injunction declaring this basic assistance was protected by the First Amendment. A federal judge agreed. But New York appealed to the Second Circuit, which concluded the lower court applied the wrong First Amendment test and invalidated the injunction.',
+          label: 'The Upsolve case',
         },
         {
-          quote: 'Concerned that this might violate New York\'s UPL rules, Upsolve sought an injunction declaring this basic assistance was protected by the First Amendment. A federal judge agreed. But New York appealed to the Second Circuit, which concluded the lower court applied the wrong First Amendment test and invalidated the injunction.',
-          source: 'Upsolve case',
-        },
-        {
-          quote: 'It\'s easy to see how an AI system could help here... Despite this potential, organizations risk violating UPL laws whenever their AI tools complete "tasks that require legal judgment or expertise."',
-          source: 'The Paper (on LegalZoom UPL suits)',
+          quote: 'It\'s easy to see how an AI system could help here. Despite this potential, organizations risk violating UPL laws whenever their AI tools complete "tasks that require legal judgment or expertise."',
+          type: 'context',
         },
       ],
     },
@@ -96,16 +95,16 @@ export const pathway1 = {
     evidenceLabel: 'What are Arizona and Utah learning?',
     evidence: [
       {
-        quote: 'Utah and Arizona recently created regulatory sandboxes... Utah\'s sandbox allows entities to seek waivers from ownership restrictions and UPL rules, while Arizona eliminated restrictions on law firm ownership and fee-sharing. These sandboxes permit companies and nonprofits to operate under modified professional rules while regulators assess their impact on service quality, cost, and access to justice.',
-        source: 'The Paper',
+        quote: 'Utah and Arizona recently created regulatory sandboxes. Utah\'s sandbox allows entities to seek waivers from ownership restrictions and UPL rules, while Arizona eliminated restrictions on law firm ownership and fee-sharing. These sandboxes permit companies and nonprofits to operate under modified professional rules while regulators assess their impact on service quality, cost, and access to justice.',
+        label: 'The sandbox model',
       },
       {
         quote: 'These sandboxes treat regulatory experimentation as necessary for balancing protection and innovation for consumers. Overly stringent restrictions can backfire by protecting inefficient incumbents or forcing new entrants outside the law.',
-        source: 'The Paper',
+        type: 'context',
       },
       {
         quote: 'Early evidence on the impact of these reforms has been largely positive, though concerns have emerged regarding private equity ownership and mass tort litigation financing. Despite scant evidence of consumer harm—Utah\'s Innovation Office only received 20 total complaints—lawyers and commerce groups petitioned the Arizona and Utah supreme courts to limit these sandboxes. The Arizona Supreme Court stayed the course, and authorized entities grew from 19 to 136 between 2022 and 2025. The Utah Supreme Court has since raised eligibility requirements, and authorized entities shrank from 39 to 11 over the same period.',
-        source: 'The Paper',
+        label: 'Early results',
       },
     ],
   },

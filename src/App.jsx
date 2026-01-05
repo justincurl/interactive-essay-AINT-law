@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react
 import FlowchartGrid from './components/FlowchartGrid';
 import EvidenceModal from './components/EvidenceModal';
 import ReformModal from './components/ReformModal';
+import LandingPage from './components/LandingPage';
 import { pathway1 } from './data/pathway1';
 import { pathway2 } from './data/pathway2';
 import { pathway3 } from './data/pathway3';
@@ -12,6 +13,7 @@ const ELEMENTS_PER_PATHWAY = 4;
 const TOTAL_ELEMENTS = pathways.length * ELEMENTS_PER_PATHWAY + 1;
 
 function App() {
+  const [showLanding, setShowLanding] = useState(true);
   const [globalVisibleCount, setGlobalVisibleCount] = useState(1);
   const [expandedNodeId, setExpandedNodeId] = useState(null);
   const [evidenceNode, setEvidenceNode] = useState(null);
@@ -335,17 +337,39 @@ function App() {
     };
   }, [globalVisibleCount, animatingNodeIndex, expandedNodeId]);
 
+  // Show landing page first
+  if (showLanding) {
+    return <LandingPage onExplore={() => setShowLanding(false)} />;
+  }
+
   return (
     <div className="min-h-screen bg-cream">
       {/* Header */}
-      <header className="py-6 px-6 border-b border-border/30">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="font-heading text-2xl font-semibold text-text-primary">
-            What Could Advanced AI Mean for the Practice of Law?
-          </h1>
-          <p className="font-body text-sm text-text-secondary mt-1">
-            An interactive exploration of three bottlenecks between AI capability and positive transformation
-          </p>
+      <header className="border-b border-border/30 bg-cream/90 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-[1100px] mx-auto px-8 py-3 flex justify-between items-center">
+          <span className="text-xs font-semibold tracking-[0.06em] uppercase text-[#737373]">
+            Interactive Essay: What Could Advanced AI Mean for the Practice of Law?
+          </span>
+          <div className="flex items-center gap-6">
+            <button
+              onClick={() => setShowLanding(true)}
+              className="text-sm font-medium text-text-secondary hover:text-accent transition-colors flex items-center gap-1.5"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11 7H3M3 7L6.5 3.5M3 7L6.5 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Back to intro
+            </button>
+            <a
+              href="#"
+              className="text-sm font-medium text-text-secondary hover:text-accent transition-colors flex items-center gap-1.5"
+            >
+              Read full paper
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </a>
+          </div>
         </div>
       </header>
 
@@ -539,7 +563,7 @@ function App() {
           <div className="flex flex-wrap gap-4 justify-center text-xs">
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-node-starting border border-node-starting" />
-              <span className="text-text-secondary">Starting Conditions</span>
+              <span className="text-text-secondary">State of the World</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-node-bottleneck border border-node-bottleneck" />

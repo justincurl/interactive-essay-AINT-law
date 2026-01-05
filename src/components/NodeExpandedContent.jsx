@@ -15,7 +15,7 @@ export default function NodeExpandedContent({ node, onShowEvidence }) {
   const colorClass = evidenceColors[node.type] || 'text-accent hover:text-accent/80';
 
   return (
-    <div className="mt-3 pt-3 border-t border-border/30">
+    <div className="mt-2 pt-2 border-t border-border/60">
       {/* Level 2: Explanation paragraphs */}
       <div className="space-y-2.5">
         {node.explanation?.map((paragraph, idx) => (
