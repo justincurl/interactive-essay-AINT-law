@@ -388,7 +388,7 @@ function App() {
             {/* Reform Elbow Arrows SVG Overlay */}
             {arrowPaths.length > 0 && (
               <svg
-                className="absolute inset-0 w-full h-full pointer-events-none z-[5]"
+                className="absolute inset-0 w-full h-full pointer-events-none z-[1]"
                 style={{ overflow: 'visible' }}
               >
                 <defs>
@@ -581,6 +581,30 @@ function App() {
                   y1="5"
                   x2="16"
                   y2="5"
+                  stroke="#C54B32"
+                  strokeWidth="1.5"
+                  strokeDasharray="3 2"
+                />
+                {/* Arrow head */}
+                <path
+                  d="M13 2 L18 5 L13 8"
+                  fill="none"
+                  stroke="#C54B32"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="text-text-secondary">Pathway Without Reform</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <svg width="20" height="10" viewBox="0 0 20 10" className="flex-shrink-0">
+                {/* Dashed arrow line */}
+                <line
+                  x1="0"
+                  y1="5"
+                  x2="16"
+                  y2="5"
                   stroke="#059669"
                   strokeWidth="1.5"
                   strokeDasharray="3 2"
@@ -595,7 +619,7 @@ function App() {
                   strokeLinejoin="round"
                 />
               </svg>
-              <span className="text-text-secondary">Reform Pathway</span>
+              <span className="text-text-secondary">Pathway With Reform</span>
             </div>
           </div>
         </div>

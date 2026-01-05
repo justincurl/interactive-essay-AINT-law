@@ -107,7 +107,10 @@ export default function FlowchartGrid({
   const lastNodeIndex = nodes.length - 1;
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full">
+    <div
+      className="flex flex-col items-center gap-4 w-full relative"
+      style={{ zIndex: 10 - pathwayIndex }}
+    >
       <div className="relative w-full flex items-center justify-center">
         {showNavigation && canBack && (
           <button

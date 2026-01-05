@@ -73,10 +73,16 @@ export default function LandingPage({ onExplore }) {
             <div className="flex flex-col gap-0.5">
               <span className="text-[0.9375rem] font-medium text-[#191919]">Sayash Kapoor</span>
               <span className="text-[0.8125rem] text-[#737373]">Princeton University</span>
+              <a href="https://x.com/sayashk" className="text-[0.8125rem] text-[#C54B32] no-underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">
+                @sayashk
+              </a>
             </div>
             <div className="flex flex-col gap-0.5">
               <span className="text-[0.9375rem] font-medium text-[#191919]">Arvind Narayanan</span>
               <span className="text-[0.8125rem] text-[#737373]">Princeton University</span>
+              <a href="https://x.com/random_walker" className="text-[0.8125rem] text-[#C54B32] no-underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">
+                @random_walker
+              </a>
             </div>
           </div>
         </section>

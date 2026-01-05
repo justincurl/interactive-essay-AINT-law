@@ -125,7 +125,9 @@ export default function Node({
           ${isExpanded
             ? 'max-w-[500px] w-full p-4'
             : compact
-              ? 'w-[200px] p-2.5 cursor-pointer hover:shadow-md hover:scale-[1.02]'
+              ? node.type === 'impact'
+                ? 'w-[220px] p-2.5 cursor-pointer hover:shadow-md hover:scale-[1.02]'
+                : 'w-[200px] p-2.5 cursor-pointer hover:shadow-md hover:scale-[1.02]'
               : 'min-w-[200px] max-w-[280px] p-4 cursor-pointer hover:shadow-md hover:scale-[1.02]'
           }
         `}
