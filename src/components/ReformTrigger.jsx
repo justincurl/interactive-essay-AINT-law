@@ -77,7 +77,8 @@ function TextPrompt({
   onClick,
   isOpen = false,
   isActivated = false,
-  disabled = false
+  disabled = false,
+  pathwayIndex = null
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -97,8 +98,9 @@ function TextPrompt({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       disabled={disabled || isOpen}
+      data-reform-tab={pathwayIndex !== null ? pathwayIndex : undefined}
       className={`
-        -mt-0.5 px-2.5 py-1
+        px-2.5 py-1
         text-[10px] font-medium
         transition-all duration-200
         rounded-b-md

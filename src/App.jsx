@@ -223,8 +223,8 @@ function App() {
         if (!pathwayState.showReformBranch) return;
         const showLabel = pathwayState.showReformLabel;
 
-        const bottleneckNode = pathwaysContainerRef.current.querySelector(
-          `[data-pathway-index="${pathwayIndex}"][data-node-type="bottleneck"]`
+        const reformTab = pathwaysContainerRef.current.querySelector(
+          `[data-reform-tab="${pathwayIndex}"]`
         );
 
         let targetNode;
@@ -238,39 +238,38 @@ function App() {
           );
         }
 
-        if (bottleneckNode && targetNode) {
-          const sourceRect = bottleneckNode.getBoundingClientRect();
+        if (reformTab && targetNode) {
+          const sourceRect = reformTab.getBoundingClientRect();
           const targetRect = targetNode.getBoundingClientRect();
 
           // Skip if target has no dimensions (not rendered yet)
           if (targetRect.width === 0 || targetRect.height === 0) return;
 
-          // Start from bottom center of bottleneck node
-          const sourceX = sourceRect.left + sourceRect.width / 2 - containerRect.left;
-          const sourceY = sourceRect.bottom - containerRect.top;
+          // Start from left edge of reform tab, vertically centered
+          const sourceX = sourceRect.left - containerRect.left;
+          const sourceY = sourceRect.top + sourceRect.height / 2 - containerRect.top;
 
           // End at left edge, vertically centered on target node
           const targetX = targetRect.left - containerRect.left;
           const targetY = targetRect.top + targetRect.height / 2 - containerRect.top;
 
           // Arrow path configuration
-          // Last pathway needs a longer initial drop to avoid overlapping with larger target node
-          const initialDrop = isLastPathway ? 44 : 24;
-          const horizontalOvershoot = 22;  // How far past target left edge the arrow extends
+          // Go left from tab, then down to target level
+          const leftExtension = 100; // How far left to go from tab (enough to clear all nodes)
+          const horizontalOvershoot = isLastPathway ? 30 : 22;  // How far past target left edge the arrow extends
 
-          // Calculate turn point (short drop from bottleneck)
-          const turnY = sourceY + initialDrop;
-          // Calculate elbow X (extends past target's left edge for breathing room)
+          // Calculate turn points
+          const firstTurnX = sourceX - leftExtension; // Left from tab
           const elbowX = targetX - horizontalOvershoot;
 
-          // Path: down (short), left (extends past target), down, right into target
-          const path = `M ${sourceX} ${sourceY} L ${sourceX} ${turnY} L ${elbowX} ${turnY} L ${elbowX} ${targetY} L ${targetX} ${targetY}`;
+          // Path: left from tab, down to target level, left past target, right into target
+          const path = `M ${sourceX} ${sourceY} L ${firstTurnX} ${sourceY} L ${firstTurnX} ${targetY} L ${elbowX} ${targetY} L ${targetX} ${targetY}`;
 
           newPaths.push({
             pathwayIndex,
             path,
-            labelX: (sourceX + elbowX) / 2,
-            labelY: turnY - 8,
+            labelX: firstTurnX - 8,
+            labelY: (sourceY + targetY) / 2,
             showLabel,
           });
         }
@@ -362,7 +361,7 @@ function App() {
             {/* Reform Elbow Arrows SVG Overlay */}
             {arrowPaths.length > 0 && (
               <svg
-                className="absolute inset-0 w-full h-full pointer-events-none z-10"
+                className="absolute inset-0 w-full h-full pointer-events-none z-[5]"
                 style={{ overflow: 'visible' }}
               >
                 <defs>
@@ -535,16 +534,27 @@ function App() {
               <span className="text-text-secondary">Impact without Reform</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-3.5 h-3.5 rounded-full bg-[#059669] flex items-center justify-center">
-                <svg className="w-2 h-2 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
-                  {/* Input line */}
-                  <path d="M2 12h8" />
-                  {/* Upper branch */}
-                  <path d="M10 12l8-6" />
-                  {/* Lower branch */}
-                  <path d="M10 12l8 6" />
-                </svg>
-              </div>
+              <svg width="20" height="10" viewBox="0 0 20 10" className="flex-shrink-0">
+                {/* Dashed arrow line */}
+                <line
+                  x1="0"
+                  y1="5"
+                  x2="16"
+                  y2="5"
+                  stroke="#059669"
+                  strokeWidth="1.5"
+                  strokeDasharray="3 2"
+                />
+                {/* Arrow head */}
+                <path
+                  d="M13 2 L18 5 L13 8"
+                  fill="none"
+                  stroke="#059669"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
               <span className="text-text-secondary">Reform Pathway</span>
             </div>
           </div>

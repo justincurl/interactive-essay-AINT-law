@@ -144,7 +144,7 @@ export default function FlowchartGrid({
                 {index > 0 && (
                   <Arrow
                     direction="right"
-                    variant="standard"
+                    variant={index === lastNodeIndex ? "reform" : "standard"}
                     visible={!hasExpanded || isExpanded}
                     animate={isAnimating}
                     compact={true}

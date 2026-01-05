@@ -78,12 +78,12 @@ export default function Arrow({
   return (
     <div
       className={`
-        relative flex items-center justify-center self-center
+        relative flex items-center justify-center self-start
         transition-all duration-300 ease-out
         ${compact ? 'px-0.5 min-w-[28px]' : 'px-2 min-w-[48px]'}
         ${visible ? 'opacity-100' : 'opacity-0'}
       `}
-      style={{ marginTop: compact ? '12px' : '16px' }}
+      style={{ marginTop: compact ? '48px' : '52px' }}
     >
       <svg
         width={arrowWidth}

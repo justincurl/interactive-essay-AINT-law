@@ -8,24 +8,28 @@ const nodeStyles = {
     border: 'border-node-starting',
     borderStyle: 'border border-solid',
     labelColor: 'text-[#5a7a9a]',
+    ring: 'ring-[#5a7a9a]/30',
   },
   bottleneck: {
     bg: 'bg-node-bottleneck',
     border: 'border-node-bottleneck',
     borderStyle: 'border border-solid',
     labelColor: 'text-[#9a5a5a]',
+    ring: 'ring-accent/30',
   },
   impact: {
     bg: 'bg-node-impact',
     border: 'border-node-impact',
     borderStyle: 'border border-solid',
     labelColor: 'text-[#8a7a5a]',
+    ring: 'ring-[#8a7a5a]/30',
   },
   reform: {
     bg: 'bg-node-reform',
     border: 'border-node-reform',
     borderStyle: 'border border-solid',
     labelColor: 'text-[#5a8a6a]',
+    ring: 'ring-[#5a8a6a]/30',
   },
 };
 
@@ -110,13 +114,14 @@ export default function Node({
           ${styles.bg}
           ${styles.borderStyle}
           ${styles.border}
-          ${isExpanded ? 'shadow-lg ring-2 ring-accent/30' : ''}
+          ${isExpanded ? `shadow-lg ring-2 ${styles.ring}` : ''}
           ${isDimmed ? 'opacity-40 pointer-events-none' : ''}
           rounded-md
           ${isExpanded ? 'text-left' : 'text-center'}
           transition-all
           duration-150
           ease-out
+          focus:outline-none
           ${isExpanded
             ? 'max-w-[500px] w-full p-4'
             : compact
@@ -190,6 +195,7 @@ export default function Node({
           isOpen={isReformOpen}
           isActivated={isReformActivated}
           disabled={isDimmed}
+          pathwayIndex={pathwayIndex}
         />
       )}
     </div>

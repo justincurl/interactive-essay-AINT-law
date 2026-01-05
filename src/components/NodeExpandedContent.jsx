@@ -4,6 +4,16 @@ export default function NodeExpandedContent({ node, onShowEvidence }) {
     onShowEvidence?.(node);
   };
 
+  // Define colors for each node type
+  const evidenceColors = {
+    starting: 'text-[#5a7a9a] hover:text-[#4a6a8a]',
+    bottleneck: 'text-accent hover:text-accent/80',
+    impact: 'text-[#8a7a5a] hover:text-[#7a6a4a]',
+    reform: 'text-[#5a8a6a] hover:text-[#4a7a5a]',
+  };
+
+  const colorClass = evidenceColors[node.type] || 'text-accent hover:text-accent/80';
+
   return (
     <div className="mt-3 pt-3 border-t border-border/30">
       {/* Level 2: Explanation paragraphs */}
@@ -23,7 +33,7 @@ export default function NodeExpandedContent({ node, onShowEvidence }) {
         <div className="mt-4">
           <button
             onClick={handleShowEvidence}
-            className="text-accent hover:text-accent/80 text-sm font-medium transition-colors flex items-center gap-1.5 group"
+            className={`${colorClass} text-sm font-medium transition-colors flex items-center gap-1.5 group`}
           >
             <svg
               className="w-4 h-4 transition-transform group-hover:scale-110"
