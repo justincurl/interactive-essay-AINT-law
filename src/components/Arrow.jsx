@@ -12,7 +12,11 @@ export default function Arrow({
   showBranchNode = false,
   isBranchActivated = false,
   isBranchOpen = false,
-  onBranchClick = null
+  onBranchClick = null,
+  // Label props
+  showLabel = false,
+  label = '',
+  extraSpacing = false
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isBranchHovered, setIsBranchHovered] = useState(false);
@@ -65,11 +69,11 @@ export default function Arrow({
   }
 
   // Horizontal arrow - compact version
-  const arrowWidth = compact ? 24 : 40;
+  const arrowWidth = compact ? 44 : 60;
   const arrowHeight = compact ? 12 : 16;
-  const lineEnd = compact ? 18 : 32;
-  const headX1 = compact ? 14 : 28;
-  const headX2 = compact ? 22 : 36;
+  const lineEnd = compact ? 38 : 52;
+  const headX1 = compact ? 34 : 48;
+  const headX2 = compact ? 42 : 56;
   const headY1 = compact ? 3 : 4;
   const headY2 = compact ? 9 : 12;
   const centerY = compact ? 6 : 8;
@@ -78,13 +82,26 @@ export default function Arrow({
   return (
     <div
       className={`
-        relative flex items-center justify-center self-start
+        relative flex flex-col items-center justify-center self-start
         transition-all duration-300 ease-out
-        ${compact ? 'px-0.5 min-w-[28px]' : 'px-2 min-w-[48px]'}
+        ${extraSpacing
+          ? (compact ? 'px-3 min-w-[54px]' : 'px-4 min-w-[68px]')
+          : (compact ? 'px-0 min-w-[24px]' : 'px-2 min-w-[48px]')
+        }
         ${visible ? 'opacity-100' : 'opacity-0'}
       `}
       style={{ marginTop: compact ? '54px' : '58px' }}
     >
+      {/* Label above arrow */}
+      {showLabel && label && (
+        <div
+          className="absolute -top-4 left-1/2 -translate-x-1/2 z-30 text-[10px] font-medium whitespace-nowrap"
+          style={{ color: strokeColor }}
+        >
+          {label}
+        </div>
+      )}
+
       <svg
         width={arrowWidth}
         height={arrowHeight}

@@ -4,7 +4,7 @@ export const pathway1 = {
     {
       id: 'p1-node1',
       type: 'starting',
-      category: 'STARTING ASSUMPTION',
+      category: 'STATE OF THE WORLD',
       title: 'Advanced AI capabilities',
       subtitle: 'AI can increase lawyers\' productivity and do legal work well',
       explanation: [

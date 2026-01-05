@@ -510,7 +510,7 @@ function App() {
                         className={`
                           w-1.5 h-1.5 rounded-full transition-all duration-300
                           ${globalIndex < globalVisibleCount
-                            ? isReformElement ? 'bg-[#059669]/70' : 'bg-accent/70'
+                            ? 'bg-accent/70'
                             : 'bg-border/50'}
                         `}
                       />
@@ -522,7 +522,7 @@ function App() {
               <div
                 className={`
                   w-1.5 h-1.5 rounded-full transition-all duration-300
-                  ${showFinalDestination ? 'bg-[#059669]' : 'bg-border/50'}
+                  ${showFinalDestination ? 'bg-accent/70' : 'bg-border/50'}
                 `}
               />
               <span className="ml-2 text-[10px] text-text-secondary/50">
@@ -539,7 +539,7 @@ function App() {
           <div className="flex flex-wrap gap-4 justify-center text-xs">
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-node-starting border border-node-starting" />
-              <span className="text-text-secondary">Starting Assumption</span>
+              <span className="text-text-secondary">State of the World</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-node-bottleneck border border-node-bottleneck" />
