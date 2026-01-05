@@ -113,10 +113,9 @@ export default function Node({
           ${isExpanded ? 'shadow-lg ring-2 ring-accent/30' : ''}
           ${isDimmed ? 'opacity-40 pointer-events-none' : ''}
           rounded-md
-          ${shouldShowReformTrigger ? 'rounded-b-none' : ''}
           ${isExpanded ? 'text-left' : 'text-center'}
           transition-all
-          duration-300
+          duration-150
           ease-out
           ${isExpanded
             ? 'max-w-[500px] w-full p-4'
@@ -170,7 +169,7 @@ export default function Node({
         {/* Expanded content */}
         <div
           className={`
-            overflow-hidden transition-all duration-300 ease-out
+            overflow-hidden transition-all duration-150 ease-out
             ${isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}
           `}
         >

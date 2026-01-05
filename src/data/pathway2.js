@@ -38,7 +38,7 @@ export const pathway2 = {
     {
       id: 'p2-node3',
       type: 'impact',
-      category: 'IMPACT BY DEFAULT',
+      category: 'IMPACT WITHOUT REFORM',
       title: 'Productivity increases but doesn\'t lead to better outcomes',
       subtitle: 'Opposing parties locked into escalating arms races',
       explanation: [

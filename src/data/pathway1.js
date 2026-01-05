@@ -38,7 +38,7 @@ export const pathway1 = {
     {
       id: 'p1-node3',
       type: 'impact',
-      category: 'IMPACT BY DEFAULT',
+      category: 'IMPACT WITHOUT REFORM',
       title: 'Limits on AI use by consumers',
       subtitle: 'Threat of liability chills experimentation',
       explanation: [

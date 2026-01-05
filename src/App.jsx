@@ -494,8 +494,8 @@ function App() {
                         key={elementIndex}
                         className={`
                           w-1.5 h-1.5 rounded-full transition-all duration-300
-                          ${globalIndex < globalVisibleCount 
-                            ? isReformElement ? 'bg-[#059669]/70' : 'bg-accent/70' 
+                          ${globalIndex < globalVisibleCount
+                            ? isReformElement ? 'bg-[#059669]/70' : 'bg-accent/70'
                             : 'bg-border/50'}
                         `}
                       />
@@ -532,7 +532,7 @@ function App() {
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded bg-node-impact border border-node-impact" />
-              <span className="text-text-secondary">Impact by Default</span>
+              <span className="text-text-secondary">Impact without Reform</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3.5 h-3.5 rounded-full bg-[#059669] flex items-center justify-center">

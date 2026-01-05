@@ -38,7 +38,7 @@ export const pathway3 = {
     {
       id: 'p3-node3',
       type: 'impact',
-      category: 'IMPACT BY DEFAULT',
+      category: 'IMPACT WITHOUT REFORM',
       title: 'AI gains limited by human speed',
       subtitle: 'Judges and contracting parties need time to adjudicate cases & understand contracts',
       explanation: [

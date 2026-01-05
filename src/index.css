@@ -12,7 +12,7 @@
   /* Node colors */
   --color-node-starting: #D4E5F7;     /* Blue - starting condition */
   --color-node-bottleneck: #F5D5D5;   /* Light red/salmon */
-  --color-node-impact: #FDF4E7;       /* Cream/yellow - impact by default */
+  --color-node-impact: #FDF4E7;       /* Cream/yellow - impact without reform */
   --color-node-reform: #D4EDDA;       /* Light green - impact with reform */
 
   /* Arrow colors */
@@ -65,7 +65,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .animate-node-enter {
-  animation: node-enter 400ms ease-out forwards;
+  animation: node-enter 250ms ease-out forwards;
 }
 
 .animate-node-exit {
