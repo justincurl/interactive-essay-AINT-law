@@ -544,6 +544,30 @@ function App() {
                             </p>
                           ))}
                         </div>
+
+                        {/* Level 3 CTA */}
+                        {finalDestination.evidence && finalDestination.evidence.length > 0 && (
+                          <div className="mt-4">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEvidenceNode(finalDestination);
+                                setEvidenceSectionIndex(null);
+                              }}
+                              className="text-[#059669] hover:text-[#047857] text-sm font-medium transition-colors flex items-center gap-1.5 group"
+                            >
+                              <svg
+                                className="w-4 h-4 transition-transform group-hover:scale-110"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                              {finalDestination.evidenceLabel || 'See the evidence'}
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
