@@ -63,6 +63,7 @@ export default function MobileApp() {
   const [evidenceNode, setEvidenceNode] = useState(null);
   const [evidenceSectionIndex, setEvidenceSectionIndex] = useState(null);
   const [showReformModal, setShowReformModal] = useState(false);
+  const [hasCompletedOnce, setHasCompletedOnce] = useState(false);
 
   // Swipe handling
   const touchStartX = useRef(0);
@@ -72,6 +73,11 @@ export default function MobileApp() {
 
   const currentItem = contentList[currentIndex];
   const isComplete = currentIndex >= contentList.length - 1;
+
+  // Track if user has ever completed the journey
+  if (isComplete && !hasCompletedOnce) {
+    setHasCompletedOnce(true);
+  }
 
   // Check if we're at the end of a row (after 3rd node - impact node)
   const isEndOfRow = currentItem?.isLastInRow && currentItem?.type !== 'reform';
@@ -263,11 +269,11 @@ export default function MobileApp() {
       <main className="flex-1 flex flex-col">
         {showFullFlowchart ? (
           <MobileOverview
-            items={getOverviewItems()}
+            items={hasCompletedOnce ? getAllItems() : getOverviewItems()}
             currentIndex={currentIndex}
             pathways={pathways}
             onContinue={() => setShowFullFlowchart(false)}
-            isComplete={isComplete}
+            isComplete={isComplete || hasCompletedOnce}
             isFullView={true}
             onNodeClick={handleNodeClickFromFlowchart}
           />
@@ -279,7 +285,7 @@ export default function MobileApp() {
             onContinue={handleContinue}
             isComplete={isComplete}
             isFullView={isComplete}
-            onNodeClick={isComplete ? handleNodeClickFromFlowchart : undefined}
+            onNodeClick={handleNodeClickFromFlowchart}
           />
         ) : (
           <MobileNodeView
@@ -333,12 +339,12 @@ export default function MobileApp() {
 
           {isComplete && !showOverview && !showFullFlowchart ? (
             <button
-              onClick={handleStartOver}
+              onClick={() => setShowOverview(true)}
               className="flex items-center gap-1 px-4 py-2 rounded-md text-text-secondary hover:text-text-primary hover:bg-black/5 transition-colors"
             >
-              <span className="text-sm">Restart</span>
+              <span className="text-sm">Continue</span>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
               </svg>
             </button>
           ) : isComplete && showOverview ? (

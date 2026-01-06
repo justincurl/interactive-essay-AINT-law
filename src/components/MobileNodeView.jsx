@@ -61,10 +61,7 @@ export default function MobileNodeView({
 
   // Get node position label
   const getNodeLabel = () => {
-    if (nodeIndex === 2) {
-      return 'Impact Without Reform';
-    }
-    return `Step ${nodeIndex + 1} of 3`;
+    return `Step ${nodeIndex + 1} of 4`;
   };
 
   // Handle evidence button click
@@ -98,12 +95,12 @@ export default function MobileNodeView({
     return (
       <div className="flex-1 flex flex-col p-4 animate-fadeIn">
         {/* Category label */}
-        <div className="text-center mb-3">
-          <span className="text-[10px] uppercase tracking-[0.1em] font-medium text-[#059669]">
+        <div className="text-center mb-5">
+          <span className="text-sm uppercase tracking-[0.15em] font-bold text-[#059669]">
             EXAMPLES OF REFORM
           </span>
-          <p className="text-xs text-text-secondary/60 mt-1">
-            {getPathwayLabel()}
+          <p className="text-sm text-text-secondary/60 mt-1.5">
+            {getPathwayLabel()} · Step 4 of 4
           </p>
         </div>
 
@@ -152,8 +149,8 @@ export default function MobileNodeView({
     return (
       <div className="flex-1 flex flex-col p-4 animate-fadeIn">
         {/* Category label */}
-        <div className="text-center mb-3">
-          <span className="text-[10px] uppercase tracking-[0.1em] font-medium text-[#059669]">
+        <div className="text-center mb-5">
+          <span className="text-sm uppercase tracking-[0.15em] font-bold text-[#059669]">
             IMPACT WITH REFORMS
           </span>
         </div>
@@ -207,41 +204,40 @@ export default function MobileNodeView({
   // Render regular node
   const styles = nodeStyles[data.type] || nodeStyles.starting;
 
-  // Node 3 (impact) gets special label
-  const displayNodeLabel = nodeIndex === 2 ? 'Impact Without Reform' : getNodeLabel();
+  const displayNodeLabel = getNodeLabel();
 
   return (
     <div className="flex-1 flex flex-col p-4 animate-fadeIn">
       {/* Category label */}
-      <div className="text-center mb-3">
-        <span className={`text-[10px] uppercase tracking-[0.1em] font-medium ${styles.labelColor}`}>
+      <div className="text-center mb-5">
+        <span className={`text-sm uppercase tracking-[0.15em] font-bold ${styles.labelColor}`}>
           {data.category}
         </span>
-        <p className="text-xs text-text-secondary/60 mt-1">
+        <p className="text-sm text-text-secondary/60 mt-1.5">
           {getPathwayLabel()} · {displayNodeLabel}
         </p>
       </div>
 
-      {/* Node card - smaller when collapsed, full size when expanded */}
+      {/* Node card - larger when collapsed for readability, full size when expanded */}
       {/* Using a wrapper div to handle centering for collapsed state */}
       <div className={`flex-1 flex ${isExpanded ? 'flex-col' : 'items-center justify-center'}`}>
         <div
           className={`
             flex flex-col ${styles.bg} ${styles.border} border rounded-xl overflow-hidden cursor-pointer
             transition-all duration-300 ease-out active:scale-[0.98]
-            ${isExpanded ? 'flex-1 w-full' : 'w-[280px]'}
+            ${isExpanded ? 'flex-1 w-full' : 'w-[320px]'}
           `}
           onClick={onToggleExpand}
         >
           {/* Header */}
-          <div className={`${styles.headerBg} px-4 py-4 text-center`}>
+          <div className={`${styles.headerBg} text-center ${isExpanded ? 'px-4 py-4' : 'px-5 py-5'}`}>
             <h2 className={`font-heading font-semibold text-text-primary leading-tight transition-all duration-300 ${
-              isExpanded ? 'text-xl' : 'text-base'
+              isExpanded ? 'text-xl' : 'text-xl'
             }`}>
               {data.title}
             </h2>
-            <p className={`font-body text-text-secondary mt-2 transition-all duration-300 ${
-              isExpanded ? 'text-sm' : 'text-xs'
+            <p className={`font-body text-text-secondary transition-all duration-300 ${
+              isExpanded ? 'text-sm mt-2' : 'text-sm mt-3'
             }`}>
               {data.subtitle}
             </p>
@@ -340,10 +336,10 @@ export default function MobileNodeView({
               </p>
             </div>
           ) : (
-            <div className="p-3 text-center">
-              <span className="text-xs text-text-secondary/60 flex items-center justify-center gap-1">
+            <div className="p-4 text-center">
+              <span className="text-sm text-text-secondary/60 flex items-center justify-center gap-1.5">
                 Tap to learn more
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
                 </svg>
               </span>

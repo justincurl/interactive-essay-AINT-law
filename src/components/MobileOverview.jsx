@@ -50,6 +50,15 @@ export default function MobileOverview({ items, currentIndex, pathways, onContin
     }
   };
 
+  // Handle reform click - calculate direct index in full content list
+  // Each pathway has 3 nodes + 1 reform = 4 items
+  const handleReformClick = (pathwayIndex) => {
+    if (onNodeClick) {
+      const reformIndex = (pathwayIndex * 4) + 3; // Reform is the 4th item in each pathway
+      onNodeClick(reformIndex);
+    }
+  };
+
   return (
     <div className="flex-1 flex flex-col p-4 overflow-y-auto animate-fadeIn">
       {/* Header */}
@@ -161,11 +170,11 @@ export default function MobileOverview({ items, currentIndex, pathways, onContin
                           </p>
                         </div>
 
-                        {/* "What could change this?" flag on impact node - always show as preview */}
+                        {/* "What could change this?" flag on impact node - always clickable */}
                         {isImpactNode && (
                           <div
-                            className={`mt-1.5 flex items-center gap-1 px-1.5 py-1 bg-[#d1fae5] border border-[#a7f3d0] rounded text-[#059669] w-[115px] ${onNodeClick && hasReform ? 'cursor-pointer active:scale-[0.98] transition-transform' : 'opacity-70'}`}
-                            onClick={() => onNodeClick && hasReform && reformItem && handleNodeClick(reformItem)}
+                            className={`mt-1.5 flex items-center gap-1 px-1.5 py-1 bg-[#d1fae5] border border-[#a7f3d0] rounded text-[#059669] w-[115px] ${onNodeClick ? 'cursor-pointer active:scale-[0.98] transition-transform' : ''}`}
+                            onClick={() => handleReformClick(pathwayIndex)}
                           >
                             <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />

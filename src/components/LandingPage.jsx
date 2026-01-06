@@ -111,16 +111,7 @@ export default function LandingPage({ onExplore }) {
 
         {/* Context */}
         <p className="text-base leading-[1.7] text-[#525252] mb-4 text-justify">
-          Many AI leaders predict transformative changes to knowledge work, and researchers have identified legal services as a field that may be especially affected. This paper applies the{' '}
-          <a
-            href="https://www.normaltech.ai/p/ai-as-normal-technology"
-            className="text-[#191919] underline decoration-[#E8E5E0] underline-offset-[3px] decoration-1 hover:decoration-[#C54B32] transition-all"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            "AI as Normal Technology"
-          </a>
-          {' '}framework to examine what stands between AI capability advances and the positive transformation of legal practice. The authors identify three bottlenecks—regulatory barriers, adversarial dynamics, and human involvement—that may need to be addressed for AI to deliver genuinely better outcomes for consumers.
+          Many AI leaders predict transformative changes to knowledge work, with legal services being especially vulnerable to disruption. This paper applies the "AI as Normal Technology" framework to examine what stands between AI capability advances and the positive transformation of legal practice. We identify three bottlenecks—regulatory barriers, adversarial dynamics, and human involvement—that need to be addressed for AI to deliver genuinely better outcomes for consumers.
         </p>
 
         {/* CTA Section */}
