@@ -17,6 +17,7 @@ function App() {
   const [globalVisibleCount, setGlobalVisibleCount] = useState(1);
   const [expandedNodeId, setExpandedNodeId] = useState(null);
   const [evidenceNode, setEvidenceNode] = useState(null);
+  const [evidenceSectionIndex, setEvidenceSectionIndex] = useState(null);
   const [reformNode, setReformNode] = useState(null);
   const [animatingNodeIndex, setAnimatingNodeIndex] = useState(null);
   const [arrowPaths, setArrowPaths] = useState([]);
@@ -66,12 +67,14 @@ function App() {
     setExpandedNodeId(null);
   };
 
-  const handleShowEvidence = (node) => {
+  const handleShowEvidence = (node, sectionIndex = null) => {
     setEvidenceNode(node);
+    setEvidenceSectionIndex(sectionIndex);
   };
 
   const handleCloseEvidence = () => {
     setEvidenceNode(null);
+    setEvidenceSectionIndex(null);
   };
 
   // Track which pathway's reform panel is open (for navigation purposes)
@@ -629,6 +632,7 @@ function App() {
       {evidenceNode && (
         <EvidenceModal
           node={evidenceNode}
+          sectionIndex={evidenceSectionIndex}
           onClose={handleCloseEvidence}
         />
       )}

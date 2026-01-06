@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-export default function EvidenceModal({ node, onClose }) {
+export default function EvidenceModal({ node, sectionIndex = null, onClose }) {
   const modalRef = useRef(null);
 
   // Handle escape key and click outside
@@ -34,7 +34,22 @@ export default function EvidenceModal({ node, onClose }) {
     };
   }, [onClose]);
 
-  if (!node?.evidence || node.evidence.length === 0) {
+  // Determine which evidence to show
+  let evidence = [];
+  let title = '';
+
+  if (sectionIndex !== null && node?.evidenceSections?.[sectionIndex]) {
+    // Multiple sections - show specific section
+    const section = node.evidenceSections[sectionIndex];
+    evidence = section.evidence || [];
+    title = section.title || section.label || `Evidence: ${node.title}`;
+  } else if (node?.evidence) {
+    // Single evidence array (fallback)
+    evidence = node.evidence;
+    title = node.evidenceLabel || `Evidence: ${node.title}`;
+  }
+
+  if (evidence.length === 0) {
     return null;
   }
 
@@ -70,7 +85,7 @@ export default function EvidenceModal({ node, onClose }) {
             id="evidence-modal-title"
             className="font-heading text-lg font-semibold text-text-primary"
           >
-            {node.evidenceLabel || `Evidence: ${node.title}`}
+            {title}
           </h3>
           <button
             onClick={(e) => {
@@ -89,7 +104,7 @@ export default function EvidenceModal({ node, onClose }) {
         {/* Content */}
         <div className="px-6 py-4 overflow-y-auto max-h-[calc(80vh-80px)]">
           <div className="flex flex-col">
-            {node.evidence.map((item, idx) => {
+            {evidence.map((item, idx) => {
               const isContext = item.type === 'context';
               const hasLabel = !!item.label;
 
@@ -102,7 +117,7 @@ export default function EvidenceModal({ node, onClose }) {
               return (
                 <div
                   key={idx}
-                  className={`py-3 ${idx !== node.evidence.length - 1 ? 'border-b border-[#F0EDE8]' : ''}`}
+                  className={`py-3 ${idx !== evidence.length - 1 ? 'border-b border-[#F0EDE8]' : ''}`}
                 >
                   {isContext ? (
                     // Context items: no number/label, just text
