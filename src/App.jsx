@@ -6,6 +6,7 @@ import LandingPage from './components/LandingPage';
 import { pathway1 } from './data/pathway1';
 import { pathway2 } from './data/pathway2';
 import { pathway3 } from './data/pathway3';
+import { finalDestination } from './data/finalDestination';
 
 const pathways = [pathway1, pathway2, pathway3];
 const NODES_PER_PATHWAY = 3;
@@ -19,6 +20,7 @@ function App() {
   const [evidenceNode, setEvidenceNode] = useState(null);
   const [evidenceSectionIndex, setEvidenceSectionIndex] = useState(null);
   const [reformNode, setReformNode] = useState(null);
+  const [finalDestinationExpanded, setFinalDestinationExpanded] = useState(false);
   const [animatingNodeIndex, setAnimatingNodeIndex] = useState(null);
   const [arrowPaths, setArrowPaths] = useState([]);
   const pathwaysContainerRef = useRef(null);
@@ -499,14 +501,51 @@ function App() {
                 <div className="flex items-center justify-center">
                   <div
                     data-final-destination="true"
-                    className="bg-[#d1fae5] rounded-lg px-5 py-3 max-w-md text-center shadow-lg"
+                    className={`bg-[#d1fae5] rounded-lg shadow-lg cursor-pointer transition-all duration-300 ${finalDestinationExpanded ? 'max-w-2xl w-full' : 'max-w-md'}`}
+                    onClick={() => setFinalDestinationExpanded(!finalDestinationExpanded)}
                   >
-                    <h3 className="font-heading text-base font-semibold text-text-primary mb-1">
-                      Positive transformation of legal services
-                    </h3>
-                    <p className="font-body text-xs text-text-secondary">
-                      AI makes it easier and cheaper to achieve the legal outcomes clients care about
-                    </p>
+                    <div className={`px-5 py-3 ${finalDestinationExpanded ? 'text-left' : 'text-center'}`}>
+                      <div className="flex items-center justify-between">
+                        <div className={finalDestinationExpanded ? '' : 'w-full'}>
+                          <h3 className="font-heading text-base font-semibold text-text-primary mb-1">
+                            {finalDestination.title}
+                          </h3>
+                          <p className="font-body text-xs text-text-secondary">
+                            {finalDestination.subtitle}
+                          </p>
+                        </div>
+                        {finalDestinationExpanded && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setFinalDestinationExpanded(false);
+                            }}
+                            className="ml-4 w-6 h-6 flex items-center justify-center text-text-secondary hover:text-text-primary transition-colors rounded-md hover:bg-black/5 flex-shrink-0"
+                            aria-label="Collapse"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Expanded Content */}
+                      <div
+                        className={`overflow-hidden transition-all duration-300 ${finalDestinationExpanded ? 'max-h-[500px] opacity-100 mt-3 pt-3 border-t border-[#a7f3d0]' : 'max-h-0 opacity-0'}`}
+                      >
+                        <div className="space-y-2.5">
+                          {finalDestination.explanation?.map((paragraph, idx) => (
+                            <p
+                              key={idx}
+                              className="text-[14px] leading-[1.65] text-text-secondary"
+                            >
+                              {paragraph}
+                            </p>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <button

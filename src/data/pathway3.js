@@ -10,7 +10,7 @@ export const pathway3 = {
       explanation: [
         'This pathway begins with a bolder starting condition: AI productivity gains outpace increases in legal work volume. Perhaps AI becomes so advanced that the costs of completing all legal tasks fall nearly to zero, or there\'s an upper limit on arms races for certain kinds of legal work.',
       ],
-      evidenceLabel: 'When would this scenario arise? →',
+      evidenceLabel: 'When would this happen? →',
       evidence: [
         {
           quote: 'This is most relevant when AI gains outpace increases in production, which could happen for a number of reasons. Perhaps there\'s an upper limit on arms races for certain kinds of legal work. After all, some legal doctrines are only so complicated, and courts often impose strict page limits on filings. Or maybe AI is so advanced that the costs of all legal tasks falls basically to zero and increased production does not absorb productivity gains.',
@@ -25,8 +25,8 @@ export const pathway3 = {
       title: 'Human involvement',
       subtitle: 'Desire for human beings to adjudicate cases or understand contracts they sign',
       explanation: [
-        'Bottleneck 1: Judges in litigation If AI enables a flood of legal work, judges will likely respond by taking longer to resolve disputes (delaying outcomes) or delegating more to assistants (lowering adjudication quality). There is a limit to how much AI can accelerate the judicial process without meaningfully sacrificing human involvement.',
-        'Bottleneck 2: Clients understanding contracts Even if AI drafts entire contracts, human lawyers (or their clients) still need time to understand what those provisions mean for an organization\'s interests. The speed of human decision-makers places an upper limit on how much AI can accelerate legal processes.',
+        '**Judges in litigation:** If AI enables a flood of legal work, judges will likely respond by taking longer to resolve disputes (delaying outcomes) or delegating more to assistants (lowering adjudication quality). There is a limit to how much AI can accelerate the judicial process without meaningfully sacrificing human involvement.',
+        '**Clients understanding contracts:** Even if AI drafts entire contracts, human lawyers (or their clients) still need time to understand what those provisions mean for an organization\'s interests. The speed of human decision-makers places an upper limit on how much AI can accelerate legal processes.',
       ],
       evidenceSections: [
         {
@@ -34,11 +34,11 @@ export const pathway3 = {
           title: 'Could AI Judges Solve This?',
           evidence: [
             {
-              quote: 'Some authors are open to replacing human judges entirely with AI (Eugene Volokh; Estonia\'s "robot judge" experiment). One early report suggests that AI is helping Brazil\'s courts resolve cases more quickly.',
+              quote: 'Some authors are open to replacing human judges entirely with AI. One early report suggests that AI is helping Brazil\'s courts resolve cases more quickly.',
               label: 'Some have recommended AI judges',
             },
             {
-              quote: 'We find the legal (Article III likely requires human judges—Florida Bar), technical (hallucination and private influence problems—Kapoor), and moral objections (eucrim) persuasive. Even avowedly pro-AI lawyer Adam Unikowsky acknowledges he is "not quite ready to be ruled by robots."',
+              quote: 'We find the legal (Article III likely requires human judges), technical (hallucination and private influence problems), and moral objections persuasive. Even avowedly pro-AI lawyer Adam Unikowsky acknowledges he is "not quite ready to be ruled by robots."',
               label: 'The objections',
             },
             {
@@ -87,12 +87,8 @@ export const pathway3 = {
           type: 'context',
         },
         {
-          quote: 'As technology has enabled collectors to buy outstanding debt and cheaply file lawsuits for enforcement, the explosion of debt collection lawsuits has overwhelmed state courts.',
-          label: 'What\'s happening now',
-        },
-        {
-          quote: 'Some have resorted to delegating cases to court assistants. Others operate "judgeless courtrooms" with lax evidentiary standards that can lower the quality of adjudication and can undermine the rationale for the judicial process itself.',
-          label: 'The responses',
+          quote: 'The explosion of debt collection lawsuits has overwhelmed state courts. Some have resorted to delegating cases to court assistants. Others operate "judgeless courtrooms" with lax evidentiary standards that can lower the quality of adjudication and undermine the rationale for the judicial process itself.',
+          label: 'Overwhelmed courts',
         },
         {
           quote: 'If judges do not delegate, adjudicating cases will take longer as both the number of cases and the work each requires expands. Yet as the common legal maxim says: "Justice delayed is justice denied." Although more people might gain access to court, if judges require years to adjudicate cases, plaintiffs will face a choice between protracted litigation with no guarantee of success and settling cases on increasingly unfavorable terms as resolution times lengthen.',

@@ -61,7 +61,7 @@ export const pathway2 = {
           type: 'context',
         },
         {
-          quote: 'Beyond litigation: Similar dynamics can appear in transactional work, where lawyers compete to "outfox" each other on disclosures and contract terms.',
+          quote: 'Similar dynamics can appear in transactional work, where lawyers compete to "outfox" each other on disclosures and contract terms.',
           label: 'Beyond litigation',
         },
       ],
@@ -78,32 +78,8 @@ export const pathway2 = {
       evidenceLabel: 'How did digitization fail to reduce discovery costs? →',
       evidence: [
         {
-          quote: 'We draw on David Engstrom\'s scholarship examining the relationship between discovery, technological change, and litigation costs.',
-          type: 'context',
-        },
-        {
-          quote: 'Digitization might have pushed discovery costs in either direction. Better search capabilities meant attorneys could review documents more efficiently, driving down costs while increasing the relevance of information shared.',
-          label: 'The optimistic prediction',
-        },
-        {
-          quote: 'Yet the explosion of digital information increased what parties might need to search through during discovery, creating more opportunities for discovery abuse.',
-          label: 'What actually happened',
-        },
-        {
-          quote: 'Discovery accounts for roughly "one-third to one-half of all litigation costs" when used. Fortune 200 companies reported that in cases with over $250,000 in legal fees, which are typically the kinds of complex litigation that require discovery, average litigation costs nearly doubled from $66 million per company in 2000 to $115 million in 2008.',
-          label: 'The evidence',
-        },
-        {
-          quote: 'For every page eventually shown at trial, over 1,000 pages were produced in discovery.',
-          type: 'context',
-        },
-        {
-          quote: 'The main lesson of digitization, then, is that adversarial processes do not translate predicted productivity gains into lower-cost legal outcomes by default.',
-          label: 'What this means for AI',
-        },
-        {
-          quote: 'Though discovery is important, it is not uniquely susceptible to adversarial dynamics. An arms race of legal work in any stage of litigation can erode efficiency gains and make achieving clients\' objectives expensive.',
-          type: 'context',
+          quote: 'We draw on David Engstrom\'s scholarship examining the relationship between discovery, technological change, and litigation costs.\nDigitization might have pushed discovery costs in either direction.\nBetter search capabilities meant attorneys could review documents more efficiently, driving down costs while increasing the relevance of information shared.\nYet the explosion of digital information increased what parties might need to search through during discovery, creating more opportunities for discovery abuse.\nDiscovery accounts for roughly "one-third to one-half of all litigation costs" when used.\nFortune 200 companies reported that in cases with over $250,000 in legal fees, average litigation costs nearly doubled from $66 million per company in 2000 to $115 million in 2008.\nFor every page eventually shown at trial, over 1,000 pages were produced in discovery.\nThe main lesson of digitization is that adversarial processes do not translate predicted productivity gains into lower-cost legal outcomes by default.\nAn arms race of legal work in any stage of litigation can erode efficiency gains and make achieving clients\' objectives expensive.',
+          isList: true,
         },
       ],
     },
@@ -146,19 +122,19 @@ export const pathway2 = {
         evidence: [
           {
             quote: 'Some critique arbitration as unfair because companies often force it upon consumers and employees through "take-it-or-leave-it" contracts of adhesion. These fairness concerns are important, and others have written about the level of consent needed for arbitration to be truly fair.',
-            label: 'The fairness concern',
+            label: 'Critique: Fairness',
           },
           {
             quote: 'It can promote choice by allowing litigants to decide between traditional judicial review and AI-assisted adjudication. A consumer defending against an automated debt collection suit might prefer quick AI resolution over years of waiting, while a defendant facing serious consequences might insist on traditional review by human judges.',
-            label: 'Promotes choice',
+            label: 'Advantage #1: Promotes choice',
           },
           {
             quote: 'Should an arms race of legal outputs risk overwhelming the courts, the availability of a technology-mediated alternative can alleviate pressure on the courts, preserving human review for the contexts where those navigating the judicial system feel they need it most.',
-            label: 'Reduces court pressure',
+            label: 'Advantage #2: Reduces court pressure',
           },
           {
             quote: 'It creates a natural experiment that facilitates comparison between human and AI adjudicators on dimensions like speed, cost, and participant satisfaction.',
-            label: 'Creates natural experiments',
+            label: 'Advantage #3: Creates natural experiments',
           },
         ],
       },

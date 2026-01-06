@@ -91,11 +91,12 @@ export const pathway1 = {
       title: 'Limits on AI use by consumers (and to some extent lawyers)',
       subtitle: 'Liability threats chill experimentation. Capabilities aren\'t helpful without access',
       explanation: [
-        'The threat of UPL liability inhibits AI adoption even where it would clearly help. Organizations risk fines and criminal liability if their AI systems provide legal advice, so they may be unwilling to provide access to users—especially those who cannot afford to compensate developers for the risk. As the paper states: "Without reforms, if consumers cannot access AI capabilities, they won\'t be able to accomplish their legal goals, regardless of how advanced the technology becomes."',
+        'The threat of UPL liability inhibits AI adoption even where it would clearly help. Organizations risk fines and criminal liability if their AI systems provide legal advice, so they may be unwilling to provide access to users—especially those who cannot afford to compensate developers for the risk.',
+        'Without reforms, if consumers cannot access AI capabilities, they won\'t be able to accomplish their legal goals, regardless of how advanced the technology becomes.',
       ],
       evidenceSections: [
         {
-          label: 'Learn more about how this affects debt collection defendants →',
+          label: 'See how this affects debt collection defendants →',
           title: 'Debt Collection & Upsolve',
           evidence: [
             {
