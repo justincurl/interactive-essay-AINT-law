@@ -89,7 +89,7 @@ export const pathway1 = {
       type: 'impact',
       category: 'IMPACT WITHOUT REFORM',
       title: 'Limits on AI use by consumers (and to some extent lawyers)',
-      subtitle: 'Threat of liability chills experimentation. Capabilities aren\'t helpful without access',
+      subtitle: 'Liability threats chill experimentation. Capabilities aren\'t helpful without access',
       explanation: [
         'The threat of UPL liability inhibits AI adoption even where it would clearly help. Organizations risk fines and criminal liability if their AI systems provide legal advice, so they may be unwilling to provide access to users—especially those who cannot afford to compensate developers for the risk. As the paper states: "Without reforms, if consumers cannot access AI capabilities, they won\'t be able to accomplish their legal goals, regardless of how advanced the technology becomes."',
       ],
@@ -143,8 +143,8 @@ export const pathway1 = {
     title: 'With reform',
     subtitle: 'Examples: state courts update regulations; creation of regulatory markets',
     explanation: [
-      'Example 1: State courts update regulations Several states are experimenting with regulatory reform. Creating new tiers of legal service providers is "one of the \'fastest growing UPL reform program types\' nationally, with seven states adopting this approach and another 10 considering it." Arizona and Utah have created regulatory sandboxes allowing experimentation with alternative business structures.',
-      'Example 2: Create regulatory markets More ambitiously, legal scholar Gillian Hadfield proposes a "superregulator" model that would create a market for the regulation of legal services. Rather than directly regulating providers, the government would license competing regulators, shifting its role to setting outcome targets and then licensing regulators that achieve them.',
+      '**State courts update regulations:** Several states are experimenting with regulatory reform. Creating new tiers of legal service providers is "one of the \'fastest growing UPL reform program types\' nationally, with seven states adopting this approach and another 10 considering it." Arizona and Utah have created regulatory sandboxes allowing experimentation with alternative business structures.',
+      '**Create regulatory markets:** More ambitiously, legal scholar Gillian Hadfield proposes a "superregulator" model that would create a market for the regulation of legal services. Rather than directly regulating providers, the government would license competing regulators, shifting its role to setting outcome targets and then licensing regulators that achieve them.',
     ],
     evidenceSections: [
       {

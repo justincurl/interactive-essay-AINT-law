@@ -18,8 +18,9 @@ export const pathway2 = {
           type: 'context',
         },
         {
-          quote: 'To give some examples: Inputs: Employee talent, billable hours, technological tools. Outputs: Contracts drafted, motions filed, briefs written. Outcomes: Disputes resolved, deals closed, rights protected.',
+          quote: '• Inputs: Employee talent, billable hours, technological tools\n• Outputs: Contracts drafted, motions filed, briefs written\n• Outcomes: Disputes resolved, deals closed, rights protected',
           label: 'The framework',
+          isList: true,
         },
         {
           quote: 'Consumers purchase legal services to achieve specific outcomes. Inputs and outputs can indirectly lead to those outcomes because more hours worked and more legal tasks help clients get the outcomes they want. But in a zero-sum context where the value of legal services is relative, if both sides increase their outputs, the advantages to either side of doing so can be limited.',
@@ -113,8 +114,8 @@ export const pathway2 = {
     title: 'With reform',
     subtitle: 'Examples: judges make litigation less adversarial; parties use arbitration as a parallel track',
     explanation: [
-      'Example 1: Judges reduce adversarial dynamics Judges already have some tools, but they\'re underused. Some judges have proposed appointing neutral expert witnesses under Federal Rule of Evidence 706, or using special masters under Federal Rule of Civil Procedure 53 to manage discovery.',
-      'Example 2: Arbitration as a parallel track to promote competition Voluntary arbitration can promote choice, reduce court backlogs, and create natural experiments comparing human and AI adjudication, though we want to acknowledge fairness critiques. The benefits above assume the decision to enter arbitration reflects the free choice of both parties.',
+      '**Judges reduce adversarial dynamics:** Judges already have some tools, but they\'re underused. Some judges have proposed appointing neutral expert witnesses under Federal Rule of Evidence 706, or using special masters under Federal Rule of Civil Procedure 53 to manage discovery.',
+      '**Arbitration as a parallel track:** Voluntary arbitration can promote choice, reduce court backlogs, and create natural experiments comparing human and AI adjudication, though we want to acknowledge fairness critiques. The benefits above assume the decision to enter arbitration reflects the free choice of both parties.',
     ],
     evidenceSections: [
       {

@@ -111,8 +111,8 @@ export const pathway3 = {
     title: 'With reform',
     subtitle: 'Examples: legislatures fund more judges; legal training better equips attorneys to move up the value chain',
     explanation: [
-      'Example 1: Congress and the states could expand the judiciary The most straightforward response to an overburdened judiciary is to hire more judges—a solution legal scholars have advocated for decades. While politically complicated, it\'s not as unrealistic as some fear, especially given the magnitude of AI\'s potential disruption.',
-      'Example 2: Lawyers could shift focus from legal tasks to understanding an organization\'s needs As AI handles routine tasks, value moves from completing tasks to exercising judgment and deeply understanding organizations\' needs. In-house lawyers will likely spend more time on strategic advising and less on document production. Legal education will need to evolve accordingly.',
+      '**Expand the judiciary:** The most straightforward response to an overburdened judiciary is to hire more judges—a solution legal scholars have advocated for decades. While politically complicated, it\'s not as unrealistic as some fear, especially given the magnitude of AI\'s potential disruption.',
+      '**Lawyers shift focus:** As AI handles routine tasks, value moves from completing tasks to exercising judgment and deeply understanding organizations\' needs. In-house lawyers will likely spend more time on strategic advising and less on document production. Legal education will need to evolve accordingly.',
     ],
     evidenceSections: [
       {

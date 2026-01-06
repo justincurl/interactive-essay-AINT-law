@@ -133,9 +133,18 @@ export default function EvidenceModal({ node, sectionIndex = null, onClose }) {
                       >
                         {item.label}
                       </h4>
-                      <p className="text-[0.9375rem] text-[#525252] leading-[1.7]">
-                        {item.quote}
-                      </p>
+                      {item.isList ? (
+                        // Render as a list
+                        <ul className="text-[0.9375rem] text-[#525252] leading-[1.7] space-y-1">
+                          {item.quote.split('\n').map((line, lineIdx) => (
+                            <li key={lineIdx}>{line}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-[0.9375rem] text-[#525252] leading-[1.7]">
+                          {item.quote}
+                        </p>
+                      )}
                     </div>
                   ) : (
                     // Numbered items: show number
