@@ -86,7 +86,7 @@ export const pathway2 = {
   ],
   reform: {
     id: 'p2-reform',
-    category: 'WITH REFORM',
+    category: 'EXAMPLES OF REFORM',
     title: 'With reform',
     subtitle: 'Examples: judges make litigation less adversarial; parties use arbitration as a parallel track',
     explanation: [

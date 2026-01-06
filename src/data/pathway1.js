@@ -140,7 +140,7 @@ export const pathway1 = {
   ],
   reform: {
     id: 'p1-reform',
-    category: 'WITH REFORM',
+    category: 'EXAMPLES OF REFORM',
     title: 'With reform',
     subtitle: 'Examples: state courts update regulations; creation of regulatory markets',
     explanation: [

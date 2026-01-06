@@ -103,7 +103,7 @@ export const pathway3 = {
   ],
   reform: {
     id: 'p3-reform',
-    category: 'WITH REFORM',
+    category: 'EXAMPLES OF REFORM',
     title: 'With reform',
     subtitle: 'Examples: legislatures fund more judges; legal training better equips attorneys to move up the value chain',
     explanation: [
