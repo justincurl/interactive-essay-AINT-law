@@ -102,7 +102,7 @@ export default function EvidenceModal({ node, sectionIndex = null, onClose }) {
         </div>
 
         {/* Content */}
-        <div className="px-6 py-4 overflow-y-auto max-h-[calc(80vh-80px)]">
+        <div className="px-6 pt-2 pb-4 overflow-y-auto max-h-[calc(80vh-80px)]">
           <div className="flex flex-col">
             {evidence.map((item, idx) => {
               const isContext = item.type === 'context';
