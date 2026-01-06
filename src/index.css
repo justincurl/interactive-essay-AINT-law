@@ -1,7 +1,7 @@
-@import "tailwindcss";
-
-/* Import Google Fonts */
+/* Import Google Fonts - must come first */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
+@import "tailwindcss";
 
 /* Custom theme configuration */
 @theme {
@@ -125,4 +125,30 @@ h1, h2, h3, h4, h5, h6 {
 
 .animate-dash-flow {
   animation: dash-flow 0.5s linear infinite;
+}
+
+/* Mobile-specific animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 200ms ease-out forwards;
+}
+
+/* Safe area padding for notched devices */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Mobile-specific touch feedback */
+@media (hover: none) and (pointer: coarse) {
+  .mobile-tap-highlight {
+    -webkit-tap-highlight-color: rgba(197, 75, 50, 0.1);
+  }
 }
