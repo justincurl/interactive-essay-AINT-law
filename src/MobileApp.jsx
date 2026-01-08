@@ -301,6 +301,16 @@ export default function MobileApp() {
 
       {/* Navigation footer */}
       <footer className="border-t border-border/30 bg-cream/90 backdrop-blur-sm sticky bottom-0 z-50 safe-area-pb">
+        {/* Attribution */}
+        <div className="px-4 pt-2 text-center border-b border-border/20">
+          <p className="text-[10px] text-[#737373]">
+            This is an interactive version of a co-authored essay built by{' '}
+            <a href="https://justincurl.github.io" className="text-[#C54B32] no-underline" target="_blank" rel="noopener noreferrer">Justin Curl</a>
+            {' '}with{' '}
+            <a href="https://devin.ai" className="text-[#C54B32] no-underline" target="_blank" rel="noopener noreferrer">Devin</a>
+            {' '}and Claude Code
+          </p>
+        </div>
         {/* View Flowchart button - prominent, above nav */}
         {!showOverview && !showFullFlowchart && (
           <div className="px-4 pt-3 pb-2">

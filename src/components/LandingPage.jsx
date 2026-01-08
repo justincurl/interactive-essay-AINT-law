@@ -49,7 +49,7 @@ export default function LandingPage({ onExplore }) {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-[680px] mx-auto px-6 pt-6 pb-12">
+      <main className="max-w-[680px] mx-auto px-6 pt-6 pb-20">
         {/* Title Section */}
         <section className="mb-4 animate-fadeSlideUp">
           <p className="text-xs font-semibold tracking-[0.08em] uppercase text-[#C54B32] mb-2">
@@ -61,30 +61,6 @@ export default function LandingPage({ onExplore }) {
           >
             What Could Advanced AI Mean for the Practice of Law?
           </h1>
-
-          <div className="flex justify-start gap-12">
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[0.9375rem] font-medium text-[#191919]">Justin Curl</span>
-              <span className="text-[0.8125rem] text-[#737373]">Harvard Law School</span>
-              <a href="https://x.com/curl_justin" className="text-[0.8125rem] text-[#C54B32] no-underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">
-                @curl_justin
-              </a>
-            </div>
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[0.9375rem] font-medium text-[#191919]">Sayash Kapoor</span>
-              <span className="text-[0.8125rem] text-[#737373]">Princeton University</span>
-              <a href="https://x.com/sayashk" className="text-[0.8125rem] text-[#C54B32] no-underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">
-                @sayashk
-              </a>
-            </div>
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[0.9375rem] font-medium text-[#191919]">Arvind Narayanan</span>
-              <span className="text-[0.8125rem] text-[#737373]">Princeton University</span>
-              <a href="https://x.com/random_walker" className="text-[0.8125rem] text-[#C54B32] no-underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">
-                @random_walker
-              </a>
-            </div>
-          </div>
         </section>
 
         {/* Divider */}
@@ -253,6 +229,19 @@ export default function LandingPage({ onExplore }) {
           </div>
         </section>
       </main>
+
+      {/* Footer */}
+      <footer className="fixed bottom-0 left-0 right-0 border-t border-[#F0EDE8] py-4 z-50" style={{ background: 'rgba(253, 252, 250, 0.95)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
+        <div className="max-w-[680px] mx-auto px-6 text-center">
+          <p className="text-xs text-[#737373]">
+            This is an interactive version of a co-authored essay built by{' '}
+            <a href="https://justincurl.github.io" className="text-[#C54B32] no-underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">Justin Curl</a>
+            {' '}with{' '}
+            <a href="https://devin.ai" className="text-[#C54B32] no-underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">Devin</a>
+            {' '}and Claude Code
+          </p>
+        </div>
+      </footer>
 
       <style>{`
         @keyframes fadeSlideUp {

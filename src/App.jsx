@@ -624,7 +624,7 @@ function App() {
       </main>
 
       {/* Legend */}
-      <footer className="py-4 px-6 border-t border-border/30">
+      <div className="py-4 px-6 border-t border-border/30 pb-16">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-wrap gap-4 justify-center text-xs">
             <div className="flex items-center gap-1.5">
@@ -688,6 +688,19 @@ function App() {
               <span className="text-text-secondary">Pathway With Reform</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Attribution Footer */}
+      <footer className="fixed bottom-0 left-0 right-0 border-t border-[#F0EDE8] py-3 z-50" style={{ background: 'rgba(253, 252, 250, 0.95)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <p className="text-xs text-[#737373]">
+            This is an interactive version of a co-authored essay built by{' '}
+            <a href="https://justincurl.github.io" className="text-[#C54B32] no-underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">Justin Curl</a>
+            {' '}with{' '}
+            <a href="https://devin.ai" className="text-[#C54B32] no-underline hover:opacity-70 transition-opacity" target="_blank" rel="noopener noreferrer">Devin</a>
+            {' '}and Claude Code
+          </p>
         </div>
       </footer>
 

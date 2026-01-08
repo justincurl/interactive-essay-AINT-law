@@ -24,7 +24,7 @@ export default function MobileLandingPage({ onExplore }) {
       </header>
 
       {/* Main Content */}
-      <main className="px-5 pt-5 pb-8">
+      <main className="px-5 pt-5 pb-16">
         {/* Title Section */}
         <section className="mb-4">
           <p className="text-[10px] font-semibold tracking-[0.08em] uppercase text-[#C54B32] mb-2">
@@ -36,22 +36,6 @@ export default function MobileLandingPage({ onExplore }) {
           >
             What Could Advanced AI Mean for the Practice of Law?
           </h1>
-
-          {/* Authors - stacked for mobile */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-[#191919]">Justin Curl</span>
-              <span className="text-xs text-[#737373]">Harvard Law School</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-[#191919]">Sayash Kapoor</span>
-              <span className="text-xs text-[#737373]">Princeton</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-[#191919]">Arvind Narayanan</span>
-              <span className="text-xs text-[#737373]">Princeton</span>
-            </div>
-          </div>
         </section>
 
         {/* Divider */}
@@ -218,6 +202,19 @@ export default function MobileLandingPage({ onExplore }) {
           </div>
         </section>
       </main>
+
+      {/* Footer */}
+      <footer className="fixed bottom-0 left-0 right-0 border-t border-[#F0EDE8] py-3 z-50" style={{ background: 'rgba(253, 252, 250, 0.95)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
+        <div className="px-5 text-center">
+          <p className="text-xs text-[#737373]">
+            This is an interactive version of a co-authored essay built by{' '}
+            <a href="https://justincurl.github.io" className="text-[#C54B32] no-underline" target="_blank" rel="noopener noreferrer">Justin Curl</a>
+            {' '}with{' '}
+            <a href="https://devin.ai" className="text-[#C54B32] no-underline" target="_blank" rel="noopener noreferrer">Devin</a>
+            {' '}and Claude Code
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
