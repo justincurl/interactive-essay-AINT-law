@@ -34,7 +34,7 @@ export default function MobileLandingPage({ onExplore }) {
             className="text-2xl font-normal leading-[1.2] tracking-[-0.01em] mb-4 text-[#191919]"
             style={{ fontFamily: "'Newsreader', Georgia, serif" }}
           >
-            What Could Advanced AI Mean for the Practice of Law?
+            AI Won't Automatically Make Legal Services Cheaper
           </h1>
         </section>
 
