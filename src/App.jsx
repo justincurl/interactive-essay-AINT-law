@@ -353,7 +353,7 @@ function App() {
       <header className="border-b border-border/30 bg-cream/90 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-[1100px] mx-auto px-8 py-3 flex justify-between items-center">
           <span className="text-xs font-semibold tracking-[0.06em] uppercase text-[#737373]">
-            Interactive Essay: What Could Advanced AI Mean for the Practice of Law?
+            Interactive Essay: AI Won't Automatically Make Legal Services Cheaper
           </span>
           <div className="flex items-center gap-6">
             <button
