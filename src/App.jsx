@@ -366,7 +366,9 @@ function App() {
               Back to intro
             </button>
             <a
-              href="#"
+              href="https://s3.documentcloud.org/documents/26950352/ai-wont-automatically-make-legal-services-cheaper-curl-kapoor-narayanan.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-sm font-medium text-text-secondary hover:text-accent transition-colors flex items-center gap-1.5"
             >
               Read full paper
