@@ -37,7 +37,9 @@ export default function LandingPage({ onExplore }) {
             Interactive Essay
           </span>
           <a
-            href="#"
+            href="https://s3.documentcloud.org/documents/26950352/ai-wont-automatically-make-legal-services-cheaper-curl-kapoor-narayanan.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-sm font-medium text-[#525252] no-underline flex items-center gap-1.5 hover:text-[#C54B32] transition-colors duration-150"
           >
             Read full paper
